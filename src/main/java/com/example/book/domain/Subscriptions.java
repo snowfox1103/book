@@ -5,9 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "subscription")
@@ -15,7 +12,6 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class Subscriptions extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

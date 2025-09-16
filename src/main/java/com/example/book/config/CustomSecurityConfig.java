@@ -26,53 +26,74 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class CustomSecurityConfig {
-    private final DataSource dataSource;
-    private final CustomUserDetailsService userDetailsService;
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        log.info("------------configure-------------");
-//        http.formLogin(withDefaults());
-        http.formLogin(httpSecurityFormLoginConfigurer ->
-                httpSecurityFormLoginConfigurer.loginPage("/member/login"));
-        http.csrf(httpSecurityCsrfConfigurer ->
-                httpSecurityCsrfConfigurer.disable());
+  private final DataSource dataSource;
+  private final CustomUserDetailsService userDetailsService;
 
-        http.rememberMe(httpSecurityRememberMeConfigurer ->
-                httpSecurityRememberMeConfigurer
-                .key("12345678")
-                .tokenRepository(persistentTokenRepository())
-                .userDetailsService(userDetailsService)
-                .tokenValiditySeconds(60*60*24*30)); //토큰이 유지되는 시간, 1달로 설정
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-        http.exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
-                httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler()));
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    log.info("------------------configure----------------------");
+//    http.formLogin(withDefaults());
+    http.formLogin(httpSecurityFormLoginConfigurer -> {
+      httpSecurityFormLoginConfigurer.loginPage("/users/login");
+    });
 
-        http.oauth2Login(httpSecurityOAuth2LoginConfigurer ->
-//                httpSecurityOAuth2LoginConfigurer.loginPage("/member/login"));
-                httpSecurityOAuth2LoginConfigurer.successHandler(authenticationSuccessHandler()));
-        return http.build();
-    }
-    @Bean
-    public AuthenticationSuccessHandler authenticationSuccessHandler(){
-        return new CustomSocialLoginSuccessHandler(passwordEncoder());
-    }
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer(){
-        log.info("------------web configure-------------");
-        return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-    }
-    @Bean
-    public PersistentTokenRepository persistentTokenRepository(){
-        JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
-        repo.setDataSource(dataSource);
-        return repo;
-    }
-    @Bean
-    public AccessDeniedHandler accessDeniedHandler(){
-        return new Custom403Handler();
-    }
+    http.csrf(httpSecurityCsrfConfigurer -> {
+      httpSecurityCsrfConfigurer.disable();
+    });
+
+    //자동 로그인 기능 처리하는 부분?
+    http.rememberMe(httpSecurityRememberMeConfigurer -> {
+      httpSecurityRememberMeConfigurer
+        .key("12345678")
+        .tokenRepository(persistentTokenRepository())
+        .userDetailsService(userDetailsService)
+        .tokenValiditySeconds(60*60*24*30);
+    });
+
+    //403에러를 처리하는 부분
+    http.exceptionHandling( httpSecurityExceptionHandlingConfigurer -> {
+      httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler());
+    });
+
+    http.oauth2Login(httpSecurityOauth2LoginConfigurer -> {
+//      httpSecurityOauth2LoginConfigurer.loginPage("/member/login");
+      httpSecurityOauth2LoginConfigurer.successHandler(authenticationSuccessHandler());
+    });
+
+    return http.build();
+  }
+
+//  @Bean
+//  public AuthenticationSuccessHandler authenticationSuccessHandler() {
+//    return new CustomSocialLoginSuccessHandler(passwordEncoder());
+//  }
+
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() {
+    log.info("-----------------web configure-------------------");
+    return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations()); //정적 자원들은 필터에서 제외한다는 뜻
+  }
+
+  @Bean
+  public PersistentTokenRepository persistentTokenRepository() {
+    JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
+    repo.setDataSource(dataSource);
+
+    return repo;
+  }
+
+  @Bean
+  public AccessDeniedHandler accessDeniedHandler() {
+    return new Custom403Handler();
+  }
+
+  @Bean
+  public AuthenticationSuccessHandler authenticationSuccessHandler() {
+    return new CustomSocialLoginSuccessHandler(passwordEncoder());
+  }
 }
