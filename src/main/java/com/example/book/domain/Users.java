@@ -3,8 +3,7 @@ package com.example.book.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -12,8 +11,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "role")
+@ToString(exclude = "password")
 public class Users extends BaseEntity{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userNo")
@@ -34,27 +34,4 @@ public class Users extends BaseEntity{
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private MemberRole role;
-
-    private boolean social;
-    private boolean enabled;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Subscriptions> subscriptions = new ArrayList<>();
-
-    public void setRole(MemberRole role) {
-        this.role = role;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void changePassword(String password) {
-        this.password = password;
-    }
-
-    public void changeEmail(String email) {
-        this.email = email;
-    }
 }

@@ -1,5 +1,7 @@
 package com.example.book.config;
 
+
+
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +15,6 @@ public class SwaggerConfig {
                 .group("REST API")
                 .build();
     }
-
     @Bean
     public GroupedOpenApi commonApi() {
         return GroupedOpenApi.builder()
@@ -22,4 +23,6 @@ public class SwaggerConfig {
                 .group("COMMON API")
                 .build();
     }
+
+
 }

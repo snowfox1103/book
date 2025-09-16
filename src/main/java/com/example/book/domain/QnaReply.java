@@ -1,10 +1,9 @@
 package com.example.book.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "qnaReply")
@@ -12,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class QnaReply extends BaseEntity {
+@ToString
+public class QnaReply extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +25,7 @@ public class QnaReply extends BaseEntity {
     @Column(name = "userNo")
     private Long userNo;
 
-    @Column(name = "qBContent", nullable = false, length = 1000)
+    @Column(name = "qBContent")
     private String qBContent;
 
-    public void changeContent(String content) {
-        this.qBContent = content;
-    }
 }
