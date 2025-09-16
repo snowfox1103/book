@@ -73,4 +73,5 @@ public class QnaService {
     private boolean isOwner(Qna q, Long userNo) {
         return q.getUserNo() != null && q.getUserNo().equals(userNo);
     }
+    //점심
 }
