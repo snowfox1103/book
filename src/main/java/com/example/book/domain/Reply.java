@@ -10,15 +10,14 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "board")
 public class Reply extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rno;
-
-    @Column(name="board_bno")
-    private Long boardBno;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "bno") // FK 컬럼명
+    private Board board;
     private String replyText;
     private String replyer;
     

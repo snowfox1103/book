@@ -1,18 +1,18 @@
 package com.example.book.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Qna")
+@Table(name = "qna")
 @Getter
 @Builder
 @AllArgsConstructor
+@ToString
 @NoArgsConstructor
-public class Qna extends BaseEntity {
+public class Qna extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +30,4 @@ public class Qna extends BaseEntity {
 
     @Column(name = "qBBlind")
     private Boolean qBBlind;
-
-    public void change(String title, String content, boolean blind) {
-        this.qBTitle = title;
-        this.qBContent = content;
-        this.qBBlind = blind;
-    }
 }
