@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <title>Simple Sidebar - Login</title>
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" th:href="@{/assets/favicon.ico}" />
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link th:href="@{/css/styles.css}" rel="stylesheet" />
+</head>
+<body class="align-middle" >
+<div class="container-fluid d-flex justify-content-center" style="height:100vh">
+  <div class="card align-self-center">
+    <div class="card-header">
+      LOGIN Page
+    </div>
+
+    <th:block th:if="${param.logout != null}">
+      <h1>Logout........</h1>
+    </th:block>
+
+    <div class="card-body">
+      <form id="registerForm" action="/users/login" method="post" th:if="${param.logout == null}">
+        <div class="input-group mb-3">
+          <span class="input-group-text">아이디</span>
+          <input type="text" name="username" class="form-control" placeholder="USER ID">
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text">패스워드</span>
+<!--          일부러 text타입으로 지정, 확인을 위해-->
+          <input type="text" name="password" class="form-control" placeholder="PASSWORD"> 
+        </div>
+        <div class="input-group mb-3">
+          <input class="form-check-input" type="checkbox" name="remember-me">
+          <label class="form-check-label">
+            자동 로그인
+          </label>
+        </div>
+        <div class="my-4">
+          <div class="float-end">
+            <button type="submit" class="btn btn-primary submitBtn">LOGIN</button>
+          </div>
+        </div>
+      </form>
+      <div>
+        <a href="/oauth2/authorization/kakao">KAKAO</a>
+      </div>
+    </div><!--end card body-->
+  </div><!--end card-->
+</div>
+</body>
+
+<script th:inline="javascript">
+    /* [[${param.error}]]는 로그인 실패 시 존재 */
+    let error = [[${param.error} != null ? true : false]];
+    if(error){
+        alert("아이디 또는 비밀번호가 잘못되었습니다.");
+    }
+
+    let message = [[${message}]];
+    if(message){
+        alert("가입 확인 메일을 보냈습니다.");
+    }
+
+    const verified = [[${param.verified}]];
+    if (verified === 'ok') {
+        alert('이메일 인증 완료! 로그인할 수 있습니다.');
+    } else if (verified === 'expired') {
+        alert('토큰이 만료되었습니다. 다시 요청해주세요.');
+    } else if (verified === 'invalid') {
+        alert('유효하지 않은 토큰입니다.');
+    }
+</script>
+</html>
