@@ -3,6 +3,8 @@ package com.example.book.service;
 import com.example.book.domain.QnaReply;
 import com.example.book.repository.QnaReplyRepository;
 import lombok.RequiredArgsConstructor;
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +18,7 @@ public class QnaReplyService {
     private final QnaReplyRepository replyRepo;
 
     public List<QnaReply> list(Long qBId) {
-        return replyRepo.findByQBIdOrderByRegdateAsc(qBId);
+        return replyRepo.findByQBId(qBId, Sort.by(ASC, "regDate"));
     }
 
     @Transactional

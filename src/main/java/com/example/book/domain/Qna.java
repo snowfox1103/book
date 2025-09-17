@@ -30,4 +30,11 @@ public class Qna extends BaseEntity{
 
     @Column(name = "qBBlind")
     private Boolean qBBlind;
+
+    public void change(String title, String content, boolean blind) {
+        this.qBTitle  = title;
+        this.qBContent = content;
+        this.qBBlind   = blind;
+    }
+
 }

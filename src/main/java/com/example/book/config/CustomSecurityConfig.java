@@ -1,6 +1,7 @@
 package com.example.book.config;
 
 import com.example.book.security.CustomUserDetailsService;
+import com.example.book.security.handler.Custom401Handler;
 import com.example.book.security.handler.Custom403Handler;
 import com.example.book.security.handler.CustomSocialLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +60,17 @@ public class CustomSecurityConfig {
     http.exceptionHandling( httpSecurityExceptionHandlingConfigurer -> {
       httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler());
     });
+
+    // (추가) 401 핸들러 0916 석준영
+    http.exceptionHandling(c -> c.authenticationEntryPoint(new Custom401Handler()));
+
+    // qna 인증용 0916 석준영
+    http.authorizeHttpRequests(auth -> auth
+            .requestMatchers("/error/**", "/users/login", "/css/**", "/js/**", "/images/**").permitAll()
+            .requestMatchers("/admin/**").hasRole("ADMIN")
+            .requestMatchers("/qna/**").authenticated()
+            .anyRequest().permitAll()
+    );
 
     http.oauth2Login(httpSecurityOauth2LoginConfigurer -> {
 //      httpSecurityOauth2LoginConfigurer.loginPage("/member/login");
