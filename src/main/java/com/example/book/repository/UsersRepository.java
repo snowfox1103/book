@@ -34,7 +34,11 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
   @Query("delete from Users m where m.userId = :userId")
   void deleteByUserId(@Param("userId") String userId);
 
+  @EntityGraph(attributePaths = "role")
+  Optional<Users> findByUserId(String userId);
+
   boolean existsByUserId(String userId);
   boolean existsByEmail(String email);
+
 }
 

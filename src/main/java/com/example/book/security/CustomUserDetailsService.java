@@ -21,10 +21,6 @@ public class CustomUserDetailsService implements UserDetailsService {
   private final UsersRepository usersRepository;
   private PasswordEncoder passwordEncoder;
 
-//  public CustomUserDetailsService() {
-//    this.passwordEncoder = new BCryptPasswordEncoder();
-//  }
-
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     log.info("loadUserByUsername: " + username);
@@ -41,6 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
       users.getPassword(),
       users.getEmail(),
       false,
+      users.isEnabled(),
       java.util.List.of(new SimpleGrantedAuthority("ROLE_" + users.getRole().name()))
     );
     log.info("userSecurityDTO");

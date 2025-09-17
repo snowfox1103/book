@@ -35,8 +35,8 @@ public class Users extends BaseEntity{
     @Column(name = "role")
     private MemberRole role;
 
-    private boolean social;
-    private boolean enabled;
+    private boolean social = false;
+    private boolean enabled = false;
 
     @Builder.Default
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -56,5 +56,19 @@ public class Users extends BaseEntity{
 
     public void changeEmail(String email) {
         this.email = email;
+    }
+
+    public void applyRegistration(String realName, String userId, String encodedPassword) {
+        this.realName = realName;
+        this.userId = userId;
+        this.password = encodedPassword;
+    }
+
+    public void enable() {
+        this.enabled = true;
+    }
+
+    public void disable() {
+        this.enabled = false;
     }
 }

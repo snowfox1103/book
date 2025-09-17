@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -43,9 +44,27 @@ public class CustomSecurityConfig {
       httpSecurityFormLoginConfigurer.loginPage("/users/login");
     });
 
-    http.csrf(httpSecurityCsrfConfigurer -> {
-      httpSecurityCsrfConfigurer.disable();
-    });
+    http //csrf공격 때문에 설정한것 위는
+      .csrf(csrf -> csrf
+        .ignoringRequestMatchers("/h2-console/**")// 필요하면 특정 경로만 예외
+      )
+      .logout(logout -> logout
+        .logoutUrl("/users/logout")
+        .logoutSuccessUrl("/users/login?logout")
+        .invalidateHttpSession(true)
+        .deleteCookies("JSESSIONID")
+      );
+
+    // (추가) 401 핸들러 0916 석준영
+    http.exceptionHandling(c -> c.authenticationEntryPoint(new Custom401Handler()));
+
+    // qna 인증용 0916 석준영
+    http.authorizeHttpRequests(auth -> auth
+      .requestMatchers("/error/**", "/users/login", "/css/**", "/js/**", "/images/**").permitAll()
+      .requestMatchers("/admin/**").hasRole("ADMIN")
+      .requestMatchers("/qna/**").authenticated()
+      .anyRequest().permitAll()
+    );
 
     //자동 로그인 기능 처리하는 부분?
     http.rememberMe(httpSecurityRememberMeConfigurer -> {
@@ -61,29 +80,21 @@ public class CustomSecurityConfig {
       httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler());
     });
 
-    // (추가) 401 핸들러 0916 석준영
-    http.exceptionHandling(c -> c.authenticationEntryPoint(new Custom401Handler()));
-
-    // qna 인증용 0916 석준영
-    http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/error/**", "/users/login", "/css/**", "/js/**", "/images/**").permitAll()
-            .requestMatchers("/admin/**").hasRole("ADMIN")
-            .requestMatchers("/qna/**").authenticated()
-            .anyRequest().permitAll()
-    );
-
     http.oauth2Login(httpSecurityOauth2LoginConfigurer -> {
 //      httpSecurityOauth2LoginConfigurer.loginPage("/member/login");
       httpSecurityOauth2LoginConfigurer.successHandler(authenticationSuccessHandler());
     });
 
+    http
+      .formLogin(form -> form
+        .loginPage("/users/login")
+        .loginProcessingUrl("/users/login")
+        .failureHandler(authFailureHandler())
+        .defaultSuccessUrl("/", true)
+      );
+
     return http.build();
   }
-
-//  @Bean
-//  public AuthenticationSuccessHandler authenticationSuccessHandler() {
-//    return new CustomSocialLoginSuccessHandler(passwordEncoder());
-//  }
 
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
@@ -107,5 +118,16 @@ public class CustomSecurityConfig {
   @Bean
   public AuthenticationSuccessHandler authenticationSuccessHandler() {
     return new CustomSocialLoginSuccessHandler(passwordEncoder());
+  }
+
+  @Bean
+  AuthenticationFailureHandler authFailureHandler() {
+    return (request, response, ex) -> {
+      String code = "bad";
+      if (ex instanceof org.springframework.security.authentication.DisabledException) {
+        code = "disabled";
+      }
+      response.sendRedirect("/users/login?error=" + code);
+    };
   }
 }

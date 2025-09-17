@@ -15,16 +15,24 @@ public class Custom403Handler implements AccessDeniedHandler {
   @Override
   public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
     throws IOException, ServletException {
-    log.info("--------ACCESS DENIED--------------");
-    response.setStatus(HttpStatus.FORBIDDEN.value());
-
-    //JSON 요청이었는지 확인
+    String accept = request.getHeader("Accept");
     String contentType = request.getHeader("Content-Type");
-    boolean jsonRequest = contentType.startsWith("application/json");
-    log.info("isJOSN: " + jsonRequest);
+    String xrw = request.getHeader("X-Requested-With");
 
-    //일반 request
-    if (!jsonRequest) {
+    boolean isJson =
+      (accept != null && accept.contains("application/json")) ||
+        (contentType != null && contentType.contains("application/json")) ||
+        "XMLHttpRequest".equalsIgnoreCase(xrw);
+
+    log.info("ACCESS DENIED. isJson: {}", isJson);
+
+    if (isJson) {
+      // API/Ajax: 403 + JSON 본문
+      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      response.setContentType("application/json;charset=UTF-8");
+      response.getWriter().write("{\"error\":\"ACCESS_DENIED\"}");
+    } else {
+      // 브라우저(HTML): 로그인 페이지로 리다이렉트 (상태코드는 302)
       response.sendRedirect("/users/login?error=ACCESS_DENIED");
     }
   }

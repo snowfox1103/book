@@ -1,6 +1,8 @@
 package com.example.book.service;
 
 import com.example.book.domain.Users;
+import com.example.book.dto.EmailChangeRequest;
+import com.example.book.dto.PasswordChangeRequest;
 import com.example.book.dto.UsersDTO;
 
 public interface UsersService {
@@ -10,4 +12,6 @@ public interface UsersService {
   void unRegister(UsersDTO usersDTO);
   void passwordModify(UsersDTO usersDTO);
   void emailModify(UsersDTO usersDTO) throws emailExistsException;
+  void changePassword(String userId, PasswordChangeRequest req);
+  void changeEmail(String userId, EmailChangeRequest req);
 }

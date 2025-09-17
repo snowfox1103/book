@@ -66,13 +66,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         .password(passwordEncoder.encode("1111")) // 기본 패스워드 설정 (암호화)
         .email(email) // 이메일 설정
         .social(true) // 소셜 로그인 사용자로 설정
+        .enabled(true)
         .role(MemberRole.USER) // 기본 권한(ROLE_USER) 부여
         .build();
 
       usersRepository.save(users); // 회원 정보 저장
 
-      UsersSecurityDTO usersSecurityDTO = new UsersSecurityDTO(users.getRealName(), email, "1111", email, true,
-          Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))); // MemberSecurityDTO 생성 및 반환
+      UsersSecurityDTO usersSecurityDTO = new UsersSecurityDTO(users.getRealName(), email, "1111", email, true, true,
+        Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))); // MemberSecurityDTO 생성 및 반환
 
       usersSecurityDTO.setProps(params); // 추가 속성 설정
 
@@ -87,6 +88,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
           users.getPassword(), // 암호화된 비밀번호
           users.getEmail(), // 이메일
           users.isSocial(), // 소셜 로그인 여부
+          users.isEnabled(), //이메일 인증 여부
           java.util.List.of(new SimpleGrantedAuthority("ROLE_" + users.getRole().name()))
         );
 

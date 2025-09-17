@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <title>Title</title>
+</head>
+<body>
+<form id="registerForm" action="/users/resend" method="post">
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+  <div class="input-group mb-3">
+    <span class="input-group-text">EMAIL</span>
+    <input type="email" name="email" class="form-control" required>
+  </div>
+  <div class="my-4">
+    <div class="float-end">
+      <button type="submit" class="btn btn-primary submitBtn">Submit</button>
+      <button type="reset" class="btn btn-secondary">Reset</button>
+    </div>
+  </div>
+</form>
+</body>
+</html>

@@ -19,9 +19,10 @@ public class UsersSecurityDTO extends User implements OAuth2User {
   private String email;
   private String role;
   private boolean social;
+  private boolean enabled;
   private java.util.Map<String, Object> props; //소셜 로그인 정보
 
-  public UsersSecurityDTO(String realName, String userId, String password, String email, boolean social,
+  public UsersSecurityDTO(String realName, String userId, String password, String email, boolean social, boolean enabled,
                           Collection<? extends GrantedAuthority> authorities) {
     super(userId, password, authorities);
     this.realName = realName;
@@ -29,6 +30,7 @@ public class UsersSecurityDTO extends User implements OAuth2User {
     this.password = password;
     this.email = email;
     this.social = social;
+    this.enabled = enabled;
   }
 
   @Override
