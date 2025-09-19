@@ -8,7 +8,9 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
+@Log4j2
 @RequiredArgsConstructor
 public class EmailService {
   private final JavaMailSender mailSender;
@@ -33,6 +37,7 @@ public class EmailService {
 
   @Transactional
   public void sendVerificationEmail(Users users) {
+    log.info("sendVerificationEmail -> {}", users.getEmail());
     // 이미 인증되었으면 스킵
     if (Boolean.TRUE.equals(users.isEnabled())) {
       return;
@@ -125,6 +130,69 @@ public class EmailService {
     usersRepo.findByEmail(email).ifPresent(u -> {
       if (!Boolean.TRUE.equals(u.isEnabled())) {
         sendVerificationEmail(u);
+      }
+    });
+  }
+
+  public void sendId(String email) {
+    usersRepo.findByEmail(email).ifPresent(users -> {
+      String plain = "안녕하세요, " + users.getRealName() + "님.\n";
+      String html =
+        """
+        <div style="font-family:Arial,Apple SD Gothic Neo,sans-serif;font-size:14px;line-height:1.6">
+          <p>안녕하세요, <b>%s</b>님.</p>
+          <p>아래는 요청하신 ID입니다.</p>
+          <p><b>%s</b></p>
+        </div>
+        """.formatted(users.getRealName(), users.getUserId());
+
+      try {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(users.getEmail());
+        // 발신자 표시 이름(optional)
+        helper.setFrom(new InternetAddress("your.email@gmail.com", "가계북"));
+        helper.setSubject("[가계북] 아이디 찾기 안내");
+
+        // 텍스트/HTML 동시 전송(클라이언트별 호환성 Good)
+        helper.setText(plain, html);
+
+        mailSender.send(message);
+      } catch (MessagingException | UnsupportedEncodingException e) {
+        throw new IllegalStateException("이메일 전송 실패", e);
+      }
+    });
+  }
+
+  public void sendPw(String email) {
+    usersRepo.findByEmail(email).ifPresent(users -> {
+      String plain = "안녕하세요, " + users.getRealName() + "님.\n";
+      String html =
+        """
+        <div style="font-family:Arial,Apple SD Gothic Neo,sans-serif;font-size:14px;line-height:1.6">
+          <p>안녕하세요, <b>%s</b>님.</p>
+          <p>아래는 임시 비밀번호입니다.</p>
+          <p>로그인 후 꼭 비밀번호를 변경해 주세요.</p>
+          <p><b>%s</b></p>
+        </div>
+        """.formatted(users.getRealName(), users.getEmail()+"password");
+
+      try {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(users.getEmail());
+        // 발신자 표시 이름(optional)
+        helper.setFrom(new InternetAddress("your.email@gmail.com", "가계북"));
+        helper.setSubject("[가계북] 비밀번호 찾기 안내");
+
+        // 텍스트/HTML 동시 전송(클라이언트별 호환성 Good)
+        helper.setText(plain, html);
+
+        mailSender.send(message);
+      } catch (MessagingException | UnsupportedEncodingException e) {
+        throw new IllegalStateException("이메일 전송 실패", e);
       }
     });
   }

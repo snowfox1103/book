@@ -1,12 +1,13 @@
-package com.example.book.domain.finance;
+package com.example.book.domain;
 
-import com.example.book.domain.common.BaseEntity;
-import com.example.book.domain.user.Users;
+import com.example.book.dto.SubscriptionsDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "subscription")
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Subscriptions extends BaseEntity {
+public class Subscriptions extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subId")
@@ -24,6 +25,10 @@ public class Subscriptions extends BaseEntity {
     @JoinColumn(name = "userNo") // DB 컬럼
     private Users users;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "catId")
+    private Categories categories;
+
     @Column(name = "subTitle")
     private String subTitle;
 
@@ -32,9 +37,6 @@ public class Subscriptions extends BaseEntity {
 
     @Column(name = "subPayDate")
     private int subPayDate;
-
-    @Column(name = "subCategory")
-    private Long subCategory; //이거 왜 Long?
 
     @Column(name = "subNotice")
     private boolean subNotice;
@@ -48,4 +50,16 @@ public class Subscriptions extends BaseEntity {
 
     @Column(name = "isSub")
     private boolean isSub;
+
+    public void updateFromDTO(SubscriptionsDTO dto, Users users, Categories category) {
+        this.users = users;
+        this.categories = category;
+        this.subTitle = dto.getSubTitle();
+        this.subAmount = dto.getSubAmount();
+        this.subPayDate = dto.getSubPayDate();
+        this.subPeriodUnit = SubPeriodUnit.valueOf(dto.getSubPeriodUnit());
+        this.subPeriodValue = dto.getSubPeriodValue();
+        this.subNotice = dto.isSubNotice();
+        this.isSub = dto.isSub();
+    }
 }
