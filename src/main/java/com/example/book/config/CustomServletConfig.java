@@ -21,5 +21,8 @@ public class CustomServletConfig implements WebMvcConfigurer {
 
     registry.addResourceHandler("/assets/**").
         addResourceLocations("classpath:/static/assets/");
+
+    registry.addResourceHandler("/images/**") // logo image용 추가 0918 석준영
+            .addResourceLocations("classpath:/static/images/");
   }
 }

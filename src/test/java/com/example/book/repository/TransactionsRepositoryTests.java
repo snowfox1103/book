@@ -1,8 +1,7 @@
 package com.example.book.repository;
 
-import com.example.book.domain.InOrOut;
-import com.example.book.domain.Transactions;
-import com.example.book.domain.Users;
+import com.example.book.domain.finance.InOrOut;
+import com.example.book.domain.finance.Transactions;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Log4j2
 class TransactionsRepositoryTests {

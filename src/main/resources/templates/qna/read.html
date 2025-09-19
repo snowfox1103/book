@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8" />
     <title th:text="${q.qBTitle}">문의 상세</title>
@@ -24,8 +24,8 @@
         </div>
     </div>
 
-    <!-- 소유자/권한은 서버에서 검증하니 버튼은 노출만; 권한 없으면 403 처리됨 -->
-    <div class="d-flex gap-2 mb-4">
+    <!-- 작성자 또는 관리자만 노출 -->
+    <div class="d-flex gap-2 mb-4" th:if="${canEdit}">
         <a th:href="@{|/qna/${q.qBId}/edit|}" class="btn btn-primary">수정</a>
         <form th:action="@{|/qna/${q.qBId}/delete|}" method="post">
             <button class="btn btn-danger" type="submit">삭제</button>
@@ -42,14 +42,15 @@
         </div>
     </div>
 
-    <!-- 관리자 답변 작성 폼(표시는 자유, 권한 없으면 403) -->
-    <form th:action="@{|/admin/qna/${q.qBId}/reply|}" method="post" class="card mt-3">
-        <div class="card-body">
-            <textarea name="content" class="form-control mb-2" rows="3" placeholder="관리자 답변"></textarea>
-            <button class="btn btn-success">답변 등록</button>
-        </div>
-    </form>
-
+    <!-- 관리자만 보임 -->
+    <div sec:authorize="hasRole('ADMIN')">
+        <form th:action="@{|/admin/qna/${q.qBId}/reply|}" method="post" class="card mt-3">
+            <div class="card-body">
+                <textarea name="content" class="form-control mb-2" rows="3" placeholder="관리자 답변"></textarea>
+                <button class="btn btn-success">답변 등록</button>
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 </html>

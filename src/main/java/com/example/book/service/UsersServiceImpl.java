@@ -1,7 +1,7 @@
 package com.example.book.service;
 
-import com.example.book.domain.MemberRole;
-import com.example.book.domain.Users;
+import com.example.book.domain.user.MemberRole;
+import com.example.book.domain.user.Users;
 import com.example.book.dto.EmailChangeRequest;
 import com.example.book.dto.PasswordChangeRequest;
 import com.example.book.dto.UsersDTO;

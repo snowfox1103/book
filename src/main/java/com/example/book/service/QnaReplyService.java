@@ -1,6 +1,6 @@
 package com.example.book.service;
 
-import com.example.book.domain.QnaReply;
+import com.example.book.domain.qna.QnaReply;
 import com.example.book.repository.QnaReplyRepository;
 import lombok.RequiredArgsConstructor;
 import static org.springframework.data.domain.Sort.Direction.ASC;
@@ -18,13 +18,13 @@ public class QnaReplyService {
     private final QnaReplyRepository replyRepo;
 
     public List<QnaReply> list(Long qBId) {
-        return replyRepo.findByQBId(qBId, Sort.by(ASC, "regDate"));
+        return replyRepo.findByQbId(qBId, Sort.by(ASC, "regDate"));
     }
 
     @Transactional
     public Long create(Long qBId, Long adminUserNo, String content) {
         QnaReply r = QnaReply.builder()
-                .qBId(qBId)
+                .qbId(qBId)
                 .userNo(adminUserNo)
                 .qBContent(content)
                 .build();

@@ -1,6 +1,6 @@
 package com.example.book.service;
 
-import com.example.book.domain.Qna;
+import com.example.book.domain.qna.Qna;
 import com.example.book.repository.QnaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

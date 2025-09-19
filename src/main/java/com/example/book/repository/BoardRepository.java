@@ -1,6 +1,6 @@
 package com.example.book.repository;
 
-import com.example.book.domain.Board;
+import com.example.book.domain.board.Board;
 import com.example.book.repository.search.BoardSearch;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

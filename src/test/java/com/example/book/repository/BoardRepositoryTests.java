@@ -1,6 +1,6 @@
 package com.example.book.repository;
 
-import com.example.book.domain.Board;
+import com.example.book.domain.board.Board;
 import com.example.book.dto.BoardListAllDTO;
 import com.example.book.dto.BoardListReplyCountDTO;
 import jakarta.transaction.Transactional;

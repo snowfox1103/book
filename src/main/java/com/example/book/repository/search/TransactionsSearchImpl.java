@@ -1,8 +1,8 @@
 package com.example.book.repository.search;
 
-import com.example.book.domain.InOrOut;
-import com.example.book.domain.QTransactions;
-import com.example.book.domain.Transactions;
+import com.example.book.domain.finance.InOrOut;
+import com.example.book.domain.finance.QTransactions;
+import com.example.book.domain.finance.Transactions;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Page;

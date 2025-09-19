@@ -2,7 +2,7 @@ package com.example.book.service;
 import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
 import lombok.extern.log4j.Log4j2;
-import com.example.book.domain.Reply;
+import com.example.book.domain.board.Reply;
 import com.example.book.dto.ReplyDTO;
 import com.example.book.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;

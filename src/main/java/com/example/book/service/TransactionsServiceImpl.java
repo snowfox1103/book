@@ -1,6 +1,6 @@
 package com.example.book.service;
 
-import com.example.book.domain.Transactions;
+import com.example.book.domain.finance.Transactions;
 import com.example.book.dto.TransactionsDTO;
 import com.example.book.repository.TransactionsRepository;
 import jakarta.transaction.Transactional;

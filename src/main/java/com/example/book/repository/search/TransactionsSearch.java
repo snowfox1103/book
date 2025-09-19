@@ -1,7 +1,7 @@
 package com.example.book.repository.search;
 
-import com.example.book.domain.InOrOut;
-import com.example.book.domain.Transactions;
+import com.example.book.domain.finance.InOrOut;
+import com.example.book.domain.finance.Transactions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

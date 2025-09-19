@@ -1,0 +1,11 @@
+/* 공통 헤더 로고 */
+.brand-logo{
+    height: 36px;
+    width: auto !important;
+}
+
+/* 메뉴 가로,높이 조절 */
+.main-nav .nav-link { padding-left: 2rem; padding-right: 2rem; padding-top: .5rem; padding-bottom: .5rem; }
+
+/* 헤더 바 자체 세로 패딩 보정 */
+.header-bar { padding-top: .5rem; padding-bottom: .5rem; }

@@ -1,8 +1,8 @@
 package com.example.book.repository;
 
 
-import com.example.book.domain.Board;
-import com.example.book.domain.Reply;
+import com.example.book.domain.board.Board;
+import com.example.book.domain.board.Reply;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

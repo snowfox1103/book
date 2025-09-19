@@ -1,8 +1,6 @@
 package com.example.book.repository;
 
-import com.example.book.domain.Budgets;
-import com.example.book.domain.InOrOut;
-import com.example.book.domain.Transactions;
+import com.example.book.domain.finance.Budgets;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +10,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Log4j2
 class BudgetsRepositoryTests {

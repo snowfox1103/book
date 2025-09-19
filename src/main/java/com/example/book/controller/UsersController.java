@@ -1,8 +1,7 @@
 package com.example.book.controller;
 
-import com.example.book.domain.EmailVerificationToken;
-import com.example.book.domain.MemberRole;
-import com.example.book.domain.Users;
+import com.example.book.domain.user.EmailVerificationToken;
+import com.example.book.domain.user.Users;
 import com.example.book.dto.EmailChangeRequest;
 import com.example.book.dto.PasswordChangeRequest;
 import com.example.book.dto.UsersDTO;

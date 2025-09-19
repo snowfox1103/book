@@ -1,0 +1,26 @@
+<!-- templates/notice/form.html -->
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>공지 작성</title>
+</head>
+<body>
+<div class="container py-4">
+  <h4>공지 작성</h4>
+
+  <form th:action="@{/notice}" method="post" th:object="${n}">
+    <div class="mb-3">
+      <label class="form-label">제목</label>
+      <input type="text" class="form-control" th:field="*{nBTitle}" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">내용</label>
+      <textarea class="form-control" rows="8" th:field="*{nBContent}" required></textarea>
+    </div>
+    <button class="btn btn-primary">등록</button>
+    <a class="btn btn-outline-secondary" th:href="@{/notice}">취소</a>
+  </form>
+</div>
+</body>
+</html>

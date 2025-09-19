@@ -1,6 +1,6 @@
 package com.example.book.service;
 
-import com.example.book.domain.Board;
+import com.example.book.domain.board.Board;
 import com.example.book.dto.*;
 import com.example.book.repository.BoardRepository;
 import jakarta.transaction.Transactional;

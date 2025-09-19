@@ -1,9 +1,6 @@
 package com.example.book.dto;
 
-import com.example.book.domain.InOrOut;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.example.book.domain.finance.InOrOut;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

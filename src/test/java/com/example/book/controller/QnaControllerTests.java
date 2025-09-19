@@ -1,6 +1,6 @@
 package com.example.book.controller;
 
-import com.example.book.domain.Qna;
+import com.example.book.domain.qna.Qna;
 import com.example.book.service.QnaReplyService;
 import com.example.book.service.QnaService;
 import org.junit.jupiter.api.Test;
@@ -93,7 +93,7 @@ class QnaControllerTest {
         Mockito.when(qnaService.create(anyLong(), anyString(), anyString(), anyBoolean()))
                 .thenReturn(10L);
 
-        mvc.perform(post("/qna/new")
+        mvc.perform(post("/qna/write")
                         .param("title","t")
                         .param("content","c"))
                 .andExpect(status().is3xxRedirection())

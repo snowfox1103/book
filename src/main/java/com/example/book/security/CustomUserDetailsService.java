@@ -1,6 +1,6 @@
 package com.example.book.security;
 
-import com.example.book.domain.Users;
+import com.example.book.domain.user.Users;
 import com.example.book.repository.UsersRepository;
 import com.example.book.security.dto.UsersSecurityDTO;
 import lombok.RequiredArgsConstructor;
@@ -18,31 +18,32 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-  private final UsersRepository usersRepository;
-  private PasswordEncoder passwordEncoder;
+    private final UsersRepository usersRepository;
+    private PasswordEncoder passwordEncoder;
 
-  @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    log.info("loadUserByUsername: " + username);
-    Optional<Users> result = usersRepository.getWithRoles(username);
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info("loadUserByUsername: " + username);
+        Optional<Users> result = usersRepository.getWithRoles(username);
 
-    if(result.isEmpty()) {
-      throw new UsernameNotFoundException("username not found.........");
+        if (result.isEmpty()) {
+            throw new UsernameNotFoundException("username not found.........");
+        }
+
+        Users users = result.get();
+        UsersSecurityDTO usersSecurityDTO = new UsersSecurityDTO(
+                users.getUserNo(),
+                users.getRealName(),
+                users.getUserId(),
+                users.getPassword(),
+                users.getEmail(),
+                users.isSocial(),
+                users.isEnabled(),
+                java.util.List.of(new SimpleGrantedAuthority("ROLE_" + users.getRole().name()))
+        );
+        log.info("userSecurityDTO");
+        log.info(usersSecurityDTO);
+
+        return usersSecurityDTO;
     }
-
-    Users users = result.get();
-    UsersSecurityDTO usersSecurityDTO = new UsersSecurityDTO(
-      users.getRealName(),
-      users.getUserId(),
-      users.getPassword(),
-      users.getEmail(),
-      false,
-      users.isEnabled(),
-      java.util.List.of(new SimpleGrantedAuthority("ROLE_" + users.getRole().name()))
-    );
-    log.info("userSecurityDTO");
-    log.info(usersSecurityDTO);
-
-    return usersSecurityDTO;
-  }
 }

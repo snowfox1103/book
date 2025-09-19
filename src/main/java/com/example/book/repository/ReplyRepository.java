@@ -1,6 +1,6 @@
 package com.example.book.repository;
 
-import com.example.book.domain.Reply;
+import com.example.book.domain.board.Reply;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

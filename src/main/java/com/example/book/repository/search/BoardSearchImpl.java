@@ -1,12 +1,12 @@
 package com.example.book.repository.search;
 
-import com.example.book.domain.QBoard;
-import com.example.book.domain.QReply;
+import com.example.book.domain.board.QBoard;
+import com.example.book.domain.board.QReply;
 import com.example.book.dto.BoardImageDTO;
 import com.example.book.dto.BoardListAllDTO;
 import com.example.book.dto.BoardListReplyCountDTO;
 import com.querydsl.core.BooleanBuilder;
-import com.example.book.domain.Board;
+import com.example.book.domain.board.Board;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;

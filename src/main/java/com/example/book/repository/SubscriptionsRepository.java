@@ -1,6 +1,6 @@
 package com.example.book.repository;
 
-import com.example.book.domain.Subscriptions;
+import com.example.book.domain.finance.Subscriptions;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SubscriptionsRepository extends JpaRepository<Subscriptions, Long> {
