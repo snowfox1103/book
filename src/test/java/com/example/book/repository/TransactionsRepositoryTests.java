@@ -2,7 +2,6 @@ package com.example.book.repository;
 
 import com.example.book.domain.InOrOut;
 import com.example.book.domain.Transactions;
-import com.example.book.domain.Users;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,56 +14,49 @@ import org.springframework.data.domain.Sort;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Log4j2
 class TransactionsRepositoryTests {
     @Autowired
     private TransactionsRepository transactionsRepository;
-    @Autowired
-    private BoardRepository boardRepository;
-
     @Test
-    public void insertTranscations(){
+    public void testInsertTranscations(){
         long a = 1L;
-        IntStream.rangeClosed(12,100).forEach(i->{
-            Transactions trans = Transactions.builder()
-                    .transTitle("넷플릭스"+i)
-                    .transAmount(14900L)
-                    .transCategory(3L)
-                    .transInOut(InOrOut.OUT)
-                    .transDate(LocalDate.of(2025,9,9))
-                    .subId(1L)
-                    .userNo(35L)
-                    .build();
-            transactionsRepository.save(trans);
-        });
-    }
+        Transactions trans = Transactions.builder()
+                .transTitle("dddd")
+                .transAmount(12121L)
+                .transCategory(1L)
+                .transInOut(InOrOut.OUT)
+                .transDate(LocalDate.of(2025,9,17))
+                .subId(1L)
+                .userNo(15L)
+                .build();
+        transactionsRepository.save(trans);
+}
     @Test
     public void testSelectTransactions(){
-        Long tno = 4L;
+        Long tno = 109L;
         Optional<Transactions> result = transactionsRepository.findById(tno);
         Transactions transactions = result.orElseThrow();
         log.info(transactions);
     }
     @Test
     public void testUpdateTransactions(){
-        Long tno = 4L;
+        Long tno = 109L;
         Optional<Transactions> result = transactionsRepository.findById(tno);
         Transactions transactions = result.orElseThrow();
-        transactions.changeTransaction("김밥천국",12200L,1L,"라면,김밥",LocalDate.of(2025,9,14),InOrOut.OUT,null);
+        transactions.changeTransaction(null,null,null,"포카칩",null,null,null);
         transactionsRepository.save(transactions);
     }
     @Test
     public void testDeleteTransactions(){
-        Long tno = 10L;
+        Long tno = 108L;
         transactionsRepository.deleteById(tno);
     }
     @Test
     public void testPagingTransactions(){
-        Pageable pageable = PageRequest.of(3,10, Sort.by("transId").descending());
+        Pageable pageable = PageRequest.of(1,10, Sort.by("transId").descending());
         Page<Transactions> result = transactionsRepository.findAll(pageable);
 
         log.info("total count: "+result.getTotalElements());
@@ -82,14 +74,15 @@ class TransactionsRepositoryTests {
     @Test
     public void testSearchAllTrans(){
         String[] types = {"t","m"};
-        String keyword = "라면";
+        String keyword = "3";
+        Long category = 1L;
         Long minn = null;
         Long maxx = null;
-        LocalDate a = LocalDate.of(2025,9,7);
-        LocalDate b = null;
+        LocalDate start = LocalDate.of(2025,9,7);
+        LocalDate end = null;
         InOrOut io = InOrOut.OUT;
         Pageable pageable = PageRequest.of(0,10,Sort.by("transId").descending());
-        Page<Transactions> result = transactionsRepository.searchAllTrans(types,keyword,minn,maxx,a,b,io,pageable);
+        Page<Transactions> result = transactionsRepository.searchAllTrans(types,keyword,category,minn,maxx,start,end,io,pageable);
         log.info(result.getTotalPages());
         log.info(result.getSize());
         log.info(result.getNumber());

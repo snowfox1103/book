@@ -1,8 +1,6 @@
 package com.example.book.repository;
 
-import com.example.book.domain.Budgets;
-import com.example.book.domain.InOrOut;
-import com.example.book.domain.Transactions;
+import com.example.nyjbook.domain.Budgets;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +10,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Log4j2
 class BudgetsRepositoryTests {
@@ -27,22 +22,22 @@ class BudgetsRepositoryTests {
     @Test
     public void insertBudgets(){
         long a = 1L;
-        IntStream.rangeClosed(1,5).forEach(i->{
+        IntStream.rangeClosed(1,12).forEach(i->{
             Budgets budgets = Budgets.builder()
-                    .budAmount(i*a*100000)
-                    .budCategory(2L)
+                    .budAmount(250000L)
+                    .budCategory(i*a)
                     .budIsOver(false)
-                    .budCurrent(10000*a*i)
-                    .budMonth(i)
+                    .budCurrent(90000L)
+                    .budMonth(9)
                     .budYear(2025)
-                    .userNo(22L)
+                    .userNo(73L)
                     .build();
             budgetsRepository.save(budgets);
         });
     }
     @Test
     public void testSelectBudgets(){
-        Long tno = 4L;
+        Long tno = 12L;
         Optional<Budgets> result = budgetsRepository.findById(tno);
         Budgets budgets = result.orElseThrow();
         log.info(budgets);
@@ -52,7 +47,7 @@ class BudgetsRepositoryTests {
         Long tno = 2L;
         Optional<Budgets> result = budgetsRepository.findById(tno);
         Budgets budgets = result.orElseThrow();
-        budgets.changeBudget(850000L,3L,100000L,false,2025,2);
+        budgets.changeBudget(120L,null,false,false ,false);
         budgetsRepository.save(budgets);
     }
     @Test

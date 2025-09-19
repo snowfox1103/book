@@ -1,9 +1,10 @@
 package com.example.book.dto;
 
 import com.example.book.domain.InOrOut;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,16 +20,18 @@ public class TransactionsDTO {
     private Long transId;
 
     private Long userNo;
-
+    @NotEmpty
     private String transTitle;
-
+    @NotNull
+    @Positive
     private Long transAmount;
-
+    @NotNull
+    @PastOrPresent
     private LocalDate transDate;
-
+    @NotNull
     private InOrOut transInOut;
 
-    private Long transCategory;
+    private Long transCategory; //카테고리 id
 
     private String transMemo;
 

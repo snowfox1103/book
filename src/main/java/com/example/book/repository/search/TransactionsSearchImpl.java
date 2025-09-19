@@ -28,7 +28,7 @@ public class TransactionsSearchImpl extends QuerydslRepositorySupport implements
         return null;
     }
     @Override
-    public Page<Transactions> searchAllTrans(String[] types, String keyword, Long minn, Long maxx, LocalDate a, LocalDate b, InOrOut io, Pageable pageable){
+    public Page<Transactions> searchAllTrans(String[] types, String keyword, Long category, Long minn, Long maxx, LocalDate startDay, LocalDate endDay, InOrOut io, Pageable pageable){
         QTransactions qTransactions = QTransactions.transactions;
         JPQLQuery<Transactions> query = from(qTransactions);
         BooleanBuilder booleanBuilder = new BooleanBuilder();
@@ -42,13 +42,14 @@ public class TransactionsSearchImpl extends QuerydslRepositorySupport implements
                 }
             }
         }
+        if(category != null) booleanBuilder.and(qTransactions.transCategory.eq(category));
         if(minn != null) booleanBuilder.and(qTransactions.transAmount.goe(minn));
         if(maxx != null) booleanBuilder.and(qTransactions.transAmount.loe(maxx));
-        if(a != null) booleanBuilder.and(qTransactions.transDate.goe(a));
-        if(b != null) booleanBuilder.and(qTransactions.transDate.loe(b));
+        if(startDay != null) booleanBuilder.and(qTransactions.transDate.goe(startDay));
+        if(endDay != null) booleanBuilder.and(qTransactions.transDate.loe(endDay));
         if(io != null) booleanBuilder.and(qTransactions.transInOut.eq(io));
-        query.where(booleanBuilder);
-        query.where(qTransactions.transId.gt(0L));
+        query.where(booleanBuilder); //검색 조건이 없으면 booleanBuilder에는 아무 조건도 추가 안 됨
+        query.where(qTransactions.transId.gt(0L)); //검색 조건이 없으면 transId>0인 모든 데이터 조회
         this.getQuerydsl().applyPagination(pageable,query);
         List<Transactions> list = query.fetch();
         long cnt = query.fetchCount();
