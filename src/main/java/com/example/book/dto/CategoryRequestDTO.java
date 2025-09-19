@@ -8,13 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordChangeRequest {
+public class CategoryRequestDTO {
   @Column(nullable = false)
-  private String currentPassword;
-
-  @Column(nullable = false)
-  private String newPassword;
-
-  @Column(nullable = false)
-  private String confirmPassword;
+  String categoryName;
 }

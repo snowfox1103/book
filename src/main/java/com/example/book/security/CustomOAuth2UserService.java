@@ -72,7 +72,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
       usersRepository.save(users); // 회원 정보 저장
 
-      UsersSecurityDTO usersSecurityDTO = new UsersSecurityDTO(users.getRealName(), email, "1111", email, true, true,
+      UsersSecurityDTO usersSecurityDTO = new UsersSecurityDTO(users.getUserNo(), users.getRealName(), email, "1111", email, true, true,
         Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))); // MemberSecurityDTO 생성 및 반환
 
       usersSecurityDTO.setProps(params); // 추가 속성 설정
@@ -83,6 +83,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
       // UserSecurityDTO 생성 및 반환
       UsersSecurityDTO usersSecurityDTO =
         new UsersSecurityDTO(
+          users.getUserNo(),
           users.getRealName(),
           users.getUserId(), // 회원 ID
           users.getPassword(), // 암호화된 비밀번호

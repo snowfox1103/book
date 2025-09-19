@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailChangeRequest {
+public class PwSearchRequestDTO {
   @Column(nullable = false)
-  private String currentEmail;
+  String userId;
 
   @Column(nullable = false)
-  private String newEmail;
+  String email;
 }

@@ -2,9 +2,7 @@ package com.example.book.service;
 
 import com.example.book.domain.MemberRole;
 import com.example.book.domain.Users;
-import com.example.book.dto.EmailChangeRequest;
-import com.example.book.dto.PasswordChangeRequest;
-import com.example.book.dto.UsersDTO;
+import com.example.book.dto.*;
 import com.example.book.repository.EmailVerificationTokenRepository;
 import com.example.book.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +50,7 @@ public class UsersServiceImpl implements UsersService {
         return users;
       }
     }
+//    Users users = modelMapper.map(usersDTO, Users.class);
     Users newUsers = Users.builder()
       .realName(usersDTO.getRealName())
       .userId(usersDTO.getUserId())
@@ -62,6 +61,8 @@ public class UsersServiceImpl implements UsersService {
       .enabled(false)   // 중요: 미인증 상태
       .build();
 
+//    users.changePassword(passwordEncoder.encode(usersDTO.getPassword()));
+//    users.setRole(MemberRole.USER);
     log.info("============================");
     log.info(newUsers);
     log.info(newUsers.getRole());
@@ -101,7 +102,7 @@ public class UsersServiceImpl implements UsersService {
   }
 
   @Override
-  public void changePassword(String userId, PasswordChangeRequest req) {
+  public void changePassword(String userId, PasswordChangeRequestDTO req) {
     Users users = usersRepository.findByUserId(userId)
       .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
 
@@ -123,7 +124,7 @@ public class UsersServiceImpl implements UsersService {
 
   @Override
   @Transactional
-  public void changeEmail(String userId, EmailChangeRequest req) {
+  public void changeEmail(String userId, EmailChangeRequestDTO req) {
     Users users = usersRepository.findByUserId(userId)
       .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
 
@@ -138,11 +139,56 @@ public class UsersServiceImpl implements UsersService {
     log.info("changeEmail success ........... ");
 
     // (선택) 새 이메일 인증 정책
-     users.disable(); //게정 비활성화
-      log.info("changeEnable success ........... ");
-     tokenRepository.deleteByUsers_UserNo(users.getUserNo());
-     log.info("delete success ........... ");
-     emailService.sendVerificationEmail(users);
-     log.info("email send success ........... ");
+    users.disable(); //게정 비활성화
+    log.info("changeEnable success ........... ");
+    tokenRepository.deleteByUsers_UserNo(users.getUserNo());
+    log.info("delete success ........... ");
+//     tokenRepository.save(EmailVerificationToken.newToken(users, Duration.ofMinutes(30))); //이게 문제였네?
+//     log.info("newToken insert success ........... ");
+    emailService.sendVerificationEmail(users);
+    log.info("email send success ........... ");
+  }
+
+  @Override
+  @Transactional
+  public void resend(ResendRequestDTO req) {
+    String email = req.getEmail();
+    log.info("resend email: " + email);
+    Users users = usersRepository.findByEmail(email)
+      .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
+
+    if (users.isEnabled()) {
+      throw new IllegalArgumentException("이미 인증된 계정입니다.");
+    }
+    log.info("find user success..........");
+    tokenRepository.deleteByUsers_UserNo(users.getUserNo());
+    log.info("delete success.............");
+    emailService.sendVerificationEmail(users);
+    log.info("email send success ............");
+  }
+
+  @Override
+  public void idSearch(IdSearchRequestDTO req) {
+    String email = req.getEmail();
+    log.info("idSearch email: " + email);
+    Users users = usersRepository.findByEmail(email)
+      .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
+
+    emailService.sendId(email);
+  }
+
+  @Override
+  @Transactional
+  public void pwSearch(PwSearchRequestDTO req) {
+    String userId = req.getUserId();
+    String email = req.getEmail();
+    log.info("pwSearch userId: " + userId);
+    Users users = usersRepository.findByUserId(userId)
+      .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
+
+    users.changePassword(passwordEncoder.encode(email+"password"));
+    log.info("pw change success ...........");
+    emailService.sendPw(email);
+    log.info("pw email send success ...........");
   }
 }

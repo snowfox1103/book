@@ -5,6 +5,7 @@ import com.example.book.repository.UsersRepository;
 import com.example.book.security.dto.UsersSecurityDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Log4j2
@@ -19,7 +21,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
   private final UsersRepository usersRepository;
-  private PasswordEncoder passwordEncoder;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -32,6 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     Users users = result.get();
     UsersSecurityDTO usersSecurityDTO = new UsersSecurityDTO(
+      users.getUserNo(),
       users.getRealName(),
       users.getUserId(),
       users.getPassword(),

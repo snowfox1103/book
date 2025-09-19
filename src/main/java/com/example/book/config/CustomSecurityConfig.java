@@ -1,7 +1,6 @@
 package com.example.book.config;
 
 import com.example.book.security.CustomUserDetailsService;
-import com.example.book.security.handler.Custom401Handler;
 import com.example.book.security.handler.Custom403Handler;
 import com.example.book.security.handler.CustomSocialLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import javax.sql.DataSource;
 
@@ -39,59 +41,48 @@ public class CustomSecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     log.info("------------------configure----------------------");
-//    http.formLogin(withDefaults());
-    http.formLogin(httpSecurityFormLoginConfigurer -> {
-      httpSecurityFormLoginConfigurer.loginPage("/users/login");
-    });
-
-    http //csrf공격 때문에 설정한것 위는
+    http
       .csrf(csrf -> csrf
         .ignoringRequestMatchers("/h2-console/**")// 필요하면 특정 경로만 예외
+      )
+//      .csrf(csrf -> csrf.disable())
+      .authorizeHttpRequests(auth -> auth
+        .requestMatchers("/", "/favicon.ico", "/error",
+          "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**").permitAll()
+        // 2.2 화면들
+        .requestMatchers("/users/login", "/users/userRegister", "/users/verify",
+          "/users/searchAndResend").permitAll()
+        // 2.3 공개 API (resend/id/pw)
+        .requestMatchers("/users/resend", "/users/idSearch", "/users/pwSearch").permitAll()
+        // 2.4 그 외는 인증
+        .anyRequest().authenticated()
       )
       .logout(logout -> logout
         .logoutUrl("/users/logout")
         .logoutSuccessUrl("/users/login?logout")
         .invalidateHttpSession(true)
         .deleteCookies("JSESSIONID")
-      );
-
-    // (추가) 401 핸들러 0916 석준영
-    http.exceptionHandling(c -> c.authenticationEntryPoint(new Custom401Handler()));
-
-    // qna 인증용 0916 석준영
-    http.authorizeHttpRequests(auth -> auth
-      .requestMatchers("/error/**", "/users/login", "/css/**", "/js/**", "/images/**").permitAll()
-      .requestMatchers("/admin/**").hasRole("ADMIN")
-      .requestMatchers("/qna/**").authenticated()
-      .anyRequest().permitAll()
-    );
-
-    //자동 로그인 기능 처리하는 부분?
-    http.rememberMe(httpSecurityRememberMeConfigurer -> {
-      httpSecurityRememberMeConfigurer
-        .key("12345678")
-        .tokenRepository(persistentTokenRepository())
-        .userDetailsService(userDetailsService)
-        .tokenValiditySeconds(60*60*24*30);
-    });
-
-    //403에러를 처리하는 부분
-    http.exceptionHandling( httpSecurityExceptionHandlingConfigurer -> {
-      httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler());
-    });
-
-    http.oauth2Login(httpSecurityOauth2LoginConfigurer -> {
-//      httpSecurityOauth2LoginConfigurer.loginPage("/member/login");
-      httpSecurityOauth2LoginConfigurer.successHandler(authenticationSuccessHandler());
-    });
-
-    http
+      )
       .formLogin(form -> form
         .loginPage("/users/login")
         .loginProcessingUrl("/users/login")
         .failureHandler(authFailureHandler())
         .defaultSuccessUrl("/", true)
-      );
+      )
+      .rememberMe(httpSecurityRememberMeConfigurer -> { //자동 로그인 기능 처리하는 부분
+        httpSecurityRememberMeConfigurer
+          .key("12345678")
+          .tokenRepository(persistentTokenRepository())
+          .userDetailsService(userDetailsService)
+          .tokenValiditySeconds(60*60*24*30);
+      })
+      .exceptionHandling( httpSecurityExceptionHandlingConfigurer -> { //403에러를 처리하는 부분
+        httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler());
+      })
+      .oauth2Login(httpSecurityOauth2LoginConfigurer -> {
+//      httpSecurityOauth2LoginConfigurer.loginPage("/member/login");
+        httpSecurityOauth2LoginConfigurer.successHandler(authenticationSuccessHandler());
+      });
 
     return http.build();
   }
@@ -121,7 +112,7 @@ public class CustomSecurityConfig {
   }
 
   @Bean
-  AuthenticationFailureHandler authFailureHandler() {
+  public AuthenticationFailureHandler authFailureHandler() {
     return (request, response, ex) -> {
       String code = "bad";
       if (ex instanceof org.springframework.security.authentication.DisabledException) {

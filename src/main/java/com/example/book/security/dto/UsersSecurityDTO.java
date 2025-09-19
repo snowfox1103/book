@@ -13,6 +13,7 @@ import java.util.Collection;
 @Setter
 @ToString
 public class UsersSecurityDTO extends User implements OAuth2User {
+  private Long userNo;
   private String realName;
   private String userId;
   private String password;
@@ -22,9 +23,10 @@ public class UsersSecurityDTO extends User implements OAuth2User {
   private boolean enabled;
   private java.util.Map<String, Object> props; //소셜 로그인 정보
 
-  public UsersSecurityDTO(String realName, String userId, String password, String email, boolean social, boolean enabled,
+  public UsersSecurityDTO(Long userNo, String realName, String userId, String password, String email, boolean social, boolean enabled,
                           Collection<? extends GrantedAuthority> authorities) {
     super(userId, password, authorities);
+    this.userNo = userNo;
     this.realName = realName;
     this.userId = userId;
     this.password = password;

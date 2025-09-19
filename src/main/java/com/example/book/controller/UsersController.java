@@ -1,39 +1,27 @@
 package com.example.book.controller;
 
 import com.example.book.domain.EmailVerificationToken;
-import com.example.book.domain.MemberRole;
 import com.example.book.domain.Users;
-import com.example.book.dto.EmailChangeRequest;
-import com.example.book.dto.PasswordChangeRequest;
-import com.example.book.dto.UsersDTO;
+import com.example.book.dto.*;
 import com.example.book.repository.EmailVerificationTokenRepository;
 import com.example.book.repository.UsersRepository;
-import com.example.book.security.dto.UsersSecurityDTO;
 import com.example.book.service.EmailService;
 import com.example.book.service.UsersService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 
-@Controller
 //@RestController
+@Controller
 @Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -128,80 +116,39 @@ public class UsersController {
     return "redirect:/users/login";
   }
 
-  @GetMapping("/resend")
-  public String resendPage() {
-    return "users/resend"; // 이메일 입력 form 있는 뷰
+  //, consumes=MediaType.APPLICATION_JSON_VALUE
+  @PostMapping(value="/resend")
+  public ResponseEntity<?> resendPost(@RequestBody @Valid ResendRequestDTO req) {
+    log.info("HIT /users/resend with {}", req.getEmail());
+    // 존재/미인증 사용자에게만 재발송.
+    // 이메일 존재 여부는 절대 응답으로 노출하지 않음(계정 추측 방지).
+    try {
+      usersService.resend(req); // 내부에서 enabled 확인 + 토큰 재발송
+    } catch (Exception ignored) {
+      // 일부러 무시: "있든 없든 보냈다"로 응답
+    }
+    return ResponseEntity.noContent().build(); // 204
   }
 
-  @PostMapping("/resend")
-  public String resend(@RequestParam String email, RedirectAttributes redirectAttributes) {
-    emailService.resendByEmailSilently(email);
-    redirectAttributes.addFlashAttribute("msg", "입력한 주소로(존재한다면) 인증 메일을 보냈습니다.");
-
-    return "redirect:/users/login";
-  }
-
-  @GetMapping("/userUnregister")
-  @PreAuthorize("isAuthenticated()")
-  public void unregisterGet(UsersDTO usersDTO) {
-    log.info("unregister get...............");
-  }
-
-  @PreAuthorize("isAuthenticated()")
-  @PostMapping("/userUnregister")
-  @Transactional
-  public String unregisterPost(@AuthenticationPrincipal UsersSecurityDTO principal,
-                               HttpServletRequest request,
-                               HttpServletResponse response,
-                               RedirectAttributes redirectAttributes) {
-    // 1) 현재 로그인한 사용자 로드 (DTO 신뢰 X)
-    Users users = usersRepository.findByUserId(principal.getUserId())
-      .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
-    Long userNo = users.getUserNo();
-
-    // 2) 자식 데이터 먼저 삭제 (토큰/구독 등)
-    tokenRepository.deleteByUsers_UserNo(userNo);
-//    subscriptionsRepository.deleteByUsers_UserNo(userNo);
-    // 다른 연관도 있으면 같은 방식으로
-
-    // 3) 사용자 삭제
-    usersRepository.deleteByUserId(users.getUserId()); // 또는 usersRepository.deleteByUserId(user.getUserId());
-
-    // 4) 로그아웃 처리
-    new SecurityContextLogoutHandler().logout(request, response, null);
-
-    // 5) 메시지/리다이렉트
-    redirectAttributes.addFlashAttribute("msg", "탈퇴가 완료되었습니다.");
-
-    return "redirect:/users/login?unregistered";
-  }
-
-  @GetMapping("/userPasswordModify")
-  @PreAuthorize("isAuthenticated()")
-  public void changePasswordGet() {log.info("changePassword get...............");}
-
-  @PostMapping("/userPasswordModify")
-  @PreAuthorize("isAuthenticated()")
-  public ResponseEntity<?> changePassword(@AuthenticationPrincipal UsersSecurityDTO principal,
-                                          @Valid @RequestBody PasswordChangeRequest passwordChangeRequest) {
-    usersService.changePassword(principal.getUserId(), passwordChangeRequest);
+  @PostMapping("/idSearch")
+  public ResponseEntity<?> idSearch(@RequestBody @Valid IdSearchRequestDTO req) {
+    log.info("id search Post ...............");
+    usersService.idSearch(req);
 
     return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/userEmailModify")
-  public void changeEmailGet() {
-    log.info("changeEmail get...............");
-  }
-
-  @PostMapping("/userEmailModify")
-  public ResponseEntity<?> chagneEmail(@AuthenticationPrincipal UsersSecurityDTO principal,
-                                       @Valid @RequestBody EmailChangeRequest emailChangeRequest) {
-    log.info(principal.getUserId());
-    log.info(emailChangeRequest.getNewEmail());
-    usersService.changeEmail(principal.getUserId(), emailChangeRequest);
+  @PostMapping("/pwSearch")
+  public ResponseEntity<?> pwSearch(@RequestBody @Valid PwSearchRequestDTO req) {
+    log.info("pwSearch Post ...............");
+    usersService.pwSearch(req); //user의 email + "password"로 비밀번호 변경 후 메일로 보냄
 
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/searchAndResend")
+  public void searchAndResend() {
+    log.info("searchAndResend get...............");
   }
 }
 

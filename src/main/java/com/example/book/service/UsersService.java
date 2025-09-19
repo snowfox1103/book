@@ -1,9 +1,7 @@
 package com.example.book.service;
 
 import com.example.book.domain.Users;
-import com.example.book.dto.EmailChangeRequest;
-import com.example.book.dto.PasswordChangeRequest;
-import com.example.book.dto.UsersDTO;
+import com.example.book.dto.*;
 
 public interface UsersService {
   static class userIdExistsException extends Exception { }
@@ -12,6 +10,9 @@ public interface UsersService {
   void unRegister(UsersDTO usersDTO);
   void passwordModify(UsersDTO usersDTO);
   void emailModify(UsersDTO usersDTO) throws emailExistsException;
-  void changePassword(String userId, PasswordChangeRequest req);
-  void changeEmail(String userId, EmailChangeRequest req);
+  void changePassword(String userId, PasswordChangeRequestDTO req);
+  void changeEmail(String userId, EmailChangeRequestDTO req);
+  void resend(ResendRequestDTO req);
+  void idSearch(IdSearchRequestDTO req);
+  void pwSearch(PwSearchRequestDTO req);
 }

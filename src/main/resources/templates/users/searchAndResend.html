@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#resendModal">
+    이메일 인증 다시하기
+  </button>
+  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#idSearchModal">
+    아이디 찾기
+  </button>
+  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#pwSearchModal">
+    비밀번호 찾기
+  </button>
+
+  <!--        resend modal-->
+  <div class="modal fade" id="resendModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="resendForm" class="modal-content">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div class="modal-header">
+          <h5 class="modal-title">이메일 인증 다시 보내기</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">이메일</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit" id="resendBtn">메일 보내기</button>
+        </div>
+      </form>
+    </div>
+  </div><!--resend modal end-->
+
+  <!--        id search modal-->
+  <div class="modal fade" id="idSearchModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="idSearchForm" class="modal-content">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div class="modal-header">
+          <h5 class="modal-title">아이디 찾기</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">이름</label>
+            <input type="text" class="form-control" name="realName" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">이메일</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit" id="idSearchBtn">아이디 찾기</button>
+        </div>
+      </form>
+    </div>
+  </div> <!--id modal end-->
+
+  <!--       pw search modal -->
+  <div class="modal fade" id="pwSearchModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="pwSearchForm" class="modal-content">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div class="modal-header">
+          <h5 class="modal-title">비밀번호 찾기</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">아이디</label>
+            <input type="text" class="form-control" name="userId" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">이메일</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit" id="pwSearchBtn">비밀번호 찾기</button>
+        </div>
+      </form>
+    </div>
+  </div> <!--pw modal end-->
+
+  <script th:inline="javascript">
+      const t = document.querySelector('meta[name="_csrf"]')?.content;
+      const h = document.querySelector('meta[name="_csrf_header"]')?.content;
+      const headers = { 'Content-Type': 'application/json' };
+      if (t && h) headers[h] = t;
+
+      const RESEND_URL     = /*[[@{/users/resend}]]*/ '/users/resend';
+      const ID_SEARCH_URL  = /*[[@{/users/idSearch}]]*/ '/users/idSearch';
+      const PW_SEARCH_URL  = /*[[@{/users/pwSearch}]]*/ '/users/pwSearch';
+
+      document.addEventListener('DOMContentLoaded', () => {
+          const resendform = document.getElementById('resendForm');
+          if (!resendform) {
+              console.error('resendForm not found');
+              return;
+          }
+
+          resendform.addEventListener('submit', async (e) => {
+              e.preventDefault();
+
+              const email = resendform.email?.value?.trim();
+              if (!email) return alert('이메일을 입력하세요.');
+
+              console.log('[reEmailForm] POST /users/resend', email);
+              try {
+                  const res = await fetch(RESEND_URL, {
+                      method: 'POST',
+                      headers,
+                      credentials: 'same-origin',
+                      body: JSON.stringify({email})
+                  });
+                  if (res.ok) {
+                      alert('이메일 인증을 다시 보냈습니다. 인증 메일을 확인해 주세요.');
+                      location.replace('/users/login?resend');
+                  } else {
+                      const text = await res.text().catch(() => '');
+                      alert(text || '재발송 실패');
+                  }
+              } catch (err) {
+                  console.error(err);
+                  alert('네트워크 오류가 발생했습니다.');
+              }
+          });
+
+          //idSearch script
+          const idSearchForm = document.getElementById('idSearchForm');
+          if (!idSearchForm) {
+              console.error('idSearchForm not found');
+              return;
+          }
+
+          idSearchForm.addEventListener('submit', async (e) => {
+              e.preventDefault();
+
+              const realName = idSearchForm.realName.value.trim();
+              const email = idSearchForm.email.value.trim();
+
+              if (!realName) return alert('이름을 입력하세요.');
+              if (!email) return alert('이메일을 입력하세요.');
+
+              try {
+                  const res = await fetch(ID_SEARCH_URL, { // ← 컨트롤러 매핑에 맞춰 경로 확인!
+                      method: 'POST',
+                      headers,
+                      credentials: 'same-origin', // 세션 쿠키 포함
+                      body: JSON.stringify({realName, email})
+                  });
+
+                  let data = {};
+                  try {
+                      const ct = res.headers.get('content-type') || '';
+                      if (ct.includes('application/json')) data = await res.json();
+                  } catch {}
+
+                  if (res.ok) {
+                      alert('이메일로 아이디를 보냈습니다. 이메일을 확인해 주세요');
+                      window.location.replace('/users/login?idSearch');
+                  } else {
+                      alert(data.message || '아이디 찾기에 실패했습니다.');
+                  }
+              } catch (err) {
+                  console.error(err);
+                  alert('네트워크 오류가 발생했습니다.');
+              }
+          });
+
+          <!--pw search script-->
+          const pwSearchForm = document.getElementById('pwSearchForm');
+          if (!pwSearchForm) {
+              console.error('pwSearchForm not found');
+              return;
+          }
+
+          pwSearchForm.addEventListener('submit', async (e) => {
+              e.preventDefault();
+
+              const userId = pwSearchForm.userId.value.trim();
+              const email = pwSearchForm.email.value.trim();
+
+              if (!userId) return alert('아이디를 입력하세요.');
+              if (!email) return alert('이메일을 입력하세요.');
+
+              try {
+                  const res = await fetch(PW_SEARCH_URL, { // ← 컨트롤러 매핑에 맞춰 경로 확인!
+                      method: 'POST',
+                      headers,
+                      credentials: 'same-origin', // 세션 쿠키 포함
+                      body: JSON.stringify({userId, email})
+                  });
+
+                  let data = {};
+                  try {
+                      const ct = res.headers.get('content-type') || '';
+                      if (ct.includes('application/json')) data = await res.json();
+                  } catch {}
+
+                  if (res.ok) {
+                      alert('이메일로 임시 비밀번호를 발송했습니다. 이메일을 확인해 주세요');
+                      window.location.replace('/users/login?pwSearch');
+                  } else {
+                      alert(data.message || '비밀번호 찾기에 실패했습니다.');
+                  }
+              } catch (err) {
+                  console.error(err);
+                  alert('네트워크 오류가 발생했습니다.');
+              }
+          });
+      });
+  </script>
+</div>
+</body>
+</html>
