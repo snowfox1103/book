@@ -19,15 +19,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.ui.Model;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @Log4j2
@@ -48,16 +55,11 @@ public class MyPageController {
 
     List<Categories> categories = categoriesService.categoriesList(users);
     model.addAttribute("categories", categories);
+    model.addAttribute("user", users);
 
-    return "/mypage/myPage";
+    return "mypage/myPage";
   }
 
-//  @GetMapping("/userUnregister")
-//  public void unregisterGet() {
-//    log.info("unregister get...............");
-//  }
-
-  @PreAuthorize("isAuthenticated()")
   @Transactional
   @PostMapping("/userUnregister")
   public String unregisterPost(@AuthenticationPrincipal UsersSecurityDTO principal,
@@ -86,9 +88,6 @@ public class MyPageController {
     return "redirect:/users/login?unregistered";
   }
 
-//  @GetMapping("/userPasswordModify")
-//  public void changePasswordGet() {log.info("changePassword get...............");}
-
   @PostMapping("/userPasswordModify")
   public ResponseEntity<?> changePassword(@AuthenticationPrincipal UsersSecurityDTO principal,
                                           @Valid @RequestBody PasswordChangeRequestDTO passwordChangeRequestDTO) {
@@ -96,11 +95,6 @@ public class MyPageController {
 
     return ResponseEntity.ok().build();
   }
-
-//  @GetMapping("/userEmailModify")
-//  public void changeEmailGet() {
-//    log.info("changeEmail get...............");
-//  }
 
   @PostMapping("/userEmailModify")
   public ResponseEntity<?> chagneEmail(@AuthenticationPrincipal UsersSecurityDTO principal,
@@ -152,5 +146,35 @@ public class MyPageController {
 
     categoriesService.updateCategory(catId, req.getCategoryName());
     return ResponseEntity.ok(Map.of("message", "수정 성공"));
+  }
+
+  @PostMapping("/profileImage")
+  public String uploadProfileImage(@RequestParam("profileImage") MultipartFile file,
+                                   @AuthenticationPrincipal UsersSecurityDTO authUser) throws IOException {
+    if (file.isEmpty()) {
+      return "redirect:/mypage/myPage?error=emptyFile";
+    }
+
+    // 저장할 파일명 (UUID 붙여서 중복 방지)
+    String savedFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+    // 외부 uploads 폴더 (재시작 없이 접근 가능)
+    String uploadDir = System.getProperty("user.dir") + "/uploads";
+    Path savePath = Paths.get(uploadDir, savedFileName);
+
+    // 폴더 없으면 생성
+    Files.createDirectories(savePath.getParent());
+
+    // 파일 저장
+    file.transferTo(savePath.toFile());
+
+    // DB에 저장
+    Users user = usersRepository.findByUserId(authUser.getUserId())
+      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    user.setProfileImage(savedFileName);  // DB에는 파일명만 저장
+    usersRepository.save(user);
+
+    log.info("Saved profile image: " + savedFileName);
+    return "redirect:/mypage/myPage";
   }
 }

@@ -27,7 +27,7 @@ public class Subscriptions extends BaseEntity {
     @JoinColumn(name = "userNo") // DB 컬럼
     private Users users;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "catId")
     private Categories categories;
 

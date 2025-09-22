@@ -25,4 +25,14 @@ public interface SubscriptionsRepository extends JpaRepository<Subscriptions, Lo
     "WHERE s.users.userNo = :userNo " +
     "GROUP BY s.categories.catName")
   List<Object[]> getCategoryAmountSummary(@Param("userNo") Long userNo);
+
+  @Query(value = """
+            SELECT DATE_FORMAT(regdate, '%Y-%m') as ym, SUM(subAmount)
+            FROM subscription
+            WHERE userNo = :userNo
+              AND regdate >= DATE_SUB(CURDATE(), INTERVAL 2 MONTH)
+            GROUP BY ym
+            ORDER BY ym
+            """, nativeQuery = true)
+  List<Object[]> getMonthlySummary(@Param("userNo") Long userNo);
 }

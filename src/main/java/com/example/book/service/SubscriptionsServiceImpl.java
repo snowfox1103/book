@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,5 +89,25 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
         r -> (String) r[0],
         r -> (Long) r[1]
       ));
+  }
+
+  @Override
+  public Map<String, Object> getMonthlySummary(Long userNo) {
+    List<Object[]> result = subscriptionsRepository.getMonthlySummary(userNo);
+
+    List<String> labels = new ArrayList<>();
+    List<Long> amounts = new ArrayList<>();
+
+    for (Object[] row : result) {
+      labels.add((String) row[0]); // "2025-07"
+      BigDecimal totalDecimal = (BigDecimal) row[1];
+      amounts.add(totalDecimal != null ? totalDecimal.longValue() : 0L);
+    }
+
+    Map<String, Object> summary = new HashMap<>();
+    summary.put("labels", labels);
+    summary.put("amounts", amounts);
+
+    return summary;
   }
 }

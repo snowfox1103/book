@@ -1,48 +1,107 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/basic.html}">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta name="_csrf" th:content="${_csrf.token}"/>
   <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-  <title>Title</title>
+  <title>정기 결제 관리</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link th:href="@{/css/subMain.css}" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link>
 </head>
 <body>
-<div layout:fragment="content">
-  <h1>Subscriptions Page!</h1>
-  <div>
-    <h3>정기결제 리스트</h3>
-    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addSubModal">추가</button>
-    <ul>
-      <li th:each="sub : ${subscriptions}" th:attr="data-id=${sub.subId},
-          data-catId=${sub.categories.catId},
-          data-title=${sub.subTitle},
-          data-amount=${sub.subAmount},
-          data-payDate=${sub.subPayDate},
-          data-periodUnit=${sub.subPeriodUnit},
-          data-periodValue=${sub.subPeriodValue},
-          data-notice=${sub.subNotice},
-          data-isSub=${sub.isSub}">
-        <span class="subscription-name"
-              data-bs-toggle="modal"
-              data-bs-target="#editSubModal">
-          <span th:text = "${sub.categories.getCatName()}"></span>
-          <span th:text="${sub.subTitle}"></span>
-          <span th:text="'₩' + ${#numbers.formatInteger(sub.subAmount, 3, 'COMMA')}"></span>
-          <span th:text="${sub.subPeriodValue} + ' ' + ${sub.subPeriodUnit}"></span>
-          <span th:text="${sub.subPayDate} + '일'"></span>
-          <span th:text="${sub.isSub()} ? '활성화' : '비활성화'"></span>
-        </span>
-        <button type="button" class="btn btn-sm btn-danger btn-delete">X</button>
-      </li>
-    </ul>
+<div th:replace="~{fragments/common :: header(active='board')}"></div>
+  <div class="subMain-container">
+    <h4 class="mb-4 fw-bold">정기 결제 관리</h4>
+    <div class="row align-items-stretch">
+
+      <!-- 왼쪽: 정기 결제 리스트 -->
+      <div class="col-md-6 d-flex">
+        <section class="flex-fill d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- 왼쪽: 제목 -->
+            <h6 class="fw-bold mb-0">정기 결제 리스트</h6>
+
+            <!-- 오른쪽: 정렬 + 추가 버튼 -->
+            <div class="d-flex align-items-center gap-2">
+              <select id="sortOption" class="form-select form-select-sm" style="width:auto;">
+                <option value="amount-desc">가격 내림차순</option>
+                <option value="amount-asc">가격 오름차순</option>
+                <option value="paydate-asc">결제일 오름차순</option>
+                <option value="paydate-desc">결제일 내림차순</option>
+                <option value="cat-asc">카테고리명 오름차순</option>
+                <option value="cat-desc">카테고리명 내림차순</option>
+              </select>
+              <button type="button" class="btn btn-outline-primary btn-sm"
+                      data-bs-toggle="modal" data-bs-target="#addSubModal">추가</button>
+            </div>
+          </div>
+
+          <div class="subscription-list flex-grow-1">
+            <ul class="list-group subscription-list">
+              <li th:each="sub : ${subscriptions}"
+                  class="list-group-item d-flex justify-content-between align-items-center"
+                  th:attr="data-id=${sub.subId},
+             data-catid=${sub.categories.catId},
+             data-catname=${sub.categories.catName},
+             data-title=${sub.subTitle},
+             data-amount=${sub.subAmount},
+             data-paydate=${sub.subPayDate},
+             data-periodunit=${sub.subPeriodUnit},
+             data-periodvalue=${sub.subPeriodValue},
+             data-notice=${sub.subNotice},
+             data-issub=${sub.isSub}">
+                <!-- 수정 모달을 여는 클릭 영역 -->
+                <div class="subscription-info" role="button" tabindex="0">
+                  <div class="sub-title">
+                    <i th:classappend="${sub.isSub} ? 'status-dot status-active' : 'status-dot status-inactive'"></i>
+                    <span th:text="${sub.categories.catName}"></span> -
+                    <span th:text="${sub.subTitle}"></span>
+                  </div>
+                  <div class="sub-detail">
+                    <span th:text="|₩${#numbers.formatInteger(sub.subAmount, 3, 'COMMA')} (${sub.subPeriodValue} ${sub.subPeriodUnit} / ${sub.subPayDate}일)|"></span>
+                    <!-- ✅ 상태 표시 -->
+                    <span th:text="${sub.isSub ? '활성화' : '비활성화'}"
+                          th:classappend="${sub.isSub} ? 'status-active-font' : 'status-inactive-font'">
+                    </span>
+                  </div>
+                </div>
+
+                <!-- 삭제 버튼 -->
+                <button type="button" class="btn btn-danger btn-sm delete-sub-btn">X</button>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+
+      <!-- 오른쪽: 차트 + 버튼 -->
+      <div class="col-md-6 d-flex">
+        <section class="flex-fill d-flex flex-column">
+
+          <!-- ✅ 카테고리별 비율 -->
+          <div class="mb-4">
+            <h6 class="fw-bold">카테고리별 결제 비율</h6>
+            <canvas id="categoryDonutChart"></canvas>
+          </div>
+
+          <!-- ✅ 3개월 추이 -->
+          <div class="mb-3 flex-fill">
+            <h6 class="fw-bold">최근 3개월 결제 추이</h6>
+            <canvas id="monthlyTrendChart"></canvas>
+          </div>
+
+          <div class="text-center mt-auto">
+            <a href="/statistics" class="btn btn-success">통계 보러가기</a>
+          </div>
+        </section>
+      </div>
+    </div>
   </div>
 
-  <!--add subscriptions-->
+  <!-- ✅ 정기결제 추가 모달 -->
   <div class="modal fade" id="addSubModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <form id="addSubForm" class="modal-content">
@@ -52,40 +111,25 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
         </div>
         <div class="modal-body">
-
-          <!-- 카테고리 선택 -->
           <div class="mb-3">
             <label class="form-label">카테고리</label>
-<!--            <select class="form-select" name="catId" id="catId" required>-->
-<!--            스크롤을 사용하기 위한 높이 조절 ? 왜 안 되는거야?-->
-            <select class="form-select" name="catId" id="catId" required
-                    style="max-height: 2000px; overflow-y: auto;">
-              <!-- 유저의 카테고리 + 디폴트 카테고리를 서버에서 내려줌 -->
+            <select class="form-select" name="catId" id="catId" required>
               <option value="" selected disabled>카테고리를 선택하세요</option>
               <option th:each="cat : ${categories}" th:value="${cat.catId}" th:text="${cat.catName}"></option>
             </select>
           </div>
-
-          <!-- 정기 결제 이름 -->
           <div class="mb-3">
             <label class="form-label">정기 결제 이름</label>
             <input type="text" class="form-control" name="subTitle" id="subTitle" required minlength="2">
           </div>
-
-          <!-- 결제 금액 -->
           <div class="mb-3">
             <label class="form-label">결제 금액</label>
             <input type="number" class="form-control" name="subAmount" id="subAmount" min="0" required>
           </div>
-
-          <!-- 결제날 (숫자 입력) -->
           <div class="mb-3">
             <label class="form-label">결제날 (Day)</label>
             <input type="number" class="form-control" name="subPayDate" id="subPayDate" min="1" max="31" required>
-            <div class="form-text">1~31 사이의 숫자를 입력하세요</div>
           </div>
-
-          <!-- 결제주기 -->
           <div class="mb-3">
             <label class="form-label">결제 주기</label>
             <select class="form-select" name="subPeriodUnit" id="subPeriodUnit" required>
@@ -96,20 +140,15 @@
               <option value="YEAR">년</option>
             </select>
           </div>
-
-          <!-- 정기 주기 값 -->
           <div class="mb-3">
             <label class="form-label">결제 주기 값</label>
             <input type="number" class="form-control" name="subPeriodValue" id="subPeriodValue" min="1" required>
-            <div class="form-text">예: DAY + 3 → 3일마다 결제</div>
+            <div class="form-text">예: MONTH + 1 → 매월 결제</div>
           </div>
-
-          <!-- 알림 여부 -->
           <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" name="subNotice" id="subNotice">
             <label class="form-check-label" for="subNotice">결제 알림 받기</label>
           </div>
-
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">추가</button>
@@ -117,9 +156,9 @@
         </div>
       </form>
     </div>
-  </div><!--add subscription end-->
+  </div>
 
-<!--subscription modify-->
+  <!-- ✅ 정기결제 수정 모달 -->
   <div class="modal fade" id="editSubModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <form id="editSubForm" class="modal-content">
@@ -130,41 +169,28 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
         </div>
         <div class="modal-body">
-
-          <!-- 카테고리 선택 -->
           <div class="mb-3">
             <label class="form-label">카테고리</label>
-            <select class="form-select" name="catId" id="editCatId" required
-                    style="max-height: 200px; overflow-y: auto;">
-              <!-- 유저의 카테고리 + 디폴트 카테고리를 서버에서 내려줌 -->
+            <select class="form-select" id="editCatId" required>
               <option value="" selected disabled>카테고리를 선택하세요</option>
               <option th:each="cat : ${categories}" th:value="${cat.catId}" th:text="${cat.catName}"></option>
             </select>
           </div>
-
-          <!-- 정기 결제 이름 -->
           <div class="mb-3">
             <label class="form-label">정기 결제 이름</label>
-            <input type="text" class="form-control" name="subTitle" id="editSubTitle" required minlength="2">
+            <input type="text" class="form-control" id="editSubTitle" required minlength="2">
           </div>
-
-          <!-- 결제 금액 -->
           <div class="mb-3">
             <label class="form-label">결제 금액</label>
-            <input type="number" class="form-control" name="subAmount" id="editSubAmount" min="0" required>
+            <input type="number" class="form-control" id="editSubAmount" min="0" required>
           </div>
-
-          <!-- 결제날 (숫자 입력) -->
           <div class="mb-3">
             <label class="form-label">결제날 (Day)</label>
-            <input type="number" class="form-control" name="subPayDate" id="editSubPayDate" min="1" max="31" required>
-            <div class="form-text">1~31 사이의 숫자를 입력하세요</div>
+            <input type="number" class="form-control" id="editSubPayDate" min="1" max="31" required>
           </div>
-
-          <!-- 결제주기 -->
           <div class="mb-3">
             <label class="form-label">결제 주기</label>
-            <select class="form-select" name="subPeriodUnit" id="editSubPeriodUnit" required>
+            <select class="form-select" id="editSubPeriodUnit" required>
               <option value="" selected disabled>주기를 선택하세요</option>
               <option value="DAY">일</option>
               <option value="WEEK">주</option>
@@ -172,25 +198,18 @@
               <option value="YEAR">년</option>
             </select>
           </div>
-
-          <!-- 정기 주기 값 -->
           <div class="mb-3">
             <label class="form-label">결제 주기 값</label>
-            <input type="number" class="form-control" name="subPeriodValue" id="editSubPeriodValue" min="1" required>
-            <div class="form-text">예: DAY + 3 → 3일마다 결제</div>
+            <input type="number" class="form-control" id="editSubPeriodValue" min="1" required>
           </div>
-
-          <!-- 알림 여부 -->
           <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="subNotice" id="editSubNotice">
+            <input class="form-check-input" type="checkbox" id="editSubNotice">
             <label class="form-check-label" for="editSubNotice">결제 알림 받기</label>
           </div>
-          <!--활성/비활성 선택-->
           <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="isSub" id="editIsSub">
+            <input class="form-check-input" type="checkbox" id="editIsSub">
             <label class="form-check-label" for="editIsSub">활성/비활성</label>
           </div>
-
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">수정</button>
@@ -198,187 +217,204 @@
         </div>
       </form>
     </div>
-  </div><!--subscription modify end-->
+  </div>
 
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- ✅ 차트 렌더링 -->
   <script th:inline="javascript">
-      const t = document.querySelector('meta[name="_csrf"]')?.content;
-      const h = document.querySelector('meta[name="_csrf_header"]')?.content;
-      const headers = { 'Content-Type': 'application/json' };
-      if (t && h) headers[h] = t;
+      const categorySummary = /*[[${categorySummary}]]*/ {};
+      const monthlySummary = /*[[${monthlySummary}]]*/ {};
 
-      document.addEventListener('DOMContentLoaded', () => {
-          const addSubForm = document.getElementById("addSubForm");
+      if (!categorySummary || Object.keys(categorySummary).length === 0) {
+          console.warn("카테고리 통계 데이터 없음");
+      } else {
+          const labels = Object.keys(categorySummary);
+          const data = Object.values(categorySummary);
 
-          addSubForm.addEventListener("submit", async (e) => {
-              e.preventDefault();
-
-              // 입력값 수집
-              const catId = document.getElementById("catId").value;
-              const subTitle = document.getElementById("subTitle").value.trim();
-              const subAmount = document.getElementById("subAmount")?.value || 0; // 금액 필드 있다면
-              const subPayDate = document.getElementById("subPayDate").value;
-              const subNotice = document.getElementById("subNotice")?.checked || false; // 체크박스로 만들면 true/false
-              const subPeriodUnit = document.getElementById("subPeriodUnit").value;
-              const subPeriodValue = document.getElementById("subPeriodValue").value;
-              const isSub = true; // 기본값 true (활성화)
-
-              // 검증
-              if (!catId) return alert("카테고리를 선택하세요.");
-              if (!subTitle) return alert("정기 결제 이름을 입력하세요.");
-              if (subAmount < 0) return alert("결제 금액은 0원 이상이어야 합니다.");
-              if (!subPayDate || subPayDate < 1 || subPayDate > 31) return alert("결제 날짜는 1~31 사이여야 합니다.");
-              if (!subPeriodUnit) return alert("결제 주기를 선택하세요.");
-              if (!subPeriodValue || subPeriodValue < 1) return alert("정기 주기 값을 입력하세요.");
-
-              // 요청 payload
-              const payload = {
-                  catId: parseInt(catId),
-                  subTitle,
-                  subAmount: parseInt(subAmount),
-                  subPayDate: parseInt(subPayDate),
-                  subNotice,
-                  subPeriodUnit,
-                  subPeriodValue: parseInt(subPeriodValue),
-                  isSub
-              };
-
-              try {
-                  const res = await fetch("/subscriptions/addSub", {
-                      method: "POST",
-                      headers: {
-                          "Content-Type": "application/json",
-                          "X-CSRF-TOKEN": document.querySelector("meta[name='_csrf']").content
-                      },
-                      credentials: "same-origin",
-                      body: JSON.stringify(payload)
-                  });
-
-                  const data = await res.json().catch(() => ({}));
-
-                  if (res.ok) {
-                      alert("정기 결제가 추가되었습니다.");
-                      window.location.replace('/subscriptions/subMain');
-                  } else {
-                      alert(data.message || "추가 실패");
-                  }
-              } catch (err) {
-                  console.error(err);
-                  alert("네트워크 오류 발생");
+          const ctx = document.getElementById('categoryDonutChart').getContext('2d');
+          new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                  labels: labels,
+                  datasets: [{
+                      data: data,
+                      backgroundColor: [
+                          '#4e79a7', '#f28e2b', '#e15759', '#76b7b2',
+                          '#59a14f', '#edc949', '#af7aa1', '#ff9da7',
+                          '#9c755f', '#bab0ab', '#86bc86', '#fabfd2'
+                      ]
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: { legend: { position: 'bottom' } }
               }
           });
+      }
 
-          // sub delete
-          document.querySelectorAll(".btn-delete").forEach(btn => {
+      // ✅ 3개월 추세 (막대 + 선 혼합)
+      const monthlyLabels = [[${monthlyLabels}]];
+      const monthlyAmounts = [[${monthlyAmounts}]];
+
+      if (monthlyLabels && monthlyLabels.length > 0) {
+          const ctx2 = document.getElementById('monthlyTrendChart').getContext('2d');
+          new Chart(ctx2, {
+              data: {
+                  labels: monthlyLabels,
+                  datasets: [
+                      {
+                          type: 'bar',
+                          label: '결제 금액 합계',
+                          data: monthlyAmounts,
+                          backgroundColor: '#4e79a7',
+                          order: 2
+                      },
+                      {
+                          type: 'line',
+                          label: '결제 추세',
+                          data: monthlyAmounts,
+                          borderColor: '#e15759',
+                          borderWidth: 2,
+                          tension: 0.3,
+                          fill: false,
+                          order: 1
+                      }
+                  ]
+              },
+              options: {
+                  responsive: true,
+                  plugins: { legend: { position: 'bottom' } },
+                  scales: { y: { beginAtZero: true } }
+              }
+          });
+      }
+  </script>
+
+  <!-- ✅ Ajax (추가/수정/삭제) -->
+  <script th:inline="javascript">
+      const headers = {};
+      const t = document.querySelector('meta[name="_csrf"]')?.content;
+      const h = document.querySelector('meta[name="_csrf_header"]')?.content;
+      if (t && h) headers[h] = t;
+
+      document.addEventListener("DOMContentLoaded", () => {
+          // 정렬
+          const sortSelect = document.getElementById("sortOption");
+          const list = document.querySelector(".subscription-list ul");
+
+          sortSelect.addEventListener("change", () => {
+              const option = sortSelect.value;
+              const items = Array.from(list.querySelectorAll("li"));
+
+              items.sort((a, b) => {
+                  const dataA = a.dataset;
+                  const dataB = b.dataset;
+
+                  switch (option) {
+                      case "amount-desc":
+                          return parseInt(dataB.amount) - parseInt(dataA.amount);
+                      case "amount-asc":
+                          return parseInt(dataA.amount) - parseInt(dataB.amount);
+                      case "paydate-asc":
+                          return parseInt(dataA.paydate) - parseInt(dataB.paydate);
+                      case "paydate-desc":
+                          return parseInt(dataB.paydate) - parseInt(dataA.paydate);
+                      case "cat-asc":
+                          return dataA.catname.localeCompare(dataB.catname, 'ko');
+                      case "cat-desc":
+                          return dataB.catname.localeCompare(dataA.catname, 'ko');
+                      default:
+                          return 0;
+                  }
+              });
+
+              // 정렬된 순서대로 다시 append
+              items.forEach(item => list.appendChild(item));
+          });
+
+          // 추가
+          document.getElementById("addSubForm").addEventListener("submit", async (e) => {
+              e.preventDefault();
+              // 값 수집
+              const payload = {
+                  catId: parseInt(document.getElementById("catId").value),
+                  subTitle: document.getElementById("subTitle").value,
+                  subAmount: parseInt(document.getElementById("subAmount").value),
+                  subPayDate: parseInt(document.getElementById("subPayDate").value),
+                  subPeriodUnit: document.getElementById("subPeriodUnit").value,
+                  subPeriodValue: parseInt(document.getElementById("subPeriodValue").value),
+                  subNotice: document.getElementById("subNotice").checked,
+                  isSub: true
+              };
+              const res = await fetch("/subscriptions/addSub", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json", ...headers },
+                  body: JSON.stringify(payload)
+              });
+              if (res.ok) location.reload();
+          });
+
+          // 삭제
+          document.querySelectorAll(".delete-sub-btn").forEach(btn => {
               btn.addEventListener("click", async (e) => {
                   const li = e.target.closest("li");
                   const subId = li.getAttribute("data-id");
-
-                  if (!confirm("정말 삭제하시겠습니까?")) return;
-
-                  try {
-                      const res = await fetch(`/subscriptions/deleteSub/${subId}`, {
-                          method: "DELETE",
-                          headers,
-                          credentials: "same-origin"
-                      });
-
-                      if (res.ok) {
-                          li.remove(); // ✅ 뷰에서도 즉시 제거
-                          alert("삭제되었습니다.");
-                          window.location.replace('/subscriptions/subMain');
-                      } else {
-                          const data = await res.json();
-                          alert(data.message || "삭제 실패");
-                      }
-                  } catch (err) {
-                      console.error(err);
-                      alert("네트워크 오류 발생");
-                  }
+                  if (!confirm("삭제하시겠습니까?")) return;
+                  const res = await fetch(`/subscriptions/deleteSub/${subId}`, {
+                      method: "DELETE", headers
+                  });
+                  if (res.ok) location.reload();
               });
           });
 
-          // subscription modify script
-          const editForm = document.getElementById("editSubForm");
-
-          document.querySelectorAll(".subscription-name").forEach(span => {
+          // 수정 모달 열릴 때 값 채우기
+          document.querySelectorAll(".subscription-info").forEach(span => {
               span.addEventListener("click", () => {
                   const li = span.closest("li");
-                  const subId = li.getAttribute("data-id");
-                  const catId = li.getAttribute("data-catId"); // li에 data-catId 넣어놔야 함
+                  const data = li.dataset;  // ✅ dataset으로 접근하면 깔끔함
 
-                  // 서버에서 내려줄 때 data-*에 다 담아주는 게 가장 안정적
-                  const subTitle = li.getAttribute("data-title");
-                  const subAmount = li.getAttribute("data-amount"); // 숫자 그대로
-                  const subPayDate = li.getAttribute("data-payDate");
-                  const subPeriodUnit = li.getAttribute("data-periodUnit");
-                  const subPeriodValue = li.getAttribute("data-periodValue");
-                  const subNotice = li.getAttribute("data-notice") === "true";
-                  const isSub = li.getAttribute("data-isSub") === "true";
+                  document.getElementById("editSubId").value = data.id;
+                  document.getElementById("editCatId").value = data.catid;
+                  document.getElementById("editSubTitle").value = data.title;
+                  document.getElementById("editSubAmount").value = data.amount;
+                  document.getElementById("editSubPayDate").value = data.paydate;
+                  document.getElementById("editSubPeriodUnit").value = data.periodunit;
+                  document.getElementById("editSubPeriodValue").value = data.periodvalue;
+                  document.getElementById("editSubNotice").checked = data.notice === "true";
+                  document.getElementById("editIsSub").checked = data.issub === "true";
 
-                  // modal input 채우기
-                  document.getElementById("editSubId").value = subId;
-                  document.getElementById("editCatId").value = catId;
-                  document.getElementById("editSubTitle").value = subTitle;
-                  document.getElementById("editSubAmount").value = subAmount;
-                  document.getElementById("editSubPayDate").value = subPayDate;
-                  document.getElementById("editSubPeriodUnit").value = subPeriodUnit;
-                  document.getElementById("editSubPeriodValue").value = subPeriodValue;
-                  document.getElementById("editSubNotice").checked = subNotice;
-                  document.getElementById("editIsSub").checked = isSub;
+                  // ✅ 모달 열기
+                  const modalEl = document.getElementById("editSubModal");
+                  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                  modal.show();
               });
           });
 
-          // 수정 form submit
-          editForm.addEventListener("submit", async (e) => {
+          // 수정 저장
+          document.getElementById("editSubForm").addEventListener("submit", async (e) => {
               e.preventDefault();
-
               const subId = document.getElementById("editSubId").value;
-              const catId = document.getElementById("editCatId").value;
-              const subTitle = document.getElementById("editSubTitle").value.trim();
-              const subAmount = document.getElementById("editSubAmount").value;
-              const subPayDate = document.getElementById("editSubPayDate").value;
-              const subPeriodUnit = document.getElementById("editSubPeriodUnit").value;
-              const subPeriodValue = document.getElementById("editSubPeriodValue").value;
-              const subNotice = document.getElementById("editSubNotice").checked;
-              const isSub = document.getElementById("editIsSub").checked;
-
               const payload = {
-                  catId: parseInt(catId),
-                  subTitle,
-                  subAmount,
-                  subPayDate: parseInt(subPayDate),
-                  subPeriodUnit,
-                  subPeriodValue: parseInt(subPeriodValue),
-                  subNotice,
-                  isSub
+                  catId: parseInt(document.getElementById("editCatId").value),
+                  subTitle: document.getElementById("editSubTitle").value,
+                  subAmount: parseInt(document.getElementById("editSubAmount").value),
+                  subPayDate: parseInt(document.getElementById("editSubPayDate").value),
+                  subPeriodUnit: document.getElementById("editSubPeriodUnit").value,
+                  subPeriodValue: parseInt(document.getElementById("editSubPeriodValue").value),
+                  subNotice: document.getElementById("editSubNotice").checked,
+                  isSub: document.getElementById("editIsSub").checked
               };
-
-              try {
-                  const res = await fetch(`/subscriptions/modifySub/${subId}`, {
-                      method: "PUT",
-                      headers: {
-                          "Content-Type": "application/json",
-                          "X-CSRF-TOKEN": document.querySelector("meta[name='_csrf']").content
-                      },
-                      credentials: "same-origin",
-                      body: JSON.stringify(payload)
-                  });
-
-                  const data = await res.json().catch(() => ({}));
-
-                  if (res.ok) {
-                      alert("정기 결제가 수정되었습니다.");
-                      window.location.replace('/subscriptions/subMain');
-                  } else {
-                      alert(data.message || "수정 실패");
-                  }
-              } catch (err) {
-                  console.error(err);
-                  alert("네트워크 오류 발생");
-              }
+              const res = await fetch(`/subscriptions/modifySub/${subId}`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json", ...headers },
+                  body: JSON.stringify(payload)
+              });
+              if (res.ok) location.reload();
           });
       });
   </script>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

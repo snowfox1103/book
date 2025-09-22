@@ -39,6 +39,7 @@ public class Users extends BaseEntity {
 
     private boolean social = false;
     private boolean enabled = false;
+    private String profileImage;
 
     @Builder.Default
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -72,5 +73,9 @@ public class Users extends BaseEntity {
 
     public void disable() {
         this.enabled = false;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 }

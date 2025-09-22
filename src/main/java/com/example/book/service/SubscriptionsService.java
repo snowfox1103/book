@@ -14,4 +14,5 @@ public interface SubscriptionsService  {
   void deleteSubscription(Long userNo, Long subId);
   void updateSubscription(Long subId, SubscriptionsDTO dto);
   Map<String, Long> getCategorySummary(Long userNo);
+  Map<String, Object> getMonthlySummary(Long userNo);
 }

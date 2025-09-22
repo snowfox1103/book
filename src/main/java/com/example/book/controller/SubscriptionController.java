@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,10 +40,15 @@ public class SubscriptionController {
     List<Subscriptions> subs = subscriptionsService.getSubscriptions(userNo);
     model.addAttribute("subscriptions", subs);
 
-    Map<String, Long> categorySummary = subscriptionsService.getCategorySummary(userNo);
+    Map<String, Long> categorySummary = subscriptionsService.getCategorySummary(authUser.getUserNo());
     model.addAttribute("categorySummary", categorySummary);
 
-    return "/subscriptions/subMain";
+//    model.addAttribute("monthlySummary", subscriptionsService.getMonthlySummary(authUser.getUserNo()));
+    Map<String, Object> monthlySummary = subscriptionsService.getMonthlySummary(userNo);
+    model.addAttribute("monthlyLabels", monthlySummary.get("labels"));
+    model.addAttribute("monthlyAmounts", monthlySummary.get("amounts"));
+
+    return "subscriptions/subMain";
   }
 
   @PostMapping("/addSub")

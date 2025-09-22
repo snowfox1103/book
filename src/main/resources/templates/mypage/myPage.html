@@ -1,49 +1,92 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/basic.html}">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="_csrf" th:content="${_csrf.token}"/>
   <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-  <title>Title</title>
+  <title>마이페이지</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/mypage.css}"/>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
 </head>
 <body>
-<div layout:fragment="content">
-  <div>
-    <h1>My Page!</h1>
-  </div>
-  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#emailChangeModal">
-    이메일 변경
-  </button>
-  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#pwdChangeModal">
-    비밀번호 변경
-  </button>
-<!--  회원탈퇴 form-->
-  <form action="/mypage/userUnregister" method="post" onsubmit="return confirm('정말 탈퇴하시겠어요?');">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-    <button type="submit" class="btn btn-danger">회원 탈퇴</button>
-  </form>
-  <div>
-    <h3>카테고리 리스트</h3>
-    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">추가</button>
-    <ul>
-      <li th:each="cat : ${categories}"
-          th:attr="data-id=${cat.catId},data-name=${cat.catName}">
-        <!-- 카테고리 이름 자체에 클릭 이벤트 -->
-        <span class="category-name"
-              data-bs-toggle="modal"
-              data-bs-target="#editCategoryModal"
-              th:text="${cat.catName}"></span>
-        <button type="button" class="btn btn-sm btn-danger btn-delete">X</button>
-      </li>
-    </ul>
+<div th:replace="~{fragments/common :: header(active='board')}"></div>
+<div class="mypage-container">
+  <h4 class="mb-4 fw-bold">마이페이지</h4>
+  <!-- 프로필 영역 -->
+  <section class="profile-section">
+    <div class="profile-left">
+      <!-- 프로필 이미지를 클릭하면 모달 오픈 -->
+      <div class="profile-img" data-bs-toggle="modal" data-bs-target="#profileImageModal">
+        <img th:if="${user.profileImage != null}"
+             th:src="@{'/uploads/' + ${user.profileImage}}"
+             alt=""
+             class="profile-photo"
+             onerror="this.classList.add('is-broken'); this.nextElementSibling.classList.remove('d-none');" />
+        <span class="fallback d-none">프로필 이미지</span>
+      </div>
+      <div class="profile-name" th:text="${user.realName} + ' 님'">이름</div>  <!-- ~님 이 어색하면 지우자-->
+    </div>
+    <div class="profile-info">
+      <div class="info-row">
+        <span class="label">아이디</span>
+        <span class="value" th:text="${user.userId}">user123</span>
+        <button type="button" class="btn-darkmode">다크 모드</button>
+      </div>
+      <div class="info-row">
+        <span class="label">비밀번호</span>
+        <span class="value">********</span>
+        <button type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#pwdChangeModal">비밀번호 수정</button>
+      </div>
+      <div class="info-row">
+        <span class="label">이메일</span>
+        <span class="value" th:text="${user.email}">user@email.com</span>
+        <button type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#emailChangeModal">이메일 수정</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 알림 + 카테고리 -->
+  <section class="notify-category">
+    <div class="notify-box">
+      <h4>알림</h4>
+      <p>ex) 경고 - 설정 예산의 90% 사용</p>
+    </div>
+    <div class="category-box">
+      <div class="category-header">
+        <h4>사용자 지정 카테고리 관리</h4>
+        <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#addCategoryModal">추가</button>
+      </div>
+      <ul>
+        <li th:each="cat : ${categories}"
+            th:attr="data-id=${cat.catId},data-name=${cat.catName}">
+          <span class="category-name"
+                data-bs-toggle="modal"
+                data-bs-target="#editCategoryModal"
+                th:text="${cat.catName}">카테고리</span>
+          <button type="button" class="btn btn-sm btn-danger btn-delete">X</button>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 문의사항 -->
+  <section class="inquiry-section">
+    <h4>내가 문의한 사항</h4>
+    <!-- 문의사항 리스트가 여기에 -->
+  </section>
+
+  <!-- 회원탈퇴 -->
+  <div class="delete-section">
+    <form action="/mypage/userUnregister" method="post" onsubmit="return confirm('정말 탈퇴하시겠어요?');">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <button type="submit" class="btn-delete">회원탈퇴</button>
+    </form>
   </div>
 
-<!--email modify-->
+  <!-- ================= 모달 영역 ================= -->
+  <!-- 이메일 변경 모달 -->
   <div class="modal fade" id="emailChangeModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <form id="emailChangeForm" class="modal-content">
@@ -67,9 +110,9 @@
         </div>
       </form>
     </div>
-  </div> <!--email modify end-->
+  </div>
 
-<!--  password modify-->
+  <!-- 비밀번호 변경 모달 -->
   <div class="modal fade" id="pwdChangeModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <form id="pwdChangeForm" class="modal-content">
@@ -86,7 +129,7 @@
           <div class="mb-3">
             <label class="form-label">새 비밀번호</label>
             <input type="password" class="form-control" name="newPassword" required minlength="8">
-            <div class="form-text">최소 8자 권장</div>
+            <div class="form-text">최소 8자 이상</div>
           </div>
           <div class="mb-3">
             <label class="form-label">새 비밀번호 확인</label>
@@ -98,9 +141,9 @@
         </div>
       </form>
     </div>
-  </div> <!--  password modify end-->
+  </div>
 
-<!--  add categories modal-->
+  <!-- 카테고리 추가 모달 -->
   <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <form id="addCategoryForm" class="modal-content">
@@ -112,7 +155,7 @@
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label">카테고리 이름</label>
-            <input type="text" class="form-control" name="categoryName" required minlength="4">
+            <input type="text" class="form-control" name="categoryName" required minlength="2">
           </div>
         </div>
         <div class="modal-footer">
@@ -120,13 +163,13 @@
         </div>
       </form>
     </div>
-  </div> <!--  add category end-->
+  </div>
 
-  <!--category modify-->
+  <!-- 카테고리 수정 모달 -->
   <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <form id="editCategoryForm" class="modal-content">
-        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <input type="hidden" name="catId" id="editCatId"/>
         <div class="modal-header">
           <h5 class="modal-title">카테고리 수정</h5>
@@ -135,7 +178,7 @@
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label">카테고리 이름</label>
-            <input type="text" class="form-control" name="categoryName" id="editCategoryName" required minlength="4">
+            <input type="text" class="form-control" name="categoryName" id="editCategoryName" required minlength="2">
           </div>
         </div>
         <div class="modal-footer">
@@ -144,8 +187,31 @@
         </div>
       </form>
     </div>
-  </div><!--category modify end-->
+  </div>
 
+  <!-- 프로필 이미지 업로드 모달 -->
+  <div class="modal fade" id="profileImageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="profileImageForm" class="modal-content" enctype="multipart/form-data">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div class="modal-header">
+          <h5 class="modal-title">프로필 사진 변경</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+          <input type="file" class="form-control" name="profileImage" accept="image/*" required>
+          <div class="mt-2">
+            <img id="preview" src="#" alt="미리보기" style="max-width:100%; display:none;">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit">업로드</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= 스크립트 ================= -->
   <script th:inline="javascript">
       const t = document.querySelector('meta[name="_csrf"]')?.content;
       const h = document.querySelector('meta[name="_csrf_header"]')?.content;
@@ -153,208 +219,172 @@
       if (t && h) headers[h] = t;
 
       document.addEventListener('DOMContentLoaded', () => {
-          <!--  email modify script-->
+          // ✅ 이메일 변경
           const emailForm = document.getElementById('emailChangeForm');
-          if (!emailForm) {
-              console.error('emailChangeForm not found');
-              return;
+          if (emailForm) {
+              emailForm.addEventListener('submit', async (e) => {
+                  e.preventDefault();
+                  const currentEmail = emailForm.currentEmail.value.trim();
+                  const newEmail = emailForm.newEmail.value.trim();
+                  if (!currentEmail) return alert('현재 이메일을 입력하세요.');
+                  if (currentEmail === newEmail) return alert('새 이메일은 달라야 합니다.');
+
+                  try {
+                      const res = await fetch('/mypage/userEmailModify', {
+                          method: 'POST', headers, credentials: 'same-origin',
+                          body: JSON.stringify({ currentEmail, newEmail })
+                      });
+                      if (res.ok) {
+                          alert('이메일 변경 완료. 인증 메일 확인하세요.');
+                          window.location.replace('/users/login');
+                      } else {
+                          alert('이메일 변경 실패');
+                      }
+                  } catch (err) {
+                      console.error(err); alert('네트워크 오류');
+                  }
+              });
           }
 
-          emailForm.addEventListener('submit', async (e) => {
-              e.preventDefault();
+          // ✅ 비밀번호 변경
+          const pwForm = document.getElementById('pwdChangeForm');
+          if (pwForm) {
+              pwForm.addEventListener('submit', async (e) => {
+                  e.preventDefault();
+                  const cur = pwForm.currentPassword.value.trim();
+                  const npw = pwForm.newPassword.value.trim();
+                  const cpw = pwForm.confirmPassword.value.trim();
+                  if (!cur) return alert('현재 비밀번호 입력');
+                  if (npw !== cpw) return alert('비밀번호 확인 불일치');
+                  if (cur === npw) return alert('새 비밀번호는 달라야 함');
 
-              const currentEmail = emailForm.currentEmail.value.trim();
-              const newEmail = emailForm.newEmail.value.trim();
-
-              if (!currentEmail)             return alert('현재 이메일을 입력하세요.');
-              if (currentEmail === newEmail) return alert('새 이메일은 현재 이메일과 달라야 합니다.');
-
-              try {
-                  const res = await fetch('/mypage/userEmailModify', { // ← 컨트롤러 매핑에 맞춰 경로 확인!
-                      method: 'POST',
-                      headers,
-                      credentials: 'same-origin', // 세션 쿠키 포함
-                      body: JSON.stringify({ currentEmail, newEmail})
-                  });
-
-                  let data = {};
                   try {
-                      const ct = res.headers.get('content-type') || '';
-                      if (ct.includes('application/json')) data = await res.json();
-                  } catch {}
-
-                  if (res.ok) {
-                      alert('이메일 변경되었습니다. 인증 메일을 다시 확인해 주세요');
-                      window.location.replace('/users/login');
-                  } else {
-                      alert(data.message || '이메일 변경에 실패했습니다.');
+                      const res = await fetch('/mypage/userPasswordModify', {
+                          method: 'POST', headers, credentials: 'same-origin',
+                          body: JSON.stringify({ currentPassword: cur, newPassword: npw, confirmPassword: cpw })
+                      });
+                      if (res.ok) {
+                          alert('비밀번호 변경 완료. 다시 로그인하세요.');
+                          window.location.replace('/users/login?passwordChanged');
+                      } else {
+                          alert('비밀번호 변경 실패');
+                      }
+                  } catch (err) {
+                      console.error(err); alert('네트워크 오류');
                   }
-              } catch (err) {
-                  console.error(err);
-                  alert('네트워크 오류가 발생했습니다.');
-              }
-          });
-
-          // password modify script
-          const pwform = document.getElementById('pwdChangeForm');
-          if (!pwform) {
-              console.error('pwdChangeForm not found');
-              return;
+              });
           }
 
-          pwform.addEventListener('submit', async (e) => {
-              e.preventDefault();
-
-              const currentPassword = pwform.currentPassword.value.trim();
-              const newPassword     = pwform.newPassword.value.trim();
-              const confirmPassword = pwform.confirmPassword.value.trim();
-
-              if (!currentPassword)             return alert('현재 비밀번호를 입력하세요.');
-              if (newPassword !== confirmPassword) return alert('새 비밀번호와 확인이 일치하지 않습니다.');
-              if (currentPassword === newPassword) return alert('새 비밀번호는 현재 비밀번호와 달라야 합니다.');
-
-              try {
-                  const res = await fetch('/mypage/userPasswordModify', { // ← 컨트롤러 매핑에 맞춰 경로 확인!
-                      method: 'POST',
-                      headers,
-                      credentials: 'same-origin', // 세션 쿠키 포함
-                      body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
-                  });
-
-                  let data = {};
+          // ✅ 카테고리 추가
+          const addForm = document.getElementById('addCategoryForm');
+          if (addForm) {
+              addForm.addEventListener('submit', async (e) => {
+                  e.preventDefault();
+                  const name = addForm.categoryName.value.trim();
+                  if (!name) return alert('카테고리 이름 입력');
                   try {
-                      const ct = res.headers.get('content-type') || '';
-                      if (ct.includes('application/json')) data = await res.json();
-                  } catch {}
-
-                  if (res.ok) {
-                      alert('비밀번호가 변경되었습니다. 다시 로그인해 주세요.');
-                      window.location.replace('/users/login?passwordChanged');
-                  } else {
-                      alert(data.message || '비밀번호 변경에 실패했습니다.');
-                  }
-              } catch (err) {
-                  console.error(err);
-                  alert('네트워크 오류가 발생했습니다.');
-              }
-          });
-
-          // add category script
-          const addCategoryForm = document.getElementById('addCategoryForm');
-          if (!addCategoryForm) {
-              console.error('addCategoryForm not found');
-              return;
+                      const res = await fetch('/mypage/category', {
+                          method: 'POST', headers, credentials: 'same-origin',
+                          body: JSON.stringify({ categoryName: name })
+                      });
+                      if (res.ok) { alert('추가됨'); location.reload(); }
+                      else alert('추가 실패');
+                  } catch (err) { console.error(err); alert('네트워크 오류'); }
+              });
           }
 
-          addCategoryForm.addEventListener('submit', async (e) => {
-              e.preventDefault();
-
-              const categoryName = addCategoryForm.categoryName.value.trim();
-
-              if (!categoryName) return alert('추가할 카테고리 이름을 입력하세요.');
-
-              try {
-                  const res = await fetch('/mypage/category', { // ← 컨트롤러 매핑에 맞춰 경로 확인!
-                      method: 'POST',
-                      headers,
-                      credentials: 'same-origin', // 세션 쿠키 포함
-                      body: JSON.stringify({categoryName})
-                  });
-
-                  let data = {};
-                  try {
-                      const ct = res.headers.get('content-type') || '';
-                      if (ct.includes('application/json')) data = await res.json();
-                  } catch {}
-
-                  if (res.ok) {
-                      alert('카테고리 추가 되었습니다.');
-                      window.location.replace('/mypage/myPage?addCategory');
-                  } else {
-                      alert(data.message || '카테고리 추가에 실패했습니다.');
-                  }
-              } catch (err) {
-                  console.error(err);
-                  alert('네트워크 오류가 발생했습니다.');
-              }
-          });
-
-      //     category delete
+          // ✅ 카테고리 삭제
           document.querySelectorAll(".btn-delete").forEach(btn => {
               btn.addEventListener("click", async (e) => {
                   const li = e.target.closest("li");
-                  const catId = li.getAttribute("data-id");
-
-                  if (!confirm("정말 삭제하시겠습니까?")) return;
-
+                  const id = li.getAttribute("data-id");
+                  if (!confirm("삭제하시겠습니까?")) return;
                   try {
-                      const res = await fetch(`/mypage/category/${catId}`, {
-                          method: "DELETE",
-                          headers,
-                          credentials: "same-origin"
+                      const res = await fetch(`/mypage/category/${id}`, {
+                          method: "DELETE", headers, credentials: "same-origin"
                       });
-
-                      if (res.ok) {
-                          li.remove(); // ✅ 뷰에서도 즉시 제거
-                          alert("삭제되었습니다.");
-                      } else {
-                          const data = await res.json();
-                          alert(data.message || "삭제 실패");
-                      }
-                  } catch (err) {
-                      console.error(err);
-                      alert("네트워크 오류 발생");
-                  }
+                      if (res.ok) { li.remove(); alert("삭제됨"); }
+                      else alert("삭제 실패");
+                  } catch (err) { console.error(err); alert("네트워크 오류"); }
               });
           });
 
+          // ✅ 카테고리 수정
           const editForm = document.getElementById("editCategoryForm");
           const editCatId = document.getElementById("editCatId");
-          const editCategoryName = document.getElementById("editCategoryName");
-
-          // 카테고리 이름 클릭 시 모달에 값 채워넣기
+          const editCatName = document.getElementById("editCategoryName");
           document.querySelectorAll(".category-name").forEach(span => {
               span.addEventListener("click", (e) => {
                   const li = e.target.closest("li");
                   editCatId.value = li.getAttribute("data-id");
-                  editCategoryName.value = li.getAttribute("data-name");
+                  editCatName.value = li.getAttribute("data-name");
               });
           });
+          if (editForm) {
+              editForm.addEventListener("submit", async (e) => {
+                  e.preventDefault();
+                  const id = editCatId.value;
+                  const name = editCatName.value.trim();
+                  try {
+                      const res = await fetch(`/mypage/category/${id}`, {
+                          method: "PUT", headers, credentials: "same-origin",
+                          body: JSON.stringify({ categoryName: name })
+                      });
+                      if (res.ok) { alert("수정됨"); location.reload(); }
+                      else alert("수정 실패");
+                  } catch (err) { console.error(err); alert("네트워크 오류"); }
+              });
+          }
 
-          // 수정 form submit 처리
-          editForm.addEventListener("submit", async (e) => {
+          document.getElementById("profileImageForm").addEventListener("submit", async (e) => {
               e.preventDefault();
-
-              const catId = editCatId.value;
-              const categoryName = editCategoryName.value.trim();
-              if (!categoryName) return alert("이름을 입력하세요.");
+              const form = e.target;
+              const formData = new FormData(form);
 
               try {
-                  const res = await fetch(`/mypage/category/${catId}`, {
-                      method: "PUT",
-                      headers: {
-                          "Content-Type": "application/json",
-                          "X-CSRF-TOKEN": document.querySelector("meta[name='_csrf']").content
-                      },
-                      credentials: "same-origin",
-                      body: JSON.stringify({ categoryName })
+                  const res = await fetch("/mypage/profileImage", {
+                      method: "POST",
+                      body: formData,
+                      credentials: "same-origin"
                   });
 
-                  const data = await res.json().catch(() => ({}));
-
                   if (res.ok) {
-                      alert("수정되었습니다.");
-                      window.location.reload();
+                      alert("프로필 사진이 변경되었습니다.");
+                      location.reload();
                   } else {
-                      alert(data.message || "수정 실패");
+                      alert("업로드 실패");
                   }
               } catch (err) {
                   console.error(err);
                   alert("네트워크 오류 발생");
               }
           });
+
+          // 업로드 시 미리보기 기능
+          document.querySelector("input[name='profileImage']").addEventListener("change", (e) => {
+              const file = e.target.files[0];
+              if(file){
+                  const reader = new FileReader();
+                  reader.onload = ev => {
+                      const preview = document.getElementById("preview");
+                      preview.src = ev.target.result;
+                      preview.style.display = "block";
+                  };
+                  reader.readAsDataURL(file);
+              }
+          });
+
+          //이미지 깨졌을 시
+          document.querySelectorAll('.profile-photo').forEach(img => {
+              img.addEventListener('error', () => {
+                  img.classList.add('is-broken');
+                  const fallback = img.nextElementSibling;
+                  if (fallback) fallback.classList.remove('d-none');
+              });
+          });
       });
   </script>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

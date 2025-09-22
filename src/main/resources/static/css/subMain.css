@@ -1,0 +1,93 @@
+.subMain-container {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 20px;
+    font-family: "Noto Sans KR", sans-serif;
+    color: #333;
+}
+
+.subMain-container section {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.subscription-list .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+/* 정기 결제 리스트 고정 높이 + 스크롤 */
+.subscription-list {
+    max-height: 840px;   /* ✅ 10개 정도 보여지는 높이 (항목 높이에 맞춰 조정) */
+    overflow-y: auto;    /* ✅ 스크롤 표시 */
+    scrollbar-width: thin; /* 파이어폭스 전용 얇은 스크롤 */
+}
+
+/* 크롬/엣지용 커스텀 스크롤 */
+.subscription-list::-webkit-scrollbar {
+    width: 6px;
+}
+.subscription-list::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 4px;
+}
+.subscription-list::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.subscription-info {
+    display: flex;
+    flex-direction: column; /* 위아래 정렬 */
+    cursor: pointer;
+}
+
+.sub-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.sub-detail {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.delete-sub-btn {
+    align-self: center;  /* 버튼을 세로 중앙에 맞춤 */
+    margin-left: 15px;
+}
+
+.status-active-font {
+    color: #90ee90;       /* 옅은 초록 */
+    font-weight: 600;
+}
+
+.status-inactive-font {
+    color: #f08080;       /* 옅은 빨강 */
+    font-weight: 600;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-left: 6px;
+    border-radius: 50%;
+}
+
+.status-active {
+    background-color: #28a745; /* 초록 */
+}
+
+.status-inactive {
+    background-color: #dc3545; /* 빨강 */
+}
+#sortOption {
+    min-width: 160px;
+}
+.fw-bold {
+    font-size: 20px;
+}
