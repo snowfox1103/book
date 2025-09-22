@@ -1,7 +1,7 @@
 package com.example.book.repository;
 
-import com.example.book.domain.Subscriptions;
-import com.example.book.domain.Users;
+import com.example.book.domain.finance.Subscriptions;
+import com.example.book.domain.user.Users;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

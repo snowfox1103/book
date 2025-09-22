@@ -1,6 +1,6 @@
 package com.example.book.dto;
 
-import com.example.book.domain.Users;
+import com.example.book.domain.user.Users;
 
 public class CategoriesDTO {
   private Long catId;

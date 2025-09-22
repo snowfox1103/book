@@ -1,7 +1,7 @@
 package com.example.book.service;
 
-import com.example.book.domain.Categories;
-import com.example.book.domain.Users;
+import com.example.book.domain.finance.Categories;
+import com.example.book.domain.user.Users;
 import com.example.book.dto.CategoriesDTO;
 
 import java.util.List;

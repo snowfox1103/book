@@ -1,7 +1,7 @@
 package com.example.book.security;
 
-import com.example.book.domain.MemberRole;
-import com.example.book.domain.Users;
+import com.example.book.domain.user.MemberRole;
+import com.example.book.domain.user.Users;
 import com.example.book.repository.UsersRepository;
 import com.example.book.security.dto.UsersSecurityDTO;
 import lombok.RequiredArgsConstructor;

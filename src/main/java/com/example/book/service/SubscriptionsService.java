@@ -1,6 +1,6 @@
 package com.example.book.service;
 
-import com.example.book.domain.Subscriptions;
+import com.example.book.domain.finance.Subscriptions;
 import com.example.book.dto.SubscriptionsDTO;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;

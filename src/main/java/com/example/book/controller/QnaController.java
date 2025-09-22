@@ -118,5 +118,4 @@ public class QnaController {
         qnaService.delete(id, currentUserNo(ud));
         return "redirect:/qna";
     }
-
 }

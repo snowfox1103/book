@@ -1,7 +1,7 @@
 package com.example.book.dto;
 
-import com.example.book.domain.Categories;
-import com.example.book.domain.Users;
+import com.example.book.domain.finance.Categories;
+import com.example.book.domain.user.Users;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 

@@ -91,64 +91,64 @@ public class CustomSecurityConfig {
 
     return http.build();
   }
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        log.info("===== Security configure =====");
-
-        // CSRF – 필요 시 다시 켜자 (H2 콘솔 쓰면 .ignoringRequestMatchers("/h2-console/**") 추가)
-//    http.csrf(csrf -> csrf.disable()); 로그인 기능 활성화로 주석처리 0918 석준영
-
-        // 폼 로그인
-        http.formLogin(form -> form
-                .loginPage("/users/login")
-                .loginProcessingUrl("/users/login")
-                .usernameParameter("userId")
-                .passwordParameter("password")
-                .defaultSuccessUrl("/", true)
-                .permitAll()
-        );
-
-        // OAuth2 로그인
-        http.oauth2Login(oauth2 -> oauth2
-                .loginPage("/users/login")
-                .successHandler(authenticationSuccessHandler())
-        );
-
-        // 401/403 처리
-        http.exceptionHandling(ex -> ex
-                .authenticationEntryPoint(new Custom401Handler()) // 401
-                .accessDeniedHandler(accessDeniedHandler())       // 403
-        );
-
-        // remember-me
-        http.rememberMe(remember -> remember
-                .key("12345678")
-                .tokenRepository(persistentTokenRepository())
-                .userDetailsService(userDetailsService)
-                .tokenValiditySeconds(60 * 60 * 24 * 30)
-        );
-
-        // 인가 규칙
-        http.authorizeHttpRequests(auth -> auth
-                // 정적/에러/로그인 허용
-                .requestMatchers("/error/**", "/users/login", "/css/**", "/js/**", "/images/**").permitAll()
-
-                // 공지: 읽기 허용, 쓰기/수정/삭제는 ADMIN
-                .requestMatchers(HttpMethod.GET, "/notice/**").permitAll()
-                .requestMatchers("/notice/write", "/notice/*/edit", "/notice/*/delete").hasRole("ADMIN")
-
-                // 관리자 페이지
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                // QnA: 로그인 필요(팀 규칙대로). 테스트 중이면 .permitAll()로 잠깐 바꿔도 됨
-                .requestMatchers("/qna/**").authenticated()
-
-                // 그 외
-                .anyRequest().permitAll()
-        );
-
-        return http.build();
-    }
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        log.info("===== Security configure =====");
+//
+//        // CSRF – 필요 시 다시 켜자 (H2 콘솔 쓰면 .ignoringRequestMatchers("/h2-console/**") 추가)
+////    http.csrf(csrf -> csrf.disable()); 로그인 기능 활성화로 주석처리 0918 석준영
+//
+//        // 폼 로그인
+//        http.formLogin(form -> form
+//                .loginPage("/users/login")
+//                .loginProcessingUrl("/users/login")
+//                .usernameParameter("userId")
+//                .passwordParameter("password")
+//                .defaultSuccessUrl("/", true)
+//                .permitAll()
+//        );
+//
+//        // OAuth2 로그인
+//        http.oauth2Login(oauth2 -> oauth2
+//                .loginPage("/users/login")
+//                .successHandler(authenticationSuccessHandler())
+//        );
+//
+//        // 401/403 처리
+//        http.exceptionHandling(ex -> ex
+//                .authenticationEntryPoint(new Custom401Handler()) // 401
+//                .accessDeniedHandler(accessDeniedHandler())       // 403
+//        );
+//
+//        // remember-me
+//        http.rememberMe(remember -> remember
+//                .key("12345678")
+//                .tokenRepository(persistentTokenRepository())
+//                .userDetailsService(userDetailsService)
+//                .tokenValiditySeconds(60 * 60 * 24 * 30)
+//        );
+//
+//        // 인가 규칙
+//        http.authorizeHttpRequests(auth -> auth
+//                // 정적/에러/로그인 허용
+//                .requestMatchers("/error/**", "/users/login", "/css/**", "/js/**", "/images/**").permitAll()
+//
+//                // 공지: 읽기 허용, 쓰기/수정/삭제는 ADMIN
+//                .requestMatchers(HttpMethod.GET, "/notice/**").permitAll()
+//                .requestMatchers("/notice/write", "/notice/*/edit", "/notice/*/delete").hasRole("ADMIN")
+//
+//                // 관리자 페이지
+//                .requestMatchers("/admin/**").hasRole("ADMIN")
+//
+//                // QnA: 로그인 필요(팀 규칙대로). 테스트 중이면 .permitAll()로 잠깐 바꿔도 됨
+//                .requestMatchers("/qna/**").authenticated()
+//
+//                // 그 외
+//                .anyRequest().permitAll()
+//        );
+//
+//        return http.build();
+//    }
 
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {

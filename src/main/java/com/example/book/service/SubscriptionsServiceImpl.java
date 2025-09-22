@@ -1,9 +1,10 @@
 package com.example.book.service;
 
-import com.example.book.domain.Categories;
-import com.example.book.domain.SubPeriodUnit;
-import com.example.book.domain.Subscriptions;
-import com.example.book.domain.Users;
+import com.example.book.domain.finance.Categories;
+import com.example.book.domain.finance.SubPeriodUnit;
+import com.example.book.domain.finance.Subscriptions;
+import com.example.book.domain.user.Users;
+import com.example.book.domain.finance.Subscriptions;
 import com.example.book.dto.SubscriptionsDTO;
 import com.example.book.repository.CategoriesRepository;
 import com.example.book.repository.SubscriptionsRepository;

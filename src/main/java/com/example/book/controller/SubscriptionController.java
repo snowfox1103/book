@@ -1,7 +1,7 @@
 package com.example.book.controller;
 
-import com.example.book.domain.Categories;
-import com.example.book.domain.Subscriptions;
+import com.example.book.domain.finance.Categories;
+import com.example.book.domain.finance.Subscriptions;
 import com.example.book.dto.SubscriptionsDTO;
 import com.example.book.security.dto.UsersSecurityDTO;
 import com.example.book.service.CategoriesService;
@@ -37,6 +37,9 @@ public class SubscriptionController {
     // 유저 정기결제 리스트 조회
     List<Subscriptions> subs = subscriptionsService.getSubscriptions(userNo);
     model.addAttribute("subscriptions", subs);
+
+    Map<String, Long> categorySummary = subscriptionsService.getCategorySummary(userNo);
+    model.addAttribute("categorySummary", categorySummary);
 
     return "/subscriptions/subMain";
   }

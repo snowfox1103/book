@@ -1,7 +1,7 @@
 package com.example.book.controller;
 
-import com.example.book.domain.EmailVerificationToken;
-import com.example.book.domain.Users;
+import com.example.book.domain.user.EmailVerificationToken;
+import com.example.book.domain.user.Users;
 import com.example.book.dto.*;
 import com.example.book.repository.EmailVerificationTokenRepository;
 import com.example.book.repository.UsersRepository;

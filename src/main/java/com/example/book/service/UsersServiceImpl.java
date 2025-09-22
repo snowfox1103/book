@@ -1,7 +1,7 @@
 package com.example.book.service;
 
-import com.example.book.domain.MemberRole;
-import com.example.book.domain.Users;
+import com.example.book.domain.user.MemberRole;
+import com.example.book.domain.user.Users;
 import com.example.book.dto.*;
 import com.example.book.repository.EmailVerificationTokenRepository;
 import com.example.book.repository.UsersRepository;

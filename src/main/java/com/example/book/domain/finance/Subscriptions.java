@@ -1,5 +1,7 @@
-package com.example.book.domain;
+package com.example.book.domain.finance;
 
+import com.example.book.domain.common.BaseEntity;
+import com.example.book.domain.user.Users;
 import com.example.book.dto.SubscriptionsDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Subscriptions extends BaseEntity{
+public class Subscriptions extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subId")
