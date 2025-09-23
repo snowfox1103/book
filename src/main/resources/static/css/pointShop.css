@@ -1,3 +1,7 @@
+body {
+    background-color: #f8f9fa;
+}
+
 .shop-container {
     max-width: 1200px;
     margin: 30px auto;
@@ -35,7 +39,7 @@
 }
 
 .qty-control input {
-    width: 50px;
+    width: 35px;
     text-align: center;
 }
 
@@ -81,7 +85,7 @@
 
 /* 결제 요약 박스 */
 .point-info {
-    background-color: #fafafa;
+    background-color: white;
     font-size: 15px;
     line-height: 1.6;
     display: flex;

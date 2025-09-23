@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface QnaRepository extends JpaRepository<Qna, Long> {
 
     @Query("select q from Qna q where q.qBBlind = false or q.userNo = :userNo")
@@ -23,4 +25,6 @@ public interface QnaRepository extends JpaRepository<Qna, Long> {
     Page<Qna> searchVisible(@Param("userNo") Long userNo,
                             @Param("kw") String keyword,
                             Pageable pageable);
+
+    List<Qna> findTop10ByUserNoOrderByRegDateDesc(@Param("userNo") Long userNo); //마이페이지 문의글 리스트 조회 목적
 }

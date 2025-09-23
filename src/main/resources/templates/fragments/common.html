@@ -68,7 +68,8 @@
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" th:href="@{/transactions}">입출금 내역</a></li>
                     <li><a class="dropdown-item" th:href="@{/budget}">예산 관리</a></li>
-                    <li><a class="dropdown-item" th:href="@{/subscription}">정기 결제</a></li>
+                    <!--0922 조덕진 수정 정기결제 href 수정-->
+                    <li><a class="dropdown-item" th:href="@{/subscriptions/subMain}">정기 결제</a></li>
                 </ul>
             </li>
 
@@ -83,7 +84,8 @@
                 <a class="nav-link fw-semibold dropdown-toggle" href="#" data-bs-toggle="dropdown">포인트/포인트샵</a>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" th:href="@{/point}">포인트</a></li>
-                    <li><a class="dropdown-item" th:href="@{/shop}">포인트 샵</a></li>
+                    <!--0922 조덕진 수정 포인트 샵 href 수정-->
+                    <li><a class="dropdown-item" th:href="@{/pointshop/pointShop}">포인트 샵</a></li>
                 </ul>
             </li>
 

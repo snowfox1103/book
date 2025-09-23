@@ -2,9 +2,7 @@ package com.example.book.service;
 
 import com.example.book.domain.finance.Subscriptions;
 import com.example.book.dto.SubscriptionsDTO;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -14,5 +12,6 @@ public interface SubscriptionsService  {
   void deleteSubscription(Long userNo, Long subId);
   void updateSubscription(Long subId, SubscriptionsDTO dto);
   Map<String, Long> getCategorySummary(Long userNo);
-  Map<String, Object> getMonthlySummary(Long userNo);
+  List<Subscriptions> getDueAlertsInWindow(Long userNo, LocalDate today);
+  void markAlertsShown(List<Long> ids);
 }

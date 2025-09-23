@@ -74,7 +74,19 @@
   <!-- 문의사항 -->
   <section class="inquiry-section">
     <h4>내가 문의한 사항</h4>
-    <!-- 문의사항 리스트가 여기에 -->
+    <ul class="list-group">
+      <li th:each="qna : ${myInquiries}" class="list-group-item d-flex justify-content-between align-items-center">
+        <!-- 왼쪽: 번호 + 제목 -->
+        <div class="d-flex align-items-center gap-2">
+          <span th:text="${qna.getQBId()}">문의게시글 번호</span>|
+          <a th:href="@{/qna/read/{id}(id=${qna.getQBId()})}">
+            <span th:text="${qna.getQBTitle()}">문의 제목</span>
+          </a>
+        </div>
+        <!-- 오른쪽: 날짜 -->
+        <small class="text-muted" th:text="${#temporals.format(qna.getRegDate(), 'yyyy-MM-dd')}"></small>
+      </li>
+    </ul>
   </section>
 
   <!-- 회원탈퇴 -->

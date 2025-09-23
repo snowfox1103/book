@@ -18,13 +18,13 @@
     <div class="col-md-3">
       <div class="card h-100 text-center">
         <div class="card-body">
-          <div class="point-item">3,000원권</div>
+          <div class="point-item" data-id="1" data-name="3,000원권" data-price="3000">3,000원권</div>
           <p class="point-box">3,000P</p>
           <p class="text-muted small">편의점 상품권</p>
           <div class="qty-control">
-            <button class="btn btn-outline-secondary btn-sm">-</button>
-            <input type="number" value="0" min="0">
-            <button class="btn btn-outline-secondary btn-sm">+</button>
+            <button class="btn btn-outline-secondary btn-sm btn-minus">-</button>
+            <input type="text" value="0" readonly>
+            <button class="btn btn-outline-secondary btn-sm btn-plus">+</button>
           </div>
         </div>
       </div>
@@ -148,25 +148,10 @@
     <!-- 장바구니 -->
     <div class="cart-box">
       <h5 class="mb-3">🛒 장바구니</h5>
-
-      <!-- ✅ 장바구니 항목 리스트 -->
       <div class="cart-list flex-grow-1">
-        <ul class="list-group mb-3">
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            3,000원권 x 2
-            <span>6,000P</span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            5,000원권 x 1
-            <span>4,700P</span>
-          </li>
-        </ul>
+        <ul class="list-group mb-3" id="cartList"></ul>
       </div>
-
-      <!-- ✅ 항상 맨 아래 고정 -->
-      <div class="fw-bold text-end cart-total">
-        총 차감 포인트: 10,700P
-      </div>
+      <div class="fw-bold text-end cart-total" id="cartTotal">총 차감 포인트: 0P</div>
     </div>
 
     <!-- 포인트/결제 -->
@@ -188,8 +173,68 @@
           </label>
         </div>
         <button class="btn btn-success w-100">결제하기</button>
+      </div>
+    </div>
   </div>
 </div>
+<script>
+    const cart = {}; // { itemId: { name, price, count } }
+
+    function updateCartUI() {
+        const cartList = document.getElementById("cartList");
+        const cartTotal = document.getElementById("cartTotal");
+        cartList.innerHTML = "";
+        let total = 0;
+
+        Object.values(cart).forEach(item => {
+            if (item.count > 0) {
+                const li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.textContent = `${item.name} x ${item.count}`;
+
+                const span = document.createElement("span");
+                span.textContent = `${item.price * item.count}P`;
+                li.appendChild(span);
+
+                cartList.appendChild(li);
+                total += item.price * item.count;
+            }
+        });
+
+        cartTotal.textContent = `총 차감 포인트: ${total}P`;
+    }
+
+    document.querySelectorAll(".card").forEach(card => {
+        const itemEl = card.querySelector(".point-item");
+        const input = card.querySelector("input");
+        const plusBtn = card.querySelector(".btn-plus");
+        const minusBtn = card.querySelector(".btn-minus");
+
+        const itemId = itemEl.dataset.id;
+        const itemName = itemEl.dataset.name;
+        const itemPrice = parseInt(itemEl.dataset.price);
+
+        if (!cart[itemId]) {
+            cart[itemId] = { name: itemName, price: itemPrice, count: 0 };
+        }
+
+        plusBtn.addEventListener("click", () => {
+            if (cart[itemId].count < 100) {
+                cart[itemId].count++;
+                input.value = cart[itemId].count;
+                updateCartUI();
+            }
+        });
+
+        minusBtn.addEventListener("click", () => {
+            if (cart[itemId].count > 0) {
+                cart[itemId].count--;
+                input.value = cart[itemId].count;
+                updateCartUI();
+            }
+        });
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

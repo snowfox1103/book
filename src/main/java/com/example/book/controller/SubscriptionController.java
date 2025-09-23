@@ -1,10 +1,11 @@
 package com.example.book.controller;
 
-import com.example.book.domain.finance.Categories;
 import com.example.book.domain.finance.Subscriptions;
+import com.example.book.domain.finance.Categories;
 import com.example.book.dto.SubscriptionsDTO;
 import com.example.book.security.dto.UsersSecurityDTO;
 import com.example.book.service.CategoriesService;
+import com.example.book.service.SubscriptionBillingServiceImpl;
 import com.example.book.service.SubscriptionsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +26,15 @@ import java.util.Map;
 public class SubscriptionController {
   private final SubscriptionsService subscriptionsService;
   private final CategoriesService categoriesService;
+  private final SubscriptionBillingServiceImpl billingService;
 
   @GetMapping("/subMain")
   public String subscriptionsMainGet(@AuthenticationPrincipal UsersSecurityDTO authUser, Model model) {
     log.info("subscriptionsMain get ....................");
     Long userNo = authUser.getUserNo();
+
+    // 새로고침을 해도 하루 1회만 실행됨
+    billingService.ensurePostedForToday(userNo);
 
     // 유저 카테고리 리스트 + 기본 카테고리 리스트
     List<Categories> categories = categoriesService.getCategoriesForUser(userNo);
@@ -44,9 +48,12 @@ public class SubscriptionController {
     model.addAttribute("categorySummary", categorySummary);
 
 //    model.addAttribute("monthlySummary", subscriptionsService.getMonthlySummary(authUser.getUserNo()));
-    Map<String, Object> monthlySummary = subscriptionsService.getMonthlySummary(userNo);
-    model.addAttribute("monthlyLabels", monthlySummary.get("labels"));
-    model.addAttribute("monthlyAmounts", monthlySummary.get("amounts"));
+//    Map<String, Object> monthlySummary = subscriptionsService.getMonthlySummary(userNo);
+//    model.addAttribute("monthlyLabels", monthlySummary.get("labels"));
+//    model.addAttribute("monthlyAmounts", monthlySummary.get("amounts"));
+    Map<String, Object> trend = billingService.threeMonthTrend(userNo);
+    model.addAttribute("monthlyLabels", trend.get("labels"));
+    model.addAttribute("monthlyAmounts", trend.get("amounts"));
 
     return "subscriptions/subMain";
   }
@@ -69,9 +76,8 @@ public class SubscriptionController {
 
   @DeleteMapping("/deleteSub/{id}")
   @ResponseBody
-  public ResponseEntity<?> deleteSubscription(
-    @PathVariable("id") Long subId,
-    @AuthenticationPrincipal UsersSecurityDTO authUser) {
+  public ResponseEntity<?> deleteSubscription(@PathVariable("id") Long subId,
+                                              @AuthenticationPrincipal UsersSecurityDTO authUser) {
 
     Long userNo = authUser.getUserNo();
     subscriptionsService.deleteSubscription(userNo, subId);
@@ -90,5 +96,34 @@ public class SubscriptionController {
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
     }
+  }
+
+  @GetMapping("/alerts")
+  @ResponseBody
+  public List<Map<String, Object>> getAlerts(@AuthenticationPrincipal UsersSecurityDTO authUser) {
+    var today = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Seoul"));
+    var list = subscriptionsService.getDueAlertsInWindow(authUser.getUserNo(), today);
+
+    // 프론트 친화적 형태로 변환
+    List<Map<String, Object>> result = new ArrayList<>();
+    for (Subscriptions s : list) {
+      result.add(Map.of(
+        "id", s.getSubId(),
+        "title", s.getSubTitle(),
+        "amount", s.getSubAmount(),
+        "nextPayDate", s.getNextPayDate().toString()
+      ));
+    }
+
+    return result;
+  }
+
+  // ====== ▼ 추가: 알림 노출 마킹 ======
+  @PostMapping("/alerts/mark")
+  @ResponseBody
+  public ResponseEntity<?> markAlerts(@RequestBody List<Long> ids) {
+    subscriptionsService.markAlertsShown(ids);
+
+    return ResponseEntity.ok(Map.of("message", "marked"));
   }
 }

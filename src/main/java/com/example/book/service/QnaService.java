@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -70,5 +72,9 @@ public class QnaService {
 
     private boolean isOwner(Qna q, Long userNo) {
         return q.getUserNo() != null && q.getUserNo().equals(userNo);
+    }
+
+    public List<Qna> getRecentInquiries(Long userNo) { //마이페이지 문의 글 조회 목적
+        return qnaRepository.findTop10ByUserNoOrderByRegDateDesc(userNo);
     }
 }

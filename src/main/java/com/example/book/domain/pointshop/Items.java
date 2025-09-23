@@ -2,17 +2,18 @@ package com.example.book.domain.pointshop;
 
 import com.example.book.domain.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "items")
 @Getter
 @Builder
 @AllArgsConstructor
-@ToString
 @NoArgsConstructor
 public class Items extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "itemId")

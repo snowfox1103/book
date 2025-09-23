@@ -1,29 +1,37 @@
 package com.example.book.domain.pointshop;
 
 import com.example.book.domain.common.BaseEntity;
+import com.example.book.domain.user.Users;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "cart")
 @Getter
 @Builder
 @AllArgsConstructor
-@ToString
 @NoArgsConstructor
 public class Cart extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cartId")
     private Long cartId;
 
-    @Column(name = "userNo")
-    private Long userNo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userNo")
+    private Users users;
 
-    @Column(name = "itemId")
-    private Long itemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "itemId")
+    private Items items;
 
     @Column(name = "itemCount")
-    private Long itemCount;
+    private int itemCount;
+
+    public void setItemCount(int itemCount) {
+        this.itemCount = itemCount;
+    }
 }

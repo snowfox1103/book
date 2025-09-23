@@ -1,6 +1,7 @@
 package com.example.book.controller;
 
 import com.example.book.domain.finance.Categories;
+import com.example.book.domain.qna.Qna;
 import com.example.book.domain.user.Users;
 import com.example.book.dto.CategoryRequestDTO;
 import com.example.book.dto.EmailChangeRequestDTO;
@@ -9,6 +10,7 @@ import com.example.book.repository.EmailVerificationTokenRepository;
 import com.example.book.repository.UsersRepository;
 import com.example.book.security.dto.UsersSecurityDTO;
 import com.example.book.service.CategoriesService;
+import com.example.book.service.QnaService;
 import com.example.book.service.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,6 +48,7 @@ public class MyPageController {
   private final UsersRepository usersRepository;
   private final EmailVerificationTokenRepository tokenRepository;
   private final CategoriesService categoriesService;
+  private final QnaService qnaService;
 
   @GetMapping("/myPage")
   public String myPageGet(@AuthenticationPrincipal UsersSecurityDTO authUser, Model model) {
@@ -56,6 +59,9 @@ public class MyPageController {
     List<Categories> categories = categoriesService.categoriesList(users);
     model.addAttribute("categories", categories);
     model.addAttribute("user", users);
+
+    List<Qna> myInquiries = qnaService.getRecentInquiries(users.getUserNo());
+    model.addAttribute("myInquiries", myInquiries);
 
     return "mypage/myPage";
   }
