@@ -1,5 +1,7 @@
 package com.example.book.repository.search;
 
+import com.example.book.domain.board.QBoard;
+import com.example.book.domain.board.QReply;
 import com.example.book.dto.BoardImageDTO;
 import com.example.book.dto.BoardListAllDTO;
 import com.example.book.dto.BoardListReplyCountDTO;
