@@ -1,0 +1,218 @@
+body {
+    background-color: #f8f9fa;
+}
+
+/* 전체 컨테이너 */
+.mypage-container {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 20px;
+    font-family: "Noto Sans KR", sans-serif;
+    color: #333;
+}
+
+/* 섹션 공통 */
+.mypage-container section {
+    background-color: white;   /* 옅은 회색 */
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 25px 0px;
+}
+
+/* 프로필 섹션 */
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 25px;              /* 프로필 사진과 info 간격 좁힘 */
+    margin: 0 40px;         /* 좌우 동일 여백 */
+}
+
+.profile-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 180px;
+}
+
+/* 컨테이너 (원 모양 + flex 중앙정렬) */
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;  /* ← 세로 중앙 */
+    overflow: hidden;
+}
+
+.profile-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 이미지 깨짐 처리 */
+.profile-photo.is-broken { display: none; }
+
+/* 대체 텍스트 중앙 */
+.profile-img .fallback {
+    display: flex;                 /* d-none 해제되면 중앙정렬 */
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 1.3;
+    font-weight: 600;
+    color: #555;
+}
+
+/* 유틸리티 */
+.d-none { display: none !important; }
+
+.profile-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #0d6efd;
+    text-align: center;
+}
+
+/* info 영역 */
+.profile-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;              /* 행 간격 */
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.info-row .label {
+    width: 100px;
+    font-weight: 600;
+    text-align: right;
+}
+
+.info-row .value {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+}
+
+/* 버튼 스타일 */
+.btn-darkmode,
+.btn-edit,
+.btn-add,
+.btn-delete {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #0d6efd;
+    background-color: #0d6efd;
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-darkmode:hover,
+.btn-edit:hover,
+.btn-add:hover,
+.btn-delete:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* 회원탈퇴 버튼 */
+.btn-delete {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.btn-delete:hover {
+    background-color: #b02a37;
+    border-color: #b02a37;
+}
+
+.notify-category {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+    /* 섹션 전체 높이를 고정 */
+    height: 300px; /* 원하는 높이값 (예: 300px) */
+}
+
+.category-box {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* 부모 높이에 맞춤 */
+}
+
+.category-box ul {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 한 줄에 3개 */
+    gap: 10px;
+
+    flex: 1; /* 위 h4 + 버튼 제외 나머지 영역 차지 */
+    overflow-y: auto; /* 스크롤 */
+    padding-right: 5px; /* 스크롤바와 텍스트가 붙지 않게 */
+}
+
+.notify-box h4,
+.category-box h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.category-box li {
+    display: flex;
+    align-items: center; /* 버튼과 텍스트를 세로 가운데 정렬 */
+    justify-content: space-between;
+    width: 120px;  /* li 크기 고정 (원하는 크기 조절) */
+    height: 40px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+.category-box li .category-name {
+    border: 1px solid #ddd;
+    background: #fff;
+}
+.category-box li .btn-delete {
+    padding: 2px 6px;  /* 버튼 패딩 줄여서 높이 맞춤 */
+    font-size: 0.8rem; /* 글자 크기 줄이기 */
+    line-height: 1;    /* 버튼 높이와 텍스트 높이를 비슷하게 */
+}
+
+.category-name {
+    cursor: pointer;
+    flex: 1;
+}
+
+/* 문의사항 */
+.inquiry-section h4 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* 회원탈퇴 영역 */
+.delete-section {
+    text-align: right;
+}

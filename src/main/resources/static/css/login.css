@@ -1,0 +1,238 @@
+.login-container *{margin: 0; padding: 0; box-sizing: border-box;}
+.login-container ul li{display: inline; margin: 10px; list-style: none;}
+.login-container li a{white-space: nowrap; color:#1D4ED8FF; text-decoration: none;}
+.login-container li a:hover{text-decoration: underline;}
+.login-container button:hover{opacity: 0.5;}
+/*---------------------------- 시작 */
+body {
+  background-color: #f8f9fa;
+}
+.login-container {
+  width: 1600px !important;
+  margin: 20px auto !important;
+  padding: 0 !important;
+}
+.page-container{
+  width: 1600px;
+  margin: 0 auto;
+}
+.contents{
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+}
+.contents li{
+  margin: 10px 100px;
+}
+/* first page -------------------------------*/
+.first-page{
+  z-index: 1;
+  padding: 50px 100px 100px;
+  background-color: white;
+  width: 1600px;
+  height: 750px;
+}
+.first-page-content{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 1400px;
+  height: 600px;
+  align-items: flex-start;
+  gap: 20px;
+}
+.image-slider{
+  position: relative;
+  width: 800px;
+  height: 600px;
+  display: flex;
+  /* transition: transform 0.5s ease-in-out; */
+}
+.first-page-content img{
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+}
+.button-wrap{
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.button-wrap button{
+  width: 50px;
+  height: 50px;
+  font-size: 2em;
+  background-color: rgba(0,0,0,0.5);
+  color:white;
+  border: none;
+}
+.right-side{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 450px;
+  height: 600px;
+}
+.login-sec{
+  width: 450px;
+  height: 270px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius:16px;
+  padding-right: 30px;
+  padding-left: 30px;
+  box-shadow:0 6px 16px rgba(0,0,0,.06);
+}
+.login-sec input{
+  display: block;
+  margin: 20px auto;
+  width: 300px;
+  height: 40px;
+  border-radius: 10px;
+  padding-left: 10px;
+  border: 1px solid #ccc;
+}
+
+#loginBtn{
+  display:block;
+  width:100%;
+  max-width:300px;
+  height:40px;
+  margin: 16px auto 8px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  color:#fff;
+  background: #2563EBFF;
+  transition:background .15s ease, transform .02s ease, box-shadow .15s ease;
+}
+
+#loginBtn:hover{ background:#1D4ED8FF; }
+#loginBtn:active{ background:#1E40AFFF; transform: translateY(1px); }
+#loginBtn:focus-visible{ outline:3px solid #DBEAFEFF; outline-offset:2px; }
+
+.login-sec ul{
+  padding: 0px 30px;
+}
+
+.login-container .login-sec li a{ color: #1D4ED8FF !important; }
+.use-sec{
+  display: flex;
+  flex-direction: column;
+  width: 450px;
+  height: 250px;
+  /* background-color: white; */
+  border-radius: 20px;
+}
+
+.use-sec p{
+  text-align: center;
+  color: #111827FF;
+  margin-bottom: 30px;
+}
+
+.use-boxes{
+  display: flex;
+  justify-content: space-between;
+  width: 450px;
+}
+
+.use-sec p{
+  font-size: 1.3em;
+}
+
+.use-box{
+  width: 120px;
+  height: 120px;
+  background-color: #F7F9FCFF;
+  border-radius: 10px;
+  border:1px solid #ccc;
+}
+
+.use-box:hover{
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  transform: translateY(-1px);
+  border-color: #2563EBFF;
+}
+
+/* .second-page------------------------------- */
+.second-page{
+  padding: 0 100px;
+  background-color: white;
+  width: 1600px;
+  height: 700px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.second-page img{
+  width: 600px;
+  height: 400px;
+}
+
+.second-page-text{
+  margin: 100px;
+  margin-top: 200px;
+  width: 500px;
+  height: 400px;
+  text-align: center;
+  color: black;
+}
+
+.second-page h1{
+  font-size: 2.5em;
+}
+
+.second-page p{
+  font-size: 1.5em;
+}
+
+/* .third-page--------------------------------- */
+.third-page{
+  padding: 0 100px;
+  background-color: white;
+  width: 1600px;
+  height: 700px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.third-page img{
+  width: 750px;
+  height: 500px;
+}
+
+.third-page-text{
+  width: 500px;
+  height: 400px;
+  text-align: center;
+  color: black;
+}
+
+.third-page h1{
+  font-size: 2.5em;
+}
+
+.third-page p{
+  font-size: 1.5em;
+}
+
+/* footer----------- */
+footer{
+  background-color: #ccc;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

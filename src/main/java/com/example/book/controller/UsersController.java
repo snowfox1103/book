@@ -10,17 +10,13 @@ import com.example.book.service.UsersService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
-//@RestController
 @Controller
 @Log4j2
 @RequiredArgsConstructor
@@ -29,26 +25,11 @@ public class UsersController {
   private final UsersService usersService;
   private final EmailService emailService;
   private final EmailVerificationTokenRepository tokenRepository;
-  private final PasswordEncoder passwordEncoder;
   private final UsersRepository usersRepository;
-  private final ModelMapper modelMapper;
 
   @GetMapping("/login")
-  public String loginGET(@RequestParam(value = "error", required = false) String error,
-                         @RequestParam(value = "logout", required = false) String logout,
-                         Model model) {
-    log.info("login get .................");
-    log.info("logout: " + logout);
-    if (logout != null) {
-      log.info("user logout..............");
-    }
-
-    if (error != null) {
-      log.info("login error..............");
-      model.addAttribute("errorMsg", "아이디 또는 비밀번호가 잘못되었습니다.");
-    }
-
-    return "/users/login"; // login.html 경로
+  public String loginGET() {
+    return "users/login";
   }
 
   @GetMapping("/userRegister")
@@ -126,6 +107,7 @@ public class UsersController {
       usersService.resend(req); // 내부에서 enabled 확인 + 토큰 재발송
     } catch (Exception ignored) {
       // 일부러 무시: "있든 없든 보냈다"로 응답
+      log.info("resend exception ...............");
     }
     return ResponseEntity.noContent().build(); // 204
   }
@@ -149,6 +131,18 @@ public class UsersController {
   @GetMapping("/searchAndResend")
   public void searchAndResend() {
     log.info("searchAndResend get...............");
+  }
+
+  @GetMapping("/checkUserId")
+  public ResponseEntity<Boolean> checkUserId(@RequestParam String userId) {
+    boolean exists = usersRepository.existsByUserId(userId);
+    return ResponseEntity.ok(exists);
+  }
+
+  @GetMapping("/checkEmail")
+  public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+    boolean exists = usersRepository.existsByEmail(email);
+    return ResponseEntity.ok(exists);
   }
 }
 

@@ -25,7 +25,7 @@ public class UsersSecurityDTO extends User implements OAuth2User {
 
   public UsersSecurityDTO(Long userNo, String realName, String userId, String password, String email, boolean social, boolean enabled,
                           Collection<? extends GrantedAuthority> authorities) {
-    super(userId, password, authorities);
+    super(userId, password, enabled, true, true, true, authorities);
     this.userNo = userNo;
     this.realName = realName;
     this.userId = userId;

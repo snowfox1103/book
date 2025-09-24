@@ -12,6 +12,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
+  boolean existsByUserId(String userId);
+  boolean existsByEmail(String email);
+
   @EntityGraph(attributePaths = "role") //jpa에서 최적화하기 위해 사용함
   @Query("select m from Users m where m.userId = :userId and m.social = false")
   Optional<Users> getWithRoles(String userId);
@@ -36,9 +39,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
   @EntityGraph(attributePaths = "role")
   Optional<Users> findByUserId(String userId);
-
-  boolean existsByUserId(String userId);
-  boolean existsByEmail(String email);
 
   @Query("select m from Users m where m.userNo = :userNo")
   Optional<Users> findByUserNo(Long userNo);

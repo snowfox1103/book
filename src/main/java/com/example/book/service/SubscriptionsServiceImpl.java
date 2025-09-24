@@ -4,7 +4,6 @@ import com.example.book.domain.finance.Categories;
 import com.example.book.domain.finance.SubPeriodUnit;
 import com.example.book.domain.finance.Subscriptions;
 import com.example.book.domain.user.Users;
-import com.example.book.domain.finance.Subscriptions;
 import com.example.book.dto.SubscriptionsDTO;
 import com.example.book.repository.CategoriesRepository;
 import com.example.book.repository.SubscriptionsRepository;
@@ -12,10 +11,9 @@ import com.example.book.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +41,11 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
       .subPeriodUnit(SubPeriodUnit.valueOf(dto.getSubPeriodUnit())) // enum 변환
       .subPeriodValue(dto.getSubPeriodValue())
       .isSub(dto.isSub())
+      .notifyWindowDays(3)        // 기본값 권장
+      .anchorToMonthEnd(false)
       .build();
 
+    sub.initNextPayDateIfNeeded(); // ★ 생성 시 필수
     subscriptionsRepository.save(sub);
   }
 
@@ -55,6 +56,8 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
 
   @Override
   public void deleteSubscription(Long userNo, Long subId) {
+    // 소유권 체크가 필요하면 아래와 같이:
+
     subscriptionsRepository.deleteByUsers_UserNoAndSubId(userNo, subId);
   }
 
@@ -76,15 +79,33 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
 
     // ✅ 엔티티에 업데이트 위임
     sub.updateFromDTO(dto, users, category);
+    subscriptionsRepository.save(sub);
+  }
+
+  // 카테고리별 합계
+  @Override
+  public Map<String, Long> getCategorySummary(Long userNo) {
+    List<Object[]> result = subscriptionsRepository.sumAmountByCategory(userNo);
+
+    Map<String, Long> summary = new LinkedHashMap<>();
+    for (Object[] row : result) {
+      String categoryName = (String) row[0];
+      Long totalAmount = (Long) row[1];
+      summary.put(categoryName, totalAmount);
+    }
+    return summary;
   }
 
   @Override
-  public Map<String, Long> getCategorySummary(Long userNo) {
-    List<Object[]> result = subscriptionsRepository.getCategoryAmountSummary(userNo);
-    return result.stream()
-      .collect(Collectors.toMap(
-        r -> (String) r[0],
-        r -> (Long) r[1]
-      ));
+  @Transactional(readOnly = true)
+  public List<Subscriptions> getDueAlertsInWindow(Long userNo, LocalDate today) {
+    return subscriptionsRepository.findDueAlertsInWindow(userNo, today);
+  }
+
+  @Override
+  @Transactional
+  public void markAlertsShown(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) return;
+    subscriptionsRepository.markNotified(ids, LocalDateTime.now());
   }
 }

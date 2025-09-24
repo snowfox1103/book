@@ -24,5 +24,9 @@ public class CustomServletConfig implements WebMvcConfigurer {
 
     registry.addResourceHandler("/images/**") // logo image용 추가 0918 석준영
             .addResourceLocations("classpath:/static/images/");
+
+    // 업로드된 파일 URL 매핑
+    registry.addResourceHandler("/uploads/**")
+      .addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/");
   }
 }

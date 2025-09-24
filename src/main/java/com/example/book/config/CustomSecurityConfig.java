@@ -52,10 +52,9 @@ public class CustomSecurityConfig {
       )
 //      .csrf(csrf -> csrf.disable())
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/", "/favicon.ico", "/error",
-          "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**").permitAll()
+        .requestMatchers("/error", "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**", "/fragments/**").permitAll()
         // 2.2 화면들
-        .requestMatchers("/users/login", "/users/userRegister", "/users/verify",
+        .requestMatchers("/users/login", "/users/checkUserId", "/users/checkEmail", "/users/userRegister", "/users/verify",
           "/users/searchAndResend").permitAll()
         // 2.3 공개 API (resend/id/pw)
         .requestMatchers("/users/resend", "/users/idSearch", "/users/pwSearch").permitAll()
@@ -63,10 +62,17 @@ public class CustomSecurityConfig {
         .anyRequest().authenticated()
       )
       .logout(logout -> logout
-        .logoutUrl("/users/logout")
-        .logoutSuccessUrl("/users/login?logout")
-        .invalidateHttpSession(true)
-        .deleteCookies("JSESSIONID")
+          .logoutUrl("/users/logout")
+          .logoutSuccessHandler((request, response, authentication) -> {
+            // 세션을 완전히 무효화
+            request.getSession().invalidate();
+            // 새 세션 강제 생성
+            request.getSession(true);
+
+            // 리다이렉트
+            response.sendRedirect("/users/login?logout");
+          })
+          .permitAll()
       )
       .formLogin(form -> form
         .loginPage("/users/login")
@@ -81,9 +87,9 @@ public class CustomSecurityConfig {
           .userDetailsService(userDetailsService)
           .tokenValiditySeconds(60*60*24*30);
       })
-      .exceptionHandling( httpSecurityExceptionHandlingConfigurer -> { //403에러를 처리하는 부분
-        httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler());
-      })
+      .exceptionHandling(ex -> ex
+        .accessDeniedHandler(new Custom403Handler()) // 등록
+      )
       .oauth2Login(httpSecurityOauth2LoginConfigurer -> {
 //      httpSecurityOauth2LoginConfigurer.loginPage("/member/login");
         httpSecurityOauth2LoginConfigurer.successHandler(authenticationSuccessHandler());

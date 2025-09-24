@@ -9,31 +9,33 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Log4j2
 public class Custom403Handler implements AccessDeniedHandler {
   @Override
-  public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
-    throws IOException, ServletException {
-    String accept = request.getHeader("Accept");
-    String contentType = request.getHeader("Content-Type");
-    String xrw = request.getHeader("X-Requested-With");
+  public void handle(HttpServletRequest request,
+                     HttpServletResponse response,
+                     AccessDeniedException accessDeniedException) throws IOException {
 
-    boolean isJson =
-      (accept != null && accept.contains("application/json")) ||
-        (contentType != null && contentType.contains("application/json")) ||
-        "XMLHttpRequest".equalsIgnoreCase(xrw);
+    String ajaxHeader = request.getHeader("X-Requested-With");
+    boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
 
-    log.info("ACCESS DENIED. isJson: {}", isJson);
-
-    if (isJson) {
-      // API/Ajax: 403 + JSON 본문
+    if (isAjax) {
+      // ---- JSON 응답 ----
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
       response.setContentType("application/json;charset=UTF-8");
-      response.getWriter().write("{\"error\":\"ACCESS_DENIED\"}");
-    } else {
-      // 브라우저(HTML): 로그인 페이지로 리다이렉트 (상태코드는 302)
-      response.sendRedirect("/users/login?error=ACCESS_DENIED");
+
+      try (PrintWriter writer = response.getWriter()) {
+        writer.write("{\"error\":\"ACCESS_DENIED\"}");
+        writer.flush();
+      }
+
+      return; // ★ JSON 보냈으면 여기서 완전히 종료
     }
+
+    // ---- 일반 브라우저 요청 ----
+    // 여기서는 Spring Boot 기본 에러 페이지로 빠지지 않도록 직접 리다이렉트
+    response.sendRedirect("/users/login?error=ACCESS_DENIED");
   }
 }

@@ -11,4 +11,5 @@ public class UsersDTO {
   private String email;
   private boolean social;
   private boolean enabled;
+  private String profileImage;
 }

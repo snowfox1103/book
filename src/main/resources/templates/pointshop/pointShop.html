@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>포인트샵</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link th:href="@{/css/pointShop.css}" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+</head>
+<body>
+<div th:replace="~{fragments/common :: header(active='board')}"></div>
+
+<<div class="shop-container">
+  <h4 class="mb-4 fw-bold">포인트 샵</h4>
+  <!-- 상품권 목록 -->
+  <div class="row g-4 mb-5 justify-content-center">
+    <!-- 3,000원권 -->
+    <div class="col-md-3">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <div class="point-item" data-id="1" data-name="3,000원권" data-price="3000">3,000원권</div>
+          <p class="point-box">3,000P</p>
+          <p class="text-muted small">편의점 상품권</p>
+          <div class="qty-control">
+            <button class="btn btn-outline-secondary btn-sm btn-minus">-</button>
+            <input type="text" value="0" readonly>
+            <button class="btn btn-outline-secondary btn-sm btn-plus">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5,000원권 -->
+    <div class="col-md-3">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <div class="point-item">5,000원권</div>
+          <p class="point-box">4,700P</p>
+          <p class="text-muted small">스타벅스 기프티콘</p>
+          <div class="qty-control">
+            <button class="btn btn-outline-secondary btn-sm">-</button>
+            <input type="number" value="0" min="0">
+            <button class="btn btn-outline-secondary btn-sm">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9,000원권 -->
+    <div class="col-md-3">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <div class="point-item">9,000원권</div>
+          <p class="point-box">8,500P</p>
+          <p class="text-muted small">문화상품권</p>
+          <div class="qty-control">
+            <button class="btn btn-outline-secondary btn-sm">-</button>
+            <input type="number" value="0" min="0">
+            <button class="btn btn-outline-secondary btn-sm">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10,000원권 -->
+    <div class="col-md-3">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <div class="point-item">10,000원권</div>
+          <p class="point-box">9,000P</p>
+          <p class="text-muted small">외식 상품권</p>
+          <div class="qty-control">
+            <button class="btn btn-outline-secondary btn-sm">-</button>
+            <input type="number" value="0" min="0">
+            <button class="btn btn-outline-secondary btn-sm">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 20,000원권 -->
+    <div class="col-md-3">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <div class="point-item">20,000원권</div>
+          <p class="point-box">18,000P</p>
+          <p class="text-muted small">영화관 예매권</p>
+          <div class="qty-control">
+            <button class="btn btn-outline-secondary btn-sm">-</button>
+            <input type="number" value="0" min="0">
+            <button class="btn btn-outline-secondary btn-sm">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 30,000원권 -->
+    <div class="col-md-3">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <div class="point-item">30,000원권</div>
+          <p class="point-box">27,000P</p>
+          <p class="text-muted small">백화점 상품권</p>
+          <div class="qty-control">
+            <button class="btn btn-outline-secondary btn-sm">-</button>
+            <input type="number" value="0" min="0">
+            <button class="btn btn-outline-secondary btn-sm">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 50,000원권 -->
+    <div class="col-md-3">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <div class="point-item">50,000원권</div>
+          <p class="point-box">45,000P</p>
+          <p class="text-muted small">주유권</p>
+          <div class="qty-control">
+            <button class="btn btn-outline-secondary btn-sm">-</button>
+            <input type="number" value="0" min="0">
+            <button class="btn btn-outline-secondary btn-sm">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 100,000원권 -->
+    <div class="col-md-3">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <div class="point-item">100,000원권</div>
+          <p class="point-box">90,000P</p>
+          <p class="text-muted small">항공 마일리지 상품권</p>
+          <div class="qty-control">
+            <button class="btn btn-outline-secondary btn-sm">-</button>
+            <input type="number" value="0" min="0">
+            <button class="btn btn-outline-secondary btn-sm">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 장바구니 + 포인트/결제 정보 -->
+  <div class="cart-summary-row">
+    <!-- 장바구니 -->
+    <div class="cart-box">
+      <h5 class="mb-3">🛒 장바구니</h5>
+      <div class="cart-list flex-grow-1">
+        <ul class="list-group mb-3" id="cartList"></ul>
+      </div>
+      <div class="fw-bold text-end cart-total" id="cartTotal">총 차감 포인트: 0P</div>
+    </div>
+
+    <!-- 포인트/결제 -->
+    <div class="point-info">
+      <div class="point-summary">
+        <p>현재 포인트: <strong id="currentPoint">50,000P</strong></p>
+        <p>선택 상품: <strong id="itemCount">3종 / 5개</strong></p>
+        <p>차감 포인트: <strong id="usedPoint">10,700P</strong></p>
+        <p class="text-success">남는 포인트: <strong id="remainPoint">39,300P</strong></p>
+        <p class="text-muted small">* 결제 후 환불/취소 불가</p>
+      </div>
+
+      <!-- ✅ 박스 하단 고정 -->
+      <div class="mt-auto">
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="agreeCheck" required>
+          <label class="form-check-label" for="agreeCheck">
+            구매 약관에 동의합니다
+          </label>
+        </div>
+        <button class="btn btn-success w-100">결제하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    const cart = {}; // { itemId: { name, price, count } }
+
+    function updateCartUI() {
+        const cartList = document.getElementById("cartList");
+        const cartTotal = document.getElementById("cartTotal");
+        cartList.innerHTML = "";
+        let total = 0;
+
+        Object.values(cart).forEach(item => {
+            if (item.count > 0) {
+                const li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.textContent = `${item.name} x ${item.count}`;
+
+                const span = document.createElement("span");
+                span.textContent = `${item.price * item.count}P`;
+                li.appendChild(span);
+
+                cartList.appendChild(li);
+                total += item.price * item.count;
+            }
+        });
+
+        cartTotal.textContent = `총 차감 포인트: ${total}P`;
+    }
+
+    document.querySelectorAll(".card").forEach(card => {
+        const itemEl = card.querySelector(".point-item");
+        const input = card.querySelector("input");
+        const plusBtn = card.querySelector(".btn-plus");
+        const minusBtn = card.querySelector(".btn-minus");
+
+        const itemId = itemEl.dataset.id;
+        const itemName = itemEl.dataset.name;
+        const itemPrice = parseInt(itemEl.dataset.price);
+
+        if (!cart[itemId]) {
+            cart[itemId] = { name: itemName, price: itemPrice, count: 0 };
+        }
+
+        plusBtn.addEventListener("click", () => {
+            if (cart[itemId].count < 100) {
+                cart[itemId].count++;
+                input.value = cart[itemId].count;
+                updateCartUI();
+            }
+        });
+
+        minusBtn.addEventListener("click", () => {
+            if (cart[itemId].count > 0) {
+                cart[itemId].count--;
+                input.value = cart[itemId].count;
+                updateCartUI();
+            }
+        });
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
