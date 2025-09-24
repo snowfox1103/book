@@ -36,7 +36,6 @@ public class Transactions extends BaseEntity {
     @Column(name = "transInOut")
     private InOrOut transInOut;
 
-    @Column(name = "transCategory")
     private Long transCategory;
 
     @Column(name = "transMemo")
@@ -46,12 +45,12 @@ public class Transactions extends BaseEntity {
     private Long subId;
 
     public void changeTransaction(String title,Long amount, Long category,String memo, LocalDate date, InOrOut io, Long subId){
-        this.transTitle = title;
-        this.transAmount = amount;
-        this.transCategory = category;
-        this.transMemo = memo;
-        this.transDate = date;
-        this.transInOut = io;
-        this.subId = subId;
+        if(title != null) this.transTitle = title;
+        if(amount != null) this.transAmount = amount;
+        if(category != null) this.transCategory = category;
+        if(memo != null) this.transMemo = memo;
+        if(date != null) this.transDate = date;
+        if(io != null) this.transInOut = io;
+        if(subId != null) this.subId = subId;
     }
 }
