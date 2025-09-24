@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<head>
+    <title>Board Register</title>
+</head>
+
+<div layout:fragment="content">
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    이번 달 예산 추가
+                </div>
+                <div class="card-body">
+                    <form action="/budget/budgetRegister" method="post">
+                        <input type="hidden" name="userNo" th:value="${users}">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">연도</span>
+                            <input type="text" th:value="${#temporals.year(#temporals.createNow())}" class="form-control" readonly>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">월</span>
+                            <input type="text" th:value="${#temporals.month(#temporals.createNow())}" class="form-control" readonly>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">카테고리 선택</span>
+                            <select name="budCategory" class="form-select">
+                                <option th:each="cat : ${categories}"
+                                        th:value="${cat.catId}"
+                                        th:text="${cat.catName}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">설정 금액</span>
+                            <input type="number" name="budAmount" class="form-control" placeholder="금액입력">
+                        </div>
+
+                        <!--                        <div class="input-group mb-3">-->
+                        <!--                            <span class="input-group-text">Writer</span>-->
+                        <!--                            <input type="text" name="writer" class="form-control" th:value="${#authentication.principal.username}" readonly>-->
+                        <!--                        </div>-->
+
+<!--                        <div>-->
+<!--                            <input type="checkbox" name="budOver" id="over" value="true">-->
+<!--                            <label for="over">이월 여부</label>-->
+
+<!--                            <input type="checkbox" name="budReduction" id="reduct" value="true">-->
+<!--                            <label for="reduct">삭감 여부</label>-->
+
+<!--                            <input type="checkbox" name="budNotice" id="overAlarm" value="true">-->
+<!--                            <label for="overAlarm">초과 시 알림 여부</label>-->
+<!--                        </div>-->
+
+                        <div class="my-4">
+                            <div class="float-end">
+                                <button type="submit" class="btn btn-primary submitBtn">등록하기</button>
+                                <button type="reset" class="btn btn-secondary">초기화</button>
+                                <button type="button" class="btn btn-secondary toList">목록 가기</button>
+                            </div>
+                        </div>
+                    </form>
+                </div><!--end card body-->
+
+            </div><!--end card-->
+        </div><!-- end col-->
+    </div><!-- end row-->
+</div>
+
+
+<script layout:fragment="script" th:inline="javascript">
+
+    const auth = [[${#authentication}]]
+
+    const errors = [[${errors}]]
+    console.log(errors)
+
+    let errorMsg = ''
+
+    if(errors){
+        for (let i = 0; i < errors.length; i++) {
+            errorMsg += `${errors[i].field}은(는) ${errors[i].code} \n`
+        }
+        alert(errorMsg)
+    }
+
+    document.querySelector(".toList").addEventListener("click",function (e){
+        e.preventDefault()
+        e.stopPropagation()
+        self.location='/budget/currentList'
+    })
+</script>
