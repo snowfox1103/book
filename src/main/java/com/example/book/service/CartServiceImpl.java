@@ -3,6 +3,8 @@ package com.example.book.service;
 import com.example.book.domain.pointshop.Cart;
 import com.example.book.domain.pointshop.Items;
 import com.example.book.domain.user.Users;
+import com.example.book.dto.CartDTO;
+import com.example.book.dto.CartResponseDTO;
 import com.example.book.repository.CartRepository;
 import com.example.book.repository.ItemsRepository;
 import com.example.book.repository.UsersRepository;
@@ -51,5 +53,55 @@ public class CartServiceImpl implements CartService{
   @Transactional(readOnly = true)
   public List<Cart> getCart(Long userNo) {
     return cartRepository.findByUsers_UserNo(userNo);
+  }
+
+  @Override
+  @Transactional
+  public void updateCart(Long userNo, CartDTO dto) {
+    Users users = usersRepository.findById(userNo)
+      .orElseThrow(() -> new RuntimeException("사용자 없음"));
+    Items items = itemsRepository.findById(dto.getItemId())
+      .orElseThrow(() -> new RuntimeException("아이템 없음"));
+
+    Cart cart = cartRepository.findByUsersAndItems(users, items)
+      .orElse(Cart.builder()
+        .users(users)
+        .items(items)
+        .itemCount(0)
+        .build());
+
+    cart.setItemCount(dto.getCount());
+    cartRepository.save(cart);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<CartResponseDTO> getCartList(Long userNo) {
+    Users user = usersRepository.findById(userNo)
+      .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
+    List<Cart> carts = cartRepository.findAllByUsers(user);
+
+    return carts.stream()
+      .map(cart -> new CartResponseDTO(
+        cart.getItems().getItemId(),
+        cart.getItems().getItemName(),
+        cart.getItems().getItemPrice(),
+        cart.getItemCount()
+      ))
+      .toList();
+  }
+
+  @Override
+  @Transactional
+  public void deleteCartItem(Long userNo, Long itemId) {
+    Users user = usersRepository.findById(userNo)
+      .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
+    Items item = itemsRepository.findById(itemId)
+      .orElseThrow(() -> new RuntimeException("아이템 없음"));
+
+    cartRepository.findByUsersAndItems(user, item)
+      .ifPresent(cartRepository::delete);
   }
 }
