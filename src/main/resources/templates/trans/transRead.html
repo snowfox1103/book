@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<head>
+  <title>거래 내역 조회</title>
+</head>
+
+<div layout:fragment="content">
+  <div class="row mt-3">
+    <div class="col">
+      <div class="card">
+        <div class="card-header">
+          거래 내역 조회
+        </div>
+        <div class="card-body">
+            <div class="input-group mb-3">
+              <span class="input-group-text">제목</span>
+              <input type="text" name="transTitle" class="form-control" placeholder="제목입력" th:value="${transDTO.transTitle}" readonly>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text">금액</span>
+              <input type="number" name="transAmount" class="form-control" placeholder="금액입력" th:value="${transDTO.transAmount}" readonly>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text">날짜</span>
+              <input type="date" name="transDate" class="form-control" th:value="${transDTO.transDate}" readonly>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text">입금/출금 선택</span>
+              <select name="transInOut" class="form-select" disabled>
+<!--            --------------------------------------------------------------------------    입금이어도 맨 처음 출금으로 보임 수정 필요 수정 완 selected 붙이면 됨-->
+                <option th:value="${T(com.example.nyjbook.domain.InOrOut).OUT}" th:text="'출금'"
+                        th:selected="${transDTO.transInOut != null and transDTO.transInOut.name() == 'OUT'}"></option>
+                <option th:value="${T(com.example.nyjbook.domain.InOrOut).IN}" th:text="'입금'"
+                        th:selected="${transDTO.transInOut != null and transDTO.transInOut.name() == 'IN'}"></option>
+              </select>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text">카테고리 선택</span>
+              <select name="transCategory" class="form-select" disabled>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat.catId}"
+                        th:text="${cat.catName}"
+                        th:selected="${cat.catId == transDTO.transCategory}">
+                </option>
+              </select>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text">메모</span>
+              <input type="text" name="transMemo" th:value="${transDTO.transMemo}" class="form-control" placeholder="메모 입력" readonly>
+            </div>
+
+            <!--                        <div class="input-group mb-3">-->
+            <!--                            <span class="input-group-text">Writer</span>-->
+            <!--                            <input type="text" name="writer" class="form-control" th:value="${#authentication.principal.username}" readonly>-->
+            <!--                        </div>-->
+
+            <div class="my-4">
+              <div class="float-end" th:with="link=${pageRequestDTO.getLink()}">
+                <a th:href="|@{/trans/transModify(tno =${transDTO.transId})}&${link}|" class="text-decoration-none">
+                  <button type="button" class="btn btn-primary modifyBtn">수정하기</button>
+                </a>
+                <a th:href="|@{/trans/transList}?${link}|">
+                  <button type="reset" class="btn btn-secondary listBtn">목록 보기</button>
+                </a>
+              </div>
+            </div>
+        </div><!--end card body-->
+
+      </div><!--end card-->
+    </div><!-- end col-->
+  </div><!-- end row-->
+</div>
+
+
+<script layout:fragment="script" th:inline="javascript">
+
+  const auth = [[${#authentication}]]
+
+  document.querySelector(".listBtn").addEventListener("click",function (e){
+    e.stopPropagation()
+    e.stopPropagation()
+    self.location = "/trans/transList"
+  })
+
+</script>

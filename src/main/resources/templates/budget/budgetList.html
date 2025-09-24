@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<div layout:fragment="content">
+    <!--  <h1>Board List</h1>-->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form action="/budget/budgetList" method="get" class="budget-search-form">
+                <input type="hidden" name="size" th:value="${pageRequestDTO.size}">
+
+                <!-- 첫 번째 줄 -->
+                <div class="row g-3 align-items-end mb-2">
+                    <div class="col-md-3">
+                        <label for="Years" class="form-label">연도</label>
+                        <select class="form-select" name="selectYear" id="Years">
+                            <option value="">전체</option>
+                            <option th:each="num: ${#numbers.sequence(#temporals.year(#temporals.createNow()),2020)}"
+                                    th:value="${num}"
+                                    th:text="${num}"
+                                    th:selected="${num == pageRequestDTO.selectYear}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="Months" class="form-label">월</label>
+                        <select class="form-select" name="selectMonth" id="Months">
+                            <option value="">전체</option>
+                            <option th:each="mon: ${#numbers.sequence(1,12)}"
+                                    th:value="${mon}"
+                                    th:text="${mon}"
+                                    th:selected="${mon == pageRequestDTO.selectMonth}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="cats" class="form-label">카테고리</label>
+                        <select class="form-select" name="categoriess" id="cats">
+                            <option value="">전체</option>
+                            <option th:each="cat: ${categories}"
+                                    th:value="${cat.catId}"
+                                    th:text="${cat.catName}"
+                                    th:selected="${cat.catId == pageRequestDTO.categoriess}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 두 번째 줄 -->
+                <div class="row g-3 align-items-end mb-2">
+                    <div class="col-md-3">
+                        <label for="aMin" class="form-label">설정 최소 금액</label>
+                        <input type="number" id="aMin" class="form-control" name="amountMin" th:value="${pageRequestDTO.amountMin}" placeholder="최소금액 입력">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="aMax" class="form-label">설정 최대 금액</label>
+                        <input type="number" id="aMax" class="form-control" name="amountMax" th:value="${pageRequestDTO.amountMax}" placeholder="최대금액 입력">
+                    </div>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="row g-3">
+                    <div class="col-auto d-flex gap-2">
+                        <button class="btn btn-primary" type="submit">검색</button>
+                        <button class="btn btn-danger clearBtn" type="button">초기화</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    모든 예산 내역
+                </div>
+                <div class="card-body" >
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">월</th>
+                            <th scope="col">카테고리</th>
+                            <th scope="col">설정금액</th>
+                            <th scope="col">사용금액</th>
+                            <th scope="col">남은금액</th>
+                            <th scope="col">예산 초과 여부</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="b:${bList.dtoList}"  > <!--응답 페이지 안의 예산 dto 리스트-->
+                            <th scope="row">
+                                <a th:href="|@{/budget/budgetRead(bno =${b.budgetId})}&${link}|"> [[${b.budgetId}]] </a>
+                            </th>
+                            <td th:text="${b.budYear + '  -  ' + b.budMonth + '월'}"></td>
+                            <td>
+                                <span th:each="cat : ${categories}"
+                                      th:if="${cat.catId} == ${b.budCategory}"
+                                      th:text="${cat.catName}">카테고리이름
+                               </span>
+                            </td>
+                            <td>[[${b.budAmount}]]</td>
+                            <td>[[${b.budCurrent}]]</td>
+                            <td>[[${b.budAmount} - ${b.budCurrent}]]</td>
+                            <td>[[${b.budIsOver}]]</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <!-- ------------------------------------------------------------------- 목록 페이지 처리-->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-primary toCurrentList" type="button">돌아가기</button>
+                        <ul class="pagination mb-0">
+                            <li class="page-item" th:if="${bList.prev}">
+                                <a class="page-link" th:data-num="${bList.start -1}">Previous</a>
+                            </li>
+                            <th:block th:each="i: ${#numbers.sequence(bList.start, bList.end)}">
+                                <li th:class="${bList.page == i}?'page-item active':'page-item'">
+                                    <a class="page-link" th:data-num="${i}">[[${i}]]</a>
+                                </li>
+                            </th:block>
+                            <li class="page-item" th:if="${bList.next}">
+                                <a class="page-link" th:data-num="${bList.end + 1}">Next</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!--end card body-->
+            </div><!--end card-->
+        </div><!-- end col-->
+    </div><!-- end row-->
+</div>
+</div>
+<script layout:fragment="script" th:inline="javascript">
+    console.log("script......")
+
+    document.querySelector(".pagination").addEventListener("click", function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const target = e.target
+        if(target.tagName !== 'A') {
+            return
+        }
+        const num = target.getAttribute("data-num")
+        const formObj = document.querySelector("form")
+        formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
+        formObj.submit();
+    },false)
+
+    document.querySelector(".clearBtn").addEventListener("click",function (e){
+        e.preventDefault();
+        e.stopPropagation();
+        self.location = '/budget/budgetList';
+    })
+    document.querySelector(".toCurrentList").addEventListener("click",function (e){
+        e.preventDefault();
+        e.stopPropagation();
+        self.location = '/budget/currentList'
+    })
+    //show modal
+    // const result = [[${result}]]
+    // const modal = new bootstrap.Modal(document.querySelector(".modal"))
+    // if(result){
+    //     alert(result)
+    // }
+    // if(result){
+    //     modal.show()
+    // }
+</script>
+</html>
