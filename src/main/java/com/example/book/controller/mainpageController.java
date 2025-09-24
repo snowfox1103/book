@@ -1,7 +1,7 @@
 package com.example.book.controller;
 
-import com.example.book.domain.Categories;
-import com.example.book.domain.Users;
+import com.example.book.domain.finance.Categories;
+import com.example.book.domain.user.Users;
 import com.example.book.dto.BudgetsDTO;
 import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
@@ -33,7 +33,7 @@ public class mainpageController {
         log.info("--------get mainpage---------");
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
         log.info(responseDTO);
-        List<Categories> categories = categoriesService.categoriesList();
+        List<Categories> categories = categoriesService.categoriesList(users);
         model.addAttribute("categories", categories);
         model.addAttribute("responseDTO",responseDTO);
     }
