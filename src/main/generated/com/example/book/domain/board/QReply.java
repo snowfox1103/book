@@ -1,4 +1,4 @@
-package com.example.book.domain;
+package com.example.book.domain.board;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,13 +16,13 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QReply extends EntityPathBase<Reply> {
 
-    private static final long serialVersionUID = -769490348L;
+    private static final long serialVersionUID = 184666572L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QReply reply = new QReply("reply");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.example.book.domain.common.QBaseEntity _super = new com.example.book.domain.common.QBaseEntity(this);
 
     public final QBoard board;
 

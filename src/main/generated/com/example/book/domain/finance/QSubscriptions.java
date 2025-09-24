@@ -1,4 +1,4 @@
-package com.example.book.domain;
+package com.example.book.domain.finance;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -15,11 +16,15 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QSubscriptions extends EntityPathBase<Subscriptions> {
 
-    private static final long serialVersionUID = -426233760L;
+    private static final long serialVersionUID = 152554316L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QSubscriptions subscriptions = new QSubscriptions("subscriptions");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.example.book.domain.common.QBaseEntity _super = new com.example.book.domain.common.QBaseEntity(this);
+
+    public final QCategories categories;
 
     public final BooleanPath isSub = createBoolean("isSub");
 
@@ -30,8 +35,6 @@ public class QSubscriptions extends EntityPathBase<Subscriptions> {
     public final DateTimePath<java.time.LocalDateTime> regDate = _super.regDate;
 
     public final NumberPath<Long> subAmount = createNumber("subAmount", Long.class);
-
-    public final NumberPath<Long> subCategory = createNumber("subCategory", Long.class);
 
     public final NumberPath<Long> subId = createNumber("subId", Long.class);
 
@@ -45,18 +48,28 @@ public class QSubscriptions extends EntityPathBase<Subscriptions> {
 
     public final StringPath subTitle = createString("subTitle");
 
-    public final NumberPath<Long> userNo = createNumber("userNo", Long.class);
+    public final com.example.book.domain.user.QUsers users;
 
     public QSubscriptions(String variable) {
-        super(Subscriptions.class, forVariable(variable));
+        this(Subscriptions.class, forVariable(variable), INITS);
     }
 
     public QSubscriptions(Path<? extends Subscriptions> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QSubscriptions(PathMetadata metadata) {
-        super(Subscriptions.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QSubscriptions(PathMetadata metadata, PathInits inits) {
+        this(Subscriptions.class, metadata, inits);
+    }
+
+    public QSubscriptions(Class<? extends Subscriptions> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.categories = inits.isInitialized("categories") ? new QCategories(forProperty("categories"), inits.get("categories")) : null;
+        this.users = inits.isInitialized("users") ? new com.example.book.domain.user.QUsers(forProperty("users")) : null;
     }
 
 }

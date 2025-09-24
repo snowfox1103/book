@@ -1,4 +1,4 @@
-package com.example.book.domain;
+package com.example.book.domain.point;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,11 +15,11 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QPointManage extends EntityPathBase<PointManage> {
 
-    private static final long serialVersionUID = 430779135L;
+    private static final long serialVersionUID = 780513313L;
 
     public static final QPointManage pointManage = new QPointManage("pointManage");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.example.book.domain.common.QBaseEntity _super = new com.example.book.domain.common.QBaseEntity(this);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;

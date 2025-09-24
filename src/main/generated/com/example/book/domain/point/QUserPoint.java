@@ -1,4 +1,4 @@
-package com.example.book.domain;
+package com.example.book.domain.point;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,11 +15,11 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QUserPoint extends EntityPathBase<UserPoint> {
 
-    private static final long serialVersionUID = 1259981551L;
+    private static final long serialVersionUID = 2033528977L;
 
     public static final QUserPoint userPoint = new QUserPoint("userPoint");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.example.book.domain.common.QBaseEntity _super = new com.example.book.domain.common.QBaseEntity(this);
 
     public final NumberPath<Long> budId = createNumber("budId", Long.class);
 

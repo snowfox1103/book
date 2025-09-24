@@ -1,4 +1,4 @@
-package com.example.book.domain;
+package com.example.book.domain.qna;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,18 +15,18 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QQnaReply extends EntityPathBase<QnaReply> {
 
-    private static final long serialVersionUID = -150676548L;
+    private static final long serialVersionUID = 1844342150L;
 
     public static final QQnaReply qnaReply = new QQnaReply("qnaReply");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.example.book.domain.common.QBaseEntity _super = new com.example.book.domain.common.QBaseEntity(this);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
 
     public final StringPath qBContent = createString("qBContent");
 
-    public final NumberPath<Long> qBId = createNumber("qBId", Long.class);
+    public final NumberPath<Long> qbId = createNumber("qbId", Long.class);
 
     public final NumberPath<Long> qRId = createNumber("qRId", Long.class);
 

@@ -9,5 +9,5 @@ import java.time.LocalDate;
 
 public interface TransactionsSearch {
     Page<Transactions> searchTrans(Pageable pageable);
-    Page<Transactions> searchAllTrans(String[] types, String keyword, Long minn, Long maxx, LocalDate a, LocalDate b, InOrOut io, Pageable pageable);
+    Page<Transactions> searchAllTrans(Long userNo,String[] types, String keyword, Long category, Long minn, Long maxx, LocalDate startDay, LocalDate endDay, InOrOut io, Pageable pageable);
 }

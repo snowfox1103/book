@@ -1,4 +1,4 @@
-package com.example.book.domain;
+package com.example.book.domain.shop;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,11 +15,11 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QItems extends EntityPathBase<Items> {
 
-    private static final long serialVersionUID = -777365718L;
+    private static final long serialVersionUID = -1028524706L;
 
     public static final QItems items = new QItems("items");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.example.book.domain.common.QBaseEntity _super = new com.example.book.domain.common.QBaseEntity(this);
 
     public final NumberPath<Long> itemId = createNumber("itemId", Long.class);
 

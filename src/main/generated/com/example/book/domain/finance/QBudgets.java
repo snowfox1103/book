@@ -1,4 +1,4 @@
-package com.example.book.domain;
+package com.example.book.domain.finance;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,11 +15,11 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QBudgets extends EntityPathBase<Budgets> {
 
-    private static final long serialVersionUID = -1614186824L;
+    private static final long serialVersionUID = 354595492L;
 
     public static final QBudgets budgets = new QBudgets("budgets");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.example.book.domain.common.QBaseEntity _super = new com.example.book.domain.common.QBaseEntity(this);
 
     public final NumberPath<Long> budAmount = createNumber("budAmount", Long.class);
 
@@ -32,12 +32,6 @@ public class QBudgets extends EntityPathBase<Budgets> {
     public final BooleanPath budIsOver = createBoolean("budIsOver");
 
     public final NumberPath<Integer> budMonth = createNumber("budMonth", Integer.class);
-
-    public final BooleanPath budNotice = createBoolean("budNotice");
-
-    public final BooleanPath budOver = createBoolean("budOver");
-
-    public final BooleanPath budReduction = createBoolean("budReduction");
 
     public final NumberPath<Integer> budYear = createNumber("budYear", Integer.class);
 

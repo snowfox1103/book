@@ -1,4 +1,4 @@
-package com.example.book.domain;
+package com.example.book.domain.notice;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -10,16 +10,16 @@ import com.querydsl.core.types.Path;
 
 
 /**
- * QNotices is a Querydsl query type for Notices
+ * QNotice is a Querydsl query type for Notice
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QNotices extends EntityPathBase<Notices> {
+public class QNotice extends EntityPathBase<Notice> {
 
-    private static final long serialVersionUID = 288981381L;
+    private static final long serialVersionUID = 464577624L;
 
-    public static final QNotices notices = new QNotices("notices");
+    public static final QNotice notice = new QNotice("notice");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.example.book.domain.common.QBaseEntity _super = new com.example.book.domain.common.QBaseEntity(this);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
@@ -35,16 +35,16 @@ public class QNotices extends EntityPathBase<Notices> {
 
     public final NumberPath<Long> userNo = createNumber("userNo", Long.class);
 
-    public QNotices(String variable) {
-        super(Notices.class, forVariable(variable));
+    public QNotice(String variable) {
+        super(Notice.class, forVariable(variable));
     }
 
-    public QNotices(Path<? extends Notices> path) {
+    public QNotice(Path<? extends Notice> path) {
         super(path.getType(), path.getMetadata());
     }
 
-    public QNotices(PathMetadata metadata) {
-        super(Notices.class, metadata);
+    public QNotice(PathMetadata metadata) {
+        super(Notice.class, metadata);
     }
 
 }

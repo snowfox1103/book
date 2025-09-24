@@ -1,4 +1,4 @@
-package com.example.book.domain;
+package com.example.book.domain.board;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QBoardImage extends EntityPathBase<BoardImage> {
 
-    private static final long serialVersionUID = 639683819L;
+    private static final long serialVersionUID = -1787072397L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
