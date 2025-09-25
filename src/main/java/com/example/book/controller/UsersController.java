@@ -101,13 +101,13 @@ public class UsersController {
   @PostMapping(value="/resend")
   public ResponseEntity<?> resendPost(@RequestBody @Valid ResendRequestDTO req) {
     log.info("HIT /users/resend with {}", req.getEmail());
-    // 존재/미인증 사용자에게만 재발송.
+    // 존재&미인증 사용자에게만 재발송.
     // 이메일 존재 여부는 절대 응답으로 노출하지 않음(계정 추측 방지).
     try {
       usersService.resend(req); // 내부에서 enabled 확인 + 토큰 재발송
-    } catch (Exception ignored) {
+    } catch (Exception ex) {
       // 일부러 무시: "있든 없든 보냈다"로 응답
-      log.info("resend exception ...............");
+      log.info("resend exception ...............", ex);
     }
     return ResponseEntity.noContent().build(); // 204
   }
@@ -126,11 +126,6 @@ public class UsersController {
     usersService.pwSearch(req); //user의 email + "password"로 비밀번호 변경 후 메일로 보냄
 
     return ResponseEntity.ok().build();
-  }
-
-  @GetMapping("/searchAndResend")
-  public void searchAndResend() {
-    log.info("searchAndResend get...............");
   }
 
   @GetMapping("/checkUserId")

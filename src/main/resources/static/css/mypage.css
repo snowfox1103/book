@@ -13,7 +13,7 @@ body {
 
 /* 섹션 공통 */
 .mypage-container section {
-    background-color: white;   /* 옅은 회색 */
+    background-color: white;
     border: 1px solid #ddd;
     border-radius: 12px;
     padding: 20px;
@@ -24,8 +24,8 @@ body {
 .profile-section {
     display: flex;
     align-items: center;
-    gap: 25px;              /* 프로필 사진과 info 간격 좁힘 */
-    margin: 0 40px;         /* 좌우 동일 여백 */
+    gap: 25px;
+    margin: 0 40px;
 }
 
 .profile-left {
@@ -43,7 +43,7 @@ body {
     background-color: #e0e0e0;
     display: flex;
     justify-content: center;
-    align-items: center;  /* ← 세로 중앙 */
+    align-items: center;
     overflow: hidden;
 }
 
@@ -59,7 +59,7 @@ body {
 
 /* 대체 텍스트 중앙 */
 .profile-img .fallback {
-    display: flex;                 /* d-none 해제되면 중앙정렬 */
+    display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
@@ -86,7 +86,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 16px;              /* 행 간격 */
+    gap: 16px;
 }
 
 .info-row {
@@ -132,7 +132,7 @@ body {
     border-color: #0056b3;
 }
 
-/* 회원탈퇴 버튼 */
+/* 회원탈퇴 버튼(전역) */
 .btn-delete {
     background-color: #dc3545;
     border-color: #dc3545;
@@ -142,35 +142,28 @@ body {
     border-color: #b02a37;
 }
 
+/* ===== 알림/카테고리 섹션 ===== */
 .notify-category {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr; /* 좌: 알림, 우: 카테고리 */
     gap: 20px;
 
-    /* 섹션 전체 높이를 고정 */
-    height: 300px; /* 원하는 높이값 (예: 300px) */
-}
-
-.category-box {
-    display: flex;
-    flex-direction: column;
-    height: 100%; /* 부모 높이에 맞춤 */
-}
-
-.category-box ul {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 한 줄에 3개 */
-    gap: 10px;
-
-    flex: 1; /* 위 h4 + 버튼 제외 나머지 영역 차지 */
-    overflow-y: auto; /* 스크롤 */
-    padding-right: 5px; /* 스크롤바와 텍스트가 붙지 않게 */
+    /* ❌ 고정 높이 제거 → 내용에 따라 자동으로 커짐 */
+    /* height: 300px;  */
 }
 
 .notify-box h4,
 .category-box h4 {
     font-size: 1.1rem;
     font-weight: 600;
+}
+
+/* 카테고리 카드 */
+.category-box {
+    display: flex;
+    flex-direction: column;
+    /* ❌ 고정 높이 의존 제거 */
+    height: auto;
 }
 
 .category-header {
@@ -180,29 +173,59 @@ body {
     margin-bottom: 10px;
 }
 
-.category-box li {
-    display: flex;
-    align-items: center; /* 버튼과 텍스트를 세로 가운데 정렬 */
-    justify-content: space-between;
-    width: 120px;  /* li 크기 고정 (원하는 크기 조절) */
-    height: 40px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-}
-.category-box li .category-name {
-    border: 1px solid #ddd;
-    background: #fff;
-}
-.category-box li .btn-delete {
-    padding: 2px 6px;  /* 버튼 패딩 줄여서 높이 맞춤 */
-    font-size: 0.8rem; /* 글자 크기 줄이기 */
-    line-height: 1;    /* 버튼 높이와 텍스트 높이를 비슷하게 */
+/* ✅ 왼쪽부터 순차 배치 + 항목 수만큼 섹션이 늘어남 */
+.category-box ul {
+    display: grid;
+
+    /* li가 고정폭이므로, 트랙도 그에 맞춰 120px로 고정 → 보기 일정 */
+    grid-template-columns: repeat(3, 120px);
+    gap: 8px 12px;
+
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    /* 행/열을 컨테이너 시작점으로 모아둠(줄 사이 벌어짐 방지) */
+    align-content: start;   /* 세로 방향(행) 상단 정렬 */
+    justify-content: start; /* 가로 방향(열) 좌측 정렬 */
+
+    /* ❌ 내부를 억지로 채우던 규칙 제거 */
+    /* flex: 1; */
+    /* overflow-y: auto; */
+    /* padding-right: 5px; */
 }
 
-.category-name {
-    cursor: pointer;
+/* li 고정 크기 */
+.category-box li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 120px;   /* 고정 폭 */
+    height: 40px;   /* 고정 높이 */
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+/* 카테고리 이름 */
+.category-box li .category-name {
     flex: 1;
+    margin-right: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 삭제 버튼(카테고리 전용) */
+.category-box li .btn-delete {
+    flex-shrink: 0;
+    padding: 2px 6px;
+    font-size: 0.8rem;
+    line-height: 1;
 }
 
 /* 문의사항 */

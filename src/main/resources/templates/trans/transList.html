@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<div layout:fragment="content">
+    <!--  <h1>Board List</h1>-->
+    <div class="row mt-3">
+        <div class="col">
+        <form action="/trans/transList" method="get" class="p-3 rounded shadow-sm bg-light ">
+            <input type="hidden" name="size" th:value="${pageRequestDTO.size}">
+
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label for="titleMemo" class="form-label">제목 및 내용</label>
+                    <select class="form-select" name="type" id="titleMemo">
+                        <option value="tm">전체</option>
+                        <option value="t" th:selected="${pageRequestDTO.type =='t'}">제목</option>
+                        <option value="m" th:selected="${pageRequestDTO.type =='m'}">메모</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="keyword" class="form-label">검색어</label>
+                    <input type="text" id="keyword" class="form-control"
+                           name="keyword"
+                           th:value="${pageRequestDTO.keyword}"
+                           placeholder="제목 및 내용 검색">
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-end mt-1">
+                <div class="col-md-3">
+                    <label for="cats" class="form-label">카테고리</label>
+                    <select class="form-select" name="categoriess" id="cats">
+                        <option value="">전체</option>
+                        <option th:each="cat: ${categories}"
+                                th:value="${cat.catId}"
+                                th:text="${cat.catName}"
+                                th:selected="${cat.catId == pageRequestDTO.categoriess}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="IOIO" class="form-label">입출금</label>
+                    <select name="io" class="form-select" id="IOIO">
+                        <option value="" th:selected="${pageRequestDTO.io == null}">전체</option>
+                        <option value="IN" th:selected="${pageRequestDTO.io?.name() == 'IN'}">입금</option>
+                        <option value="OUT" th:selected="${pageRequestDTO.io?.name() == 'OUT'}">출금</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="minAmount" class="form-label">최소 금액</label>
+                    <input type="number" class="form-control" id="minAmount"
+                           placeholder="최소 금액 입력" name="amountMin"
+                           th:value="${pageRequestDTO.amountMin}">
+                </div>
+
+                <div class="col-md-3">
+                    <label for="maxAmount" class="form-label">최대 금액</label>
+                    <input type="number" class="form-control" id="maxAmount"
+                           placeholder="최대 금액 입력" name="amountMax"
+                           th:value="${pageRequestDTO.amountMax}">
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-end mt-1">
+                <div class="col-md-3">
+                    <label for="startDay" class="form-label">시작일</label>
+                    <input type="date" id="startDay" name="startDay"
+                           class="form-control"
+                           th:value="${pageRequestDTO.startDay}">
+                </div>
+                <div class="col-md-3">
+                    <label for="endDay" class="form-label">종료일</label>
+                    <input type="date" id="endDay" name="endDay"
+                           class="form-control"
+                           th:value="${pageRequestDTO.endDay}">
+                </div>
+
+                <div class="col-md-6 text-end">
+                    <button class="btn btn-primary searchBtn me-2" type="submit">검색</button>
+                    <button class="btn btn-outline-secondary clearBtn" type="button">초기화</button>
+                </div>
+            </div>
+        </form>
+        </div>
+
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    입출금 내역
+                </div>
+                <div class="card-body" >
+                    <table class="table" >
+                        <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">제목</th>
+                            <th scope="col">금액</th>
+                            <th scope="col">날짜</th>
+                            <th scope="col">입금/출금</th>
+                            <th scope="col">카테고리</th>
+                        </tr>
+                        </thead>
+<!--                        <tbody th:with="link = ${pageRequestDTO.getLink()}">-->
+                        <tbody>
+                        <tr th:each="dto:${responseDTO.dtoList}" th:if="${dto.userNo == users}">
+<!--                        <tr th:each="dto:${responseDTO.dtoList}">-->
+                            <th scope="row">[[${dto.transId}]]</th>
+                            <td>
+<!--    ------------------------------------------------ read로 넘어감 여기서 tno는 read의 get controller 파라미터 값과 같음-->
+                                <a th:href="|@{/trans/transRead(tno =${dto.transId})}&${link}|"> [[${dto.transTitle}]] </a>
+                            </td>
+                            <td>[[${dto.transAmount}]]</td>
+                            <td>[[${#temporals.format(dto.transDate, 'yyyy-MM-dd')}]]</td>
+                            <td>
+                                <span th:if="${dto.transInOut.name() == 'IN'}" >입금</span>
+                                <span th:if="${dto.transInOut.name() == 'OUT'}">출금</span>
+                            </td>
+                            <td>
+                              <span th:each="cat : ${categories}"
+                                    th:if="${cat.catId} == ${dto.transCategory}"
+                                    th:text="${cat.catName}">
+                              </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+<!-- ------------------------------------------------------------------- 목록 페이지 처리 수정 필요-->
+                    <div class="toall" style="display: flex; justify-content: space-between; height: 38px;">
+                        <button class="btn btn-primary trans-register-btn" type="button">등록하기</button>
+                        <div class="float-end">
+<!--                        등록하기 버튼-->
+                            <ul class="pagination flex-wrap">
+                                <li class="page-item" th:if="${responseDTO.prev}">
+                                    <a class="page-link" th:data-num="${responseDTO.start -1}">Previous</a>
+                                </li>
+                                <th:block th:each="i: ${#numbers.sequence(responseDTO.start, responseDTO.end)}">
+                                    <li th:class="${responseDTO.page == i}?'page-item active':'page-item'" >
+                                        <a class="page-link"  th:data-num="${i}">[[${i}]]</a>
+                                    </li>
+                                </th:block>
+                                <li class="page-item" th:if="${responseDTO.next}">
+                                    <a class="page-link"  th:data-num="${responseDTO.end + 1}">Next</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!--end card body-->
+            </div><!--end card-->
+        </div><!-- end col-->
+    </div><!-- end row-->
+</div>
+</div>
+<script layout:fragment="script" th:inline="javascript">
+    console.log("script......")
+
+    document.querySelector(".pagination").addEventListener("click", function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const target = e.target
+        if(target.tagName !== 'A') {
+            return
+        }
+        const num = target.getAttribute("data-num")
+        const formObj = document.querySelector("form")
+        formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
+        formObj.submit();
+    },false)
+
+    document.querySelector(".clearBtn").addEventListener("click",function (e){
+        e.preventDefault();
+        e.stopPropagation();
+        self.location = '/trans/transList';
+    })
+    document.querySelector(".trans-register-btn").addEventListener("click",function (e){
+        e.preventDefault();
+        e.stopPropagation();
+        self.location = '/trans/transRegister'
+    })
+    //show modal
+    // const result = [[${result}]]
+    // const modal = new bootstrap.Modal(document.querySelector(".modal"))
+    // if(result){
+    //     alert(result)
+    // }
+    // if(result){
+    //     modal.show()
+    // }
+</script>
+</html>
