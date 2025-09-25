@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/basic.html}">
+      layout:decorate="~{layout/nyjbasic.html}">
 
 <head>
     <title>입출금 목록 수정</title>
@@ -57,11 +57,6 @@
                         <div class="input-group mb-3">
                             <span class="input-group-text">메모</span>
                             <input type="text" name="transMemo" class="form-control" placeholder="메모 입력" th:value="${transDTO.transMemo}">
-                        </div>
-
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Writer</span>
-                            <input type="text" class="form-control" th:value="${users}" readonly>
                         </div>
 
                         <div class="input-group mb-3">

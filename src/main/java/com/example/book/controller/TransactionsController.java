@@ -34,7 +34,7 @@ public class TransactionsController {
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
         log.info(responseDTO);
 //        Long userNo = users.getUserNo();
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
         model.addAttribute("users",userNo);
         model.addAttribute("active", "board");
         model.addAttribute("categories", categories);
@@ -45,7 +45,7 @@ public class TransactionsController {
     public void getTransRegister(Users users,Model model){
 //        Long userNo = users.getUserNo();
         Long userNo = 1L;
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
         model.addAttribute("users",userNo);
         model.addAttribute("categories", categories);
         model.addAttribute("inOrOutValues", InOrOut.values());
@@ -60,7 +60,7 @@ public class TransactionsController {
         }
         log.info(transactionsDTO);
         Long tno = transactionsService.registerTrans(transactionsDTO);
-        transactionsService.autoUpdateBudgetCurrent(transactionsDTO.getTransCategory(),transactionsDTO.getUserNo());
+        transactionsService.autoUpdateBudgetCurrentByCategory(transactionsDTO.getTransCategory(),transactionsDTO.getUserNo());
         //result message 안뜸 495p----------------------------------------------------------
         redirectAttributes.addFlashAttribute("result",tno);
         log.info("------------post register------------------");
@@ -71,7 +71,7 @@ public class TransactionsController {
     public void read(Users users,Long tno,PageRequestDTO pageRequestDTO,Model model){ //url에서 tno값 받아오기, model 이용해서 view(html,jsp 등)에 전달
 //        Long userNo = users.getUserNo();
         Long userNo = 1L;
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
         model.addAttribute("categories", categories);
         model.addAttribute("inOrOutValues", InOrOut.values()); //없어도 되는 듯
         TransactionsDTO transactionsDTO = transactionsService.readOneTrans(tno);
@@ -93,7 +93,7 @@ public class TransactionsController {
         }
         transactionsService.modifyTrans(transactionsDTO);
         TransactionsDTO updated = transactionsService.readOneTrans(transactionsDTO.getTransId());
-        transactionsService.autoUpdateBudgetCurrent(updated.getTransCategory(),updated.getUserNo());
+        transactionsService.autoUpdateBudgetCurrentByCategory(updated.getTransCategory(),updated.getUserNo());
 //        transactionsService.autoUpdateBudgetCurrent(transactionsDTO);
         redirectAttributes.addAttribute("tno",transactionsDTO.getTransId());
         redirectAttributes.addFlashAttribute("result","modified");
@@ -104,7 +104,7 @@ public class TransactionsController {
         log.info("remove post...."+transId);
         TransactionsDTO transactionsDTO = transactionsService.readOneTrans(transId);
         transactionsService.removeTrans(transId);
-        transactionsService.autoUpdateBudgetCurrent(transactionsDTO.getTransCategory(),transactionsDTO.getUserNo());
+        transactionsService.autoUpdateBudgetCurrentByCategory(transactionsDTO.getTransCategory(),transactionsDTO.getUserNo());
         redirectAttributes.addFlashAttribute("result","removed");
         return "redirect:/trans/transList";
     }

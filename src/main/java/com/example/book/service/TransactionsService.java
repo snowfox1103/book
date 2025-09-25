@@ -10,5 +10,8 @@ public interface TransactionsService {
     void modifyTrans(TransactionsDTO transactionsDTO);
     void removeTrans(Long transId);
     PageResponseDTO<TransactionsDTO> listByUser(Long userNo,PageRequestDTO pageRequestDTO);
-    void autoUpdateBudgetCurrent(Long catId, Long userNo);
+    void autoUpdateBudgetCurrentByCategory(Long catId, Long userNo);
+    Long wholeUses(Long userNo); //이번 달 총 사용 금액
+
 }
+

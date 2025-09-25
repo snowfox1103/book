@@ -33,7 +33,7 @@ public class BudgetsController {
 //        Long userNo = users.getUserNo();
         Long userNo = 1L;
         PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(userNo);
         model.addAttribute("users",userNo);
         model.addAttribute("response",pageResponseDTO);
         model.addAttribute("categories",categories);
@@ -44,7 +44,7 @@ public class BudgetsController {
 //        Long userNo = users.getUserNo();
         Long userNo = 1L;
         PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(userNo);
         model.addAttribute("users",userNo);
         model.addAttribute("bList",pageResponseDTO);
         model.addAttribute("categories",categories);
@@ -56,7 +56,7 @@ public class BudgetsController {
 //        Long userNo = users.getUserNo();
         Long userNo = 1L;
         model.addAttribute("users",userNo);
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(userNo);
         model.addAttribute("categories",categories);
     }
     @PostMapping("/budgetRegister")
@@ -68,7 +68,7 @@ public class BudgetsController {
         }
         try{
             Long bno = budgetsService.registerBudget(budgetsDTO);
-            transactionsService.autoUpdateBudgetCurrent(budgetsDTO.getBudCategory(),budgetsDTO.getUserNo());
+            transactionsService.autoUpdateBudgetCurrentByCategory(budgetsDTO.getBudCategory(),budgetsDTO.getUserNo());
             redirectAttributes.addFlashAttribute("result",bno);
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -88,7 +88,7 @@ public class BudgetsController {
         Long userNo = 1L;
         PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
         BudgetsDTO budgetsDTO = budgetsService.readOneBudget(bno);
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(userNo);
         model.addAttribute("users",userNo);
         model.addAttribute("categories",categories);
         model.addAttribute("responseDTO",pageResponseDTO);

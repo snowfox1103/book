@@ -33,7 +33,24 @@ public class mainpageController {
         log.info("--------get mainpage---------");
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
         log.info(responseDTO);
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
+//        Long totalAmount = transactionsService.totals(userNo);
+        model.addAttribute("users",userNo);
+//        model.addAttribute("totals",totalAmount);
+        model.addAttribute("categories", categories);
+        model.addAttribute("responseDTO",responseDTO);
+    }
+    @GetMapping("/stastic")
+    public void getstastic(Users users,PageRequestDTO pageRequestDTO, Model model, TransactionsDTO transactionsDTO, BudgetsDTO budgetsDTO){
+//        Long userNo = users.getUserNo();
+        Long userNo = 1L;
+        log.info("--------get ---------");
+        PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
+        log.info(responseDTO);
+        List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
+//        Long totalAmount = transactionsService.totals(userNo);
+        model.addAttribute("users",userNo);
+//        model.addAttribute("totals",totalAmount);
         model.addAttribute("categories", categories);
         model.addAttribute("responseDTO",responseDTO);
     }

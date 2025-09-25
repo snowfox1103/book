@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/basic.html}">
+      layout:decorate="~{layout/nyjbasic.html}">
 <div layout:fragment="content">
     <!--  <h1>Board List</h1>-->
     <div class="row mt-3">
@@ -98,10 +98,9 @@
                     <table class="table" >
                         <thead>
                         <tr>
-                            <th scope="col">번호</th>
+                            <th scope="col">날짜</th>
                             <th scope="col">제목</th>
                             <th scope="col">금액</th>
-                            <th scope="col">날짜</th>
                             <th scope="col">입금/출금</th>
                             <th scope="col">카테고리</th>
                         </tr>
@@ -109,14 +108,12 @@
 <!--                        <tbody th:with="link = ${pageRequestDTO.getLink()}">-->
                         <tbody>
                         <tr th:each="dto:${responseDTO.dtoList}" th:if="${dto.userNo == users}">
-<!--                        <tr th:each="dto:${responseDTO.dtoList}">-->
-                            <th scope="row">[[${dto.transId}]]</th>
+                            <td>[[${#temporals.format(dto.transDate, 'yyyy-MM-dd')}]]</td>
                             <td>
 <!--    ------------------------------------------------ read로 넘어감 여기서 tno는 read의 get controller 파라미터 값과 같음-->
                                 <a th:href="|@{/trans/transRead(tno =${dto.transId})}&${link}|"> [[${dto.transTitle}]] </a>
                             </td>
                             <td>[[${dto.transAmount}]]</td>
-                            <td>[[${#temporals.format(dto.transDate, 'yyyy-MM-dd')}]]</td>
                             <td>
                                 <span th:if="${dto.transInOut.name() == 'IN'}" >입금</span>
                                 <span th:if="${dto.transInOut.name() == 'OUT'}">출금</span>

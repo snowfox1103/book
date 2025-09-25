@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,5 +71,17 @@ public class BudgetsServiceImpl implements BudgetsService {
                 .dtoList(dtoList)
                 .total((int)result.getTotalElements())
                 .build();
+    }
+    @Override //이번 달 총 설정 예산
+    public Long wholeSetBudgetAmount(Long userNo){
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+        return budgetsRepository.totalBudAmountByMonth(year,month,userNo);
+    }
+    @Override
+    public Long budgetUses(Long userNo){
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+        return budgetsRepository.budgetUsesByMonth(year,month,userNo);
     }
 }

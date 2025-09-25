@@ -21,6 +21,6 @@ public interface TransactionsRepository extends JpaRepository<Transactions, Long
             "where t.userNo = :userNo "+
             "and year(t.transDate) = :year "+
             "and month(t.transDate) = :month ")
-    Long totalUseByMonth(Long catId, int year, int month, Long userNo);
+    Long totalUseByMonth(int year, int month, Long userNo);
     //해당 달 모든 사용 금액 총합 계산
 }

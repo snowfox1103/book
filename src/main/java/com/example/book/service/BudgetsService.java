@@ -11,5 +11,6 @@ public interface BudgetsService {
     void removeBudget(Long budgetId);
     PageResponseDTO<BudgetsDTO> budgetListByUser(Long userNo,PageRequestDTO pageRequestDTO);
     //리스트 불러올 때마다 예산 사용 내역 자동 집계
-
+    Long wholeSetBudgetAmount(Long userNo); //이번 달 총 설정 예산
+    Long budgetUses(Long userNo);
 }
