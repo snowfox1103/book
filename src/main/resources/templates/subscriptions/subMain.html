@@ -219,7 +219,6 @@
   </div>
 </div>
 
-<!--<div id="toastArea" class="toast-container position-fixed bottom-0 end-0 p-3"></div>-->
 <div th:replace="~{fragments/common :: alert}"></div>
 
 <!-- Chart.js -->
@@ -231,7 +230,7 @@
     const monthlySummary = /*[[${monthlySummary}]]*/ {};
 
     if (!categorySummary || Object.keys(categorySummary).length === 0) {
-        console.warn("카테고리 통계 데이터 없음");
+        console.warn("카테고리 통계 데이터가 없습니다.");
     } else {
         const labels = Object.keys(categorySummary);
         const data = Object.values(categorySummary);
@@ -416,54 +415,6 @@
             });
             if (res.ok) location.reload();
         });
-
-        //알림
-//         const res = await fetch('/subscriptions/alerts', { credentials: 'same-origin' });
-//         if (!res.ok) return;
-//         const alerts = await res.json();
-//         if (!alerts.length) return;
-//
-//         const toastArea = document.getElementById('toastArea');
-//         const ids = alerts.map(a => a.id);
-//
-// // ✅ 토스트 여러 개 생성해서 쌓기
-//         alerts.forEach(a => {
-//             const el = document.createElement('div');
-//             el.className = 'toast';
-//             el.setAttribute('role', 'alert');
-//             el.innerHTML = `
-//     <div class="toast-header">
-//       <strong class="me-auto">정기결제 미리 알림</strong>
-//       <small>${a.nextPayDate}</small>
-//       <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close"></button>
-//     </div>
-//     <div class="toast-body">
-//       <b>${a.title}</b> 결제 예정입니다. (결제일 3일 이내)
-//       <div class="mt-2 text-muted">금액: ${Number(a.amount||0).toLocaleString()}원</div>
-//     </div>
-//   `;
-//             toastArea.appendChild(el);
-//
-//             const t = new bootstrap.Toast(el, { autohide: true, delay: 8000 });
-//             t.show();
-//         });
-//
-// // ✅ 모든 토스트 출력 후, 서버에 한 번만 "봤다" 마킹
-//         const tMeta = document.querySelector('meta[name="_csrf"]')?.content;
-//         const hMeta = document.querySelector('meta[name="_csrf_header"]')?.content;
-//         const csrfHeaders = {};
-//         if (tMeta && hMeta) csrfHeaders[hMeta] = tMeta;
-//
-//         fetch('/subscriptions/alerts/mark', {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json', ...csrfHeaders },
-//             body: JSON.stringify(ids),
-//             credentials: 'same-origin'
-//         }).catch(console.error);
-
-
-        // 렌더 직후 안전망(아주 빠른 새로고침 대비)
-        // requestAnimationFrame(() => setTimeout(markOnce, 300));
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>

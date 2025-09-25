@@ -106,7 +106,7 @@
         // ✅ 장바구니 불러오기
         try {
             const response = await fetch("/cart/list", { headers });
-            if (!response.ok) throw new Error("장바구니 불러오기 실패");
+            if (!response.ok) throw new Error("장바구니 불러오기에 실패했습니다.");
 
             const cartData = await response.json();
             cartData.forEach(item => {
@@ -124,7 +124,7 @@
 
             updateCartUI();
         } catch (err) {
-            console.error("장바구니 초기화 실패", err);
+            console.error("장바구니 초기화에 실패했습니다.", err);
         }
 
         // ✅ 서버에 업데이트
@@ -211,7 +211,7 @@
                                 .querySelector("input");
                             if (input) input.value = 0;
                         } catch (err) {
-                            console.error("삭제 실패", err);
+                            console.error("삭제를 실패했습니다.", err);
                         }
                     });
 
@@ -272,7 +272,7 @@
                 location.reload();
             } catch (err) {
                 console.error(err);
-                alert("결제 중 오류 발생");
+                alert("결제 중 오류 발생!!");
             }
         });
     });

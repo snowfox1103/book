@@ -250,13 +250,13 @@
                           body: JSON.stringify({ currentEmail, newEmail })
                       });
                       if (res.ok) {
-                          alert('이메일 변경 완료. 인증 메일 확인하세요.');
+                          alert('이메일 변경이 완료되었습니다. 인증 메일을 확인하세요.');
                           window.location.replace('/users/login');
                       } else {
-                          alert('이메일 변경 실패');
+                          alert('이메일 변경에 실패했습니다.');
                       }
                   } catch (err) {
-                      console.error(err); alert('네트워크 오류');
+                      console.error(err); alert('네트워크 오류가 발생했습니다.');
                   }
               });
           }
@@ -269,9 +269,9 @@
                   const cur = pwForm.currentPassword.value.trim();
                   const npw = pwForm.newPassword.value.trim();
                   const cpw = pwForm.confirmPassword.value.trim();
-                  if (!cur) return alert('현재 비밀번호 입력');
-                  if (npw !== cpw) return alert('비밀번호 확인 불일치');
-                  if (cur === npw) return alert('새 비밀번호는 달라야 함');
+                  if (!cur) return alert('현재 비밀번호 입력를 입력해주세요.');
+                  if (npw !== cpw) return alert('비밀번호 확인과 불일치합니다.');
+                  if (cur === npw) return alert('새 비밀번호는 달라야 합니다.');
 
                   try {
                       const res = await fetch('/mypage/userPasswordModify', {
@@ -279,13 +279,13 @@
                           body: JSON.stringify({ currentPassword: cur, newPassword: npw, confirmPassword: cpw })
                       });
                       if (res.ok) {
-                          alert('비밀번호 변경 완료. 다시 로그인하세요.');
+                          alert('비밀번호 변경이 완료되었습니다. 다시 로그인 해주세요.');
                           window.location.replace('/users/login?passwordChanged');
                       } else {
-                          alert('비밀번호 변경 실패');
+                          alert('비밀번호 변경에 실패했습니다.');
                       }
                   } catch (err) {
-                      console.error(err); alert('네트워크 오류');
+                      console.error(err); alert('네트워크 오류가 발생했습니다.');
                   }
               });
           }
@@ -296,15 +296,15 @@
               addForm.addEventListener('submit', async (e) => {
                   e.preventDefault();
                   const name = addForm.categoryName.value.trim();
-                  if (!name) return alert('카테고리 이름 입력');
+                  if (!name) return alert('카테고리 이름을 입력해주세요.');
                   try {
                       const res = await fetch('/mypage/category', {
                           method: 'POST', headers, credentials: 'same-origin',
                           body: JSON.stringify({ categoryName: name })
                       });
-                      if (res.ok) { alert('추가됨'); location.reload(); }
-                      else alert('추가 실패');
-                  } catch (err) { console.error(err); alert('네트워크 오류'); }
+                      if (res.ok) { alert('추가되었습니다.'); location.reload(); }
+                      else alert('추가에 실패했습니다.');
+                  } catch (err) { console.error(err); alert('네트워크 오류가 발생했습니다.'); }
               });
           }
 
@@ -318,9 +318,9 @@
                       const res = await fetch(`/mypage/category/${id}`, {
                           method: "DELETE", headers, credentials: "same-origin"
                       });
-                      if (res.ok) { li.remove(); alert("삭제됨"); }
-                      else alert("삭제 실패");
-                  } catch (err) { console.error(err); alert("네트워크 오류"); }
+                      if (res.ok) { li.remove(); alert("삭제되었습니다"); }
+                      else alert("삭제를 실패했습니다");
+                  } catch (err) { console.error(err); alert("네트워크 오류가 발생했습니다"); }
               });
           });
 
@@ -345,9 +345,9 @@
                           method: "PUT", headers, credentials: "same-origin",
                           body: JSON.stringify({ categoryName: name })
                       });
-                      if (res.ok) { alert("수정됨"); location.reload(); }
-                      else alert("수정 실패");
-                  } catch (err) { console.error(err); alert("네트워크 오류"); }
+                      if (res.ok) { alert("수정되었습니다."); location.reload(); }
+                      else alert("수정을 실패했습니다");
+                  } catch (err) { console.error(err); alert("네트워크 오류가 발생했습니다."); }
               });
           }
 
@@ -367,11 +367,11 @@
                       alert("프로필 사진이 변경되었습니다.");
                       location.reload();
                   } else {
-                      alert("업로드 실패");
+                      alert("업로드를 실패했습니다.");
                   }
               } catch (err) {
                   console.error(err);
-                  alert("네트워크 오류 발생");
+                  alert("네트워크 오류가 발생했습니다.");
               }
           });
 

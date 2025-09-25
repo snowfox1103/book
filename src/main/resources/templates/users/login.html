@@ -190,9 +190,9 @@
         const form = document.getElementById("idSearchForm");
         const realName = form.realName.value.trim();
         const email = form.email.value.trim();
-        if(!realName || !email){alert('이름과 이메일 입력'); return;}
+        if(!realName || !email){alert('이름과 이메일 입력을 입력해주세요.'); return;}
         await fetch('/users/idSearch',{method:'POST',headers,body:JSON.stringify({realName,email})});
-        alert("아이디 찾기 요청 완료");
+        alert("아이디 찾기 요청이 완료되었습니다. 이메일을 확인해주세요.");
     });
 
     // 비밀번호 찾기
@@ -200,9 +200,9 @@
         const form = document.getElementById("pwSearchForm");
         const userId = form.userId.value.trim();
         const email = form.email.value.trim();
-        if(!userId || !email){alert('아이디와 이메일 입력'); return;}
+        if(!userId || !email){alert('아이디와 이메일을 입력해주세요.'); return;}
         await fetch('/users/pwSearch',{method:'POST',headers,body:JSON.stringify({userId,email})});
-        alert("비밀번호 찾기 요청 완료");
+        alert("비밀번호 찾기 요청이 완료되었습니다. 이메일을 확인해주세요.");
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
