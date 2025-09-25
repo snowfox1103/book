@@ -36,7 +36,7 @@ class QnaReplyControllerTest {
     @WithMockUser(username="admin1", roles="ADMIN")
     void managerEditReply() throws Exception {
         mvc.perform(post("/admin/qna/reply/10/edit")
-                        .param("qBId","1")
+                        .param("qbId","1")
                         .param("content","수정합니다"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/qna/1"));
@@ -46,7 +46,7 @@ class QnaReplyControllerTest {
     @WithMockUser(username="admin1", roles="ADMIN")
     void managerDeleteReply() throws Exception {
         mvc.perform(post("/admin/qna/reply/10/delete")
-                        .param("qBId","1"))
+                        .param("qbId","1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/qna/1"));
     }

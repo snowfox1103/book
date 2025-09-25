@@ -2,6 +2,7 @@ package com.example.book.controller;
 
 import com.example.book.domain.qna.Qna;
 import com.example.book.repository.QnaReplyRepository;
+import com.example.book.security.dto.UsersSecurityDTO;
 import com.example.book.service.QnaReplyService;
 import com.example.book.service.QnaService;
 import lombok.RequiredArgsConstructor;
@@ -62,15 +63,18 @@ public class QnaController {
     }
 
 
-    @GetMapping("/{id:\\d+}")
-    public String read(@AuthenticationPrincipal UserDetails ud,
-                       @PathVariable Long id,
+    @GetMapping("/qna/{qbId}")
+    public String read(@PathVariable Long qbId,
+                       @AuthenticationPrincipal UsersSecurityDTO auth,
                        Model model) {
-        Qna q = qnaService.getForRead(id, currentUserNo(ud), isAdmin(ud));
+        Long userNo  = (auth != null) ? auth.getUserNo() : null;
+        boolean isAdmin = (auth != null && auth.hasRole("ADMIN"));
+
+        Qna q = qnaService.getForRead(qbId, userNo, isAdmin); // ← boolean 전달
         model.addAttribute("q", q);
-        model.addAttribute("replies", qnaReplyService.list(id));
-        boolean canEdit = isAdmin(ud) || (ud != null && q.getUserNo().equals(currentUserNo(ud)));
-        model.addAttribute("canEdit", canEdit);
+
+        model.addAttribute("replies", qnaReplyService.list(qbId));
+        model.addAttribute("canEdit", isAdmin || (userNo != null && userNo.equals(q.getUserNo())));
         return "qna/read";
     }
 

@@ -26,10 +26,10 @@ public class QnaReply extends BaseEntity {
     @Column(name = "userNo")
     private Long userNo;
 
-    @Column(name = "qBContent", nullable = false, length = 1000)
-    private String qBContent;
+    @Column(name = "qRContent", nullable = false, length = 1000)
+    private String qrContent;
 
     public void changeContent(String content) {
-        this.qBContent = content;
+        this.qrContent = content;
     }
 }

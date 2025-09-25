@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -78,4 +79,10 @@ public class Users extends BaseEntity {
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
+
+    @Column(nullable = false)
+    private long balance = 0L;
+
+    public long getBalance() { return balance; }
+    public void setBalance(long balance) { this.balance = balance; }
 }

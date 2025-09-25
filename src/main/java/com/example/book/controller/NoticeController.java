@@ -23,31 +23,22 @@ public class NoticeController {
     private final NoticeService noticeService;
 
     /** 목록 + 정렬 */
-    @GetMapping
+    @GetMapping("")
     public String list(
-            @RequestParam(defaultValue = "nBId") String sort,
-            @RequestParam(required = false) String dir,          // null 허용
-            @PageableDefault(size = 10) Pageable pageable,
-            Model model) {
+            @PageableDefault(size = 10, sort = "nBId", direction = Sort.Direction.DESC)
+            Pageable pageable,
+            Model model
+    ) {
+        Page<Notice> page = noticeService.list(pageable);
 
-        // ---- 콤마 방어: sort=nBTitle,asc 처럼 들어와도 안전하게 분리 ----
-        if (sort != null && sort.contains(",")) {
-            String[] p = sort.split(",", 2);
-            sort = p[0].trim();
-            if (dir == null && p.length > 1) dir = p[1].trim();
-        }
-        if (dir == null || (!dir.equalsIgnoreCase("asc") && !dir.equalsIgnoreCase("desc"))) {
-            dir = "desc"; // 기본값
-        }
-        // -------------------------------------------------------------------
+        Sort.Order order = page.getSort().stream()
+                .findFirst()
+                .orElse(Sort.Order.by("nBId").with(Sort.Direction.DESC));
 
-        Sort.Direction direction = dir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable p = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(direction, sort));
-
-        Page<Notice> page = noticeService.list(p);
         model.addAttribute("page", page);
-        model.addAttribute("sort", sort);
-        model.addAttribute("dir", dir);
+        model.addAttribute("size", page.getSize());
+        model.addAttribute("sort", order.getProperty());
+        model.addAttribute("dir", order.getDirection().isAscending() ? "asc" : "desc");
         return "notice/list";
     }
 

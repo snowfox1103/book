@@ -1,12 +1,11 @@
 package com.example.book.repository;
 
-
+import org.springframework.data.jpa.repository.Lock;
 import com.example.book.domain.user.Users;
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
@@ -42,5 +41,9 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
   @Query("select m from Users m where m.userNo = :userNo")
   Optional<Users> findByUserNo(Long userNo);
+
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Query("select u from Users u where u.userNo = :userNo")
+  Users findByUserNoForUpdate(@Param("userNo") Long userNo);
 }
 

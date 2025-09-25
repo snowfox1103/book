@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="utf-8"/>
+    <title>포인트 설정</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <style>
+        .section-title{font-weight:700;margin-bottom:.75rem}
+        .desc{color:#6c757d}
+        .hint{font-size:.9rem;color:#6c757d}
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- ⓐ ① ② 공통 헤더/메뉴 -->
+<div th:replace="~{fragments/common :: header(active='points')}"></div>
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">정렬 및 페이징 / 설정</h5>
+        <a th:href="@{/point/list}" class="btn btn-outline-secondary">← 목록</a>
+    </div>
+
+    <!-- 설정 폼 -->
+    <form th:action="@{/point/setting}" method="post" class="card shadow-sm">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="card-body p-4">
+
+            <!-- 기본 정렬 -->
+            <div class="mb-4">
+                <div class="section-title">기본 정렬</div>
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label class="col-form-label">정렬 키</label>
+                    </div>
+                    <div class="col-auto">
+                        <select name="sort" class="form-select"
+                                th:value="${opt != null ? opt.sort : 'date'}">
+                            <option value="date">날짜</option>
+                            <option value="delta">변동액</option>
+                            <option value="type">구분</option>
+                        </select>
+                    </div>
+
+                    <div class="col-auto">
+                        <label class="col-form-label">방향</label>
+                    </div>
+                    <div class="col-auto">
+                        <select name="dir" class="form-select"
+                                th:value="${opt != null ? opt.dir : 'desc'}">
+                            <option value="asc">오름차순</option>
+                            <option value="desc">내림차순</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="hint mt-2">목록 처음 진입 시 적용되는 정렬입니다. (목록 화면에서 다시 바꿀 수 있음)</div>
+            </div>
+
+            <!-- 페이지 크기 -->
+            <div class="mb-4">
+                <div class="section-title">페이지 크기</div>
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label class="col-form-label">표시 개수</label>
+                    </div>
+                    <div class="col-auto">
+                        <select name="pageSize" class="form-select"
+                                th:value="${opt != null ? opt.pageSize : 50}">
+                            <option value="10">10개</option>
+                            <option value="20">20개</option>
+                            <option value="50">50개</option>
+                            <option value="100">100개</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="hint mt-2">기본 페이지 크기(목록 화면에서도 변경 가능)</div>
+            </div>
+
+            <!-- 필터 기본값 -->
+            <div class="mb-4">
+                <div class="section-title">필터 기본값</div>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">기간</label>
+                        <div class="row g-2">
+                            <div class="col">
+                                <input type="date" class="form-control" name="from"
+                                       th:value="${opt != null ? opt.from : ''}" placeholder="시작일">
+                            </div>
+                            <div class="col">
+                                <input type="date" class="form-control" name="to"
+                                       th:value="${opt != null ? opt.to : ''}" placeholder="종료일">
+                            </div>
+                        </div>
+                        <div class="hint mt-2">비워두면 전체 기간</div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">구분</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="onlyPositive" id="onlyPositive"
+                                   th:checked="${opt != null ? opt.onlyPositive : false}">
+                            <label class="form-check-label" for="onlyPositive">적립만 보기(+) </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="onlyNegative" id="onlyNegative"
+                                   th:checked="${opt != null ? opt.onlyNegative : false}">
+                            <label class="form-check-label" for="onlyNegative">사용만 보기(-)</label>
+                        </div>
+                        <div class="hint mt-2">둘 다 체크하지 않으면 전체 표시</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 저장 & 초기화 -->
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">저장</button>
+                <a th:href="@{/point/setting/reset}" class="btn btn-outline-secondary">기본값으로 초기화</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="desc mt-3">저장 후 목록 화면에서 설정이 기본으로 적용됩니다.</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
