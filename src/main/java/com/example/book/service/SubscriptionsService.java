@@ -13,5 +13,5 @@ public interface SubscriptionsService  {
   void updateSubscription(Long subId, SubscriptionsDTO dto);
   Map<String, Long> getCategorySummary(Long userNo);
   List<Subscriptions> getDueAlertsInWindow(Long userNo, LocalDate today);
-  void markAlertsShown(List<Long> ids);
+  void markAlertsShown(Long userNo, List<Long> ids);
 }

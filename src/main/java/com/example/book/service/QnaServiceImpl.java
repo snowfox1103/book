@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -88,5 +90,11 @@ public class QnaServiceImpl implements QnaService {
     // ---- private helpers ----
     private boolean isOwner(Qna q, Long userNo) {
         return q.getUserNo() != null && q.getUserNo().equals(userNo);
+    }
+
+    //0925 조덕진 마이페이지 문의글 리스트 조회 목적
+    @Override
+    public List<Qna> getRecentInquiries(Long userNo) {
+        return qnaRepository.findTop10ByUserNoOrderByRegDateDesc(userNo);
     }
 }

@@ -13,7 +13,7 @@
 <div th:replace="~{fragments/common :: header(active='board')}"></div>
 
 <<div class="shop-container">
-  <h4 class="mb-4 fw-bold">포인트 샵</h4>
+<!--  <h4 class="mb-4 fw-bold">포인트 샵</h4>-->
   <!-- 상품권 목록 -->
   <div class="row g-4 mb-5 justify-content-center">
     <div class="col-md-3" th:each="item : ${items}">
@@ -47,134 +47,6 @@
       </div>
     </div>
 
-<!--    &lt;!&ndash; 3,000원권 &ndash;&gt;-->
-<!--    <div class="col-md-3">-->
-<!--      <div class="card h-100 text-center">-->
-<!--        <div class="card-body">-->
-<!--          <div class="point-item" data-id="1" data-name="3,000원권" data-price="3000">3,000원권</div>-->
-<!--          <p class="point-box">3,000P</p>-->
-<!--          <p class="text-muted small">편의점 상품권</p>-->
-<!--          <div class="qty-control">-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-minus">-</button>-->
-<!--            <input type="text" value="0" readonly>-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-plus">+</button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; 5,000원권 &ndash;&gt;-->
-<!--    <div class="col-md-3">-->
-<!--      <div class="card h-100 text-center">-->
-<!--        <div class="card-body">-->
-<!--          <div class="point-item" data-id="2" data-name="5,000원권" data-price="4700">5,000원권</div>-->
-<!--          <p class="point-box">4,700P</p>-->
-<!--          <p class="text-muted small">스타벅스 기프티콘</p>-->
-<!--          <div class="qty-control">-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-minus">-</button>-->
-<!--            <input type="text" value="0" readonly>-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-plus">+</button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; 9,000원권 &ndash;&gt;-->
-<!--    <div class="col-md-3">-->
-<!--      <div class="card h-100 text-center">-->
-<!--        <div class="card-body">-->
-<!--          <div class="point-item" data-id="3" data-name="9,000원권" data-price="8500">9,000원권</div>-->
-<!--          <p class="point-box">8,500P</p>-->
-<!--          <p class="text-muted small">문화상품권</p>-->
-<!--          <div class="qty-control">-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-minus">-</button>-->
-<!--            <input type="text" value="0" readonly>-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-plus">+</button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; 10,000원권 &ndash;&gt;-->
-<!--    <div class="col-md-3">-->
-<!--      <div class="card h-100 text-center">-->
-<!--        <div class="card-body">-->
-<!--          <div class="point-item" data-id="4" data-name="10,000원권" data-price="9500">10,000원권</div>-->
-<!--          <p class="point-box">9,500P</p>-->
-<!--          <p class="text-muted small">외식 상품권</p>-->
-<!--          <div class="qty-control">-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-minus">-</button>-->
-<!--            <input type="text" value="0" readonly>-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-plus">+</button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; 20,000원권 &ndash;&gt;-->
-<!--    <div class="col-md-3">-->
-<!--      <div class="card h-100 text-center">-->
-<!--        <div class="card-body">-->
-<!--          <div class="point-item" data-id="5" data-name="20,000원권" data-price="18000">20,000원권</div>-->
-<!--          <p class="point-box">18,000P</p>-->
-<!--          <p class="text-muted small">영화관 예매권</p>-->
-<!--          <div class="qty-control">-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-minus">-</button>-->
-<!--            <input type="text" value="0" readonly>-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-plus">+</button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; 30,000원권 &ndash;&gt;-->
-<!--    <div class="col-md-3">-->
-<!--      <div class="card h-100 text-center">-->
-<!--        <div class="card-body">-->
-<!--          <div class="point-item" data-id="6" data-name="30,000원권" data-price="27000">30,000원권</div>-->
-<!--          <p class="point-box">27,000P</p>-->
-<!--          <p class="text-muted small">백화점 상품권</p>-->
-<!--          <div class="qty-control">-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-minus">-</button>-->
-<!--            <input type="text" value="0" readonly>-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-plus">+</button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; 50,000원권 &ndash;&gt;-->
-<!--    <div class="col-md-3">-->
-<!--      <div class="card h-100 text-center">-->
-<!--        <div class="card-body">-->
-<!--          <div class="point-item" data-id="7" data-name="50,000원권" data-price="45000">50,000원권</div>-->
-<!--          <p class="point-box">45,000P</p>-->
-<!--          <p class="text-muted small">주유권</p>-->
-<!--          <div class="qty-control">-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-minus">-</button>-->
-<!--            <input type="text" value="0" readonly>-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-plus">+</button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; 100,000원권 &ndash;&gt;-->
-<!--    <div class="col-md-3">-->
-<!--      <div class="card h-100 text-center">-->
-<!--        <div class="card-body">-->
-<!--          <div class="point-item" data-id="8" data-name="100,000원권" data-price="90000">100,000원권</div>-->
-<!--          <p class="point-box">90,000P</p>-->
-<!--          <p class="text-muted small">항공 마일리지 상품권</p>-->
-<!--          <div class="qty-control">-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-minus">-</button>-->
-<!--            <input type="text" value="0" readonly>-->
-<!--            <button class="btn btn-outline-secondary btn-sm btn-plus">+</button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
     <!-- 장바구니 + 포인트/결제 정보 -->
     <div class="cart-summary-row">
       <!-- 장바구니 -->
@@ -189,10 +61,14 @@
       <!-- 포인트/결제 -->
       <div class="point-info">
         <div class="point-summary">
-          <p>현재 포인트: <strong id="currentPoint">50,000P</strong></p>
-          <p>선택 상품: <strong id="itemCount">3종 / 5개</strong></p>
-          <p>차감 포인트: <strong id="usedPoint">10,700P</strong></p>
-          <p class="text-success">남는 포인트: <strong id="remainPoint">39,300P</strong></p>
+          <p>현재 포인트:
+            <strong id="currentPoint"
+                    th:data-value="${currentPoint}"
+                    th:text="${#numbers.formatInteger(currentPoint, 3, 'COMMA')} + 'P'"></strong>
+          </p>
+          <p>선택 상품: <strong id="itemCount">0종 / 0개</strong></p>
+          <p>차감 포인트: <strong id="usedPoint">0P</strong></p>
+          <p class="text-success">남는 포인트: <strong id="remainPoint">0P</strong></p>
           <p class="text-muted small">* 결제 후 환불/취소 불가</p>
         </div>
 
@@ -200,28 +76,39 @@
         <div class="mt-auto">
           <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" id="agreeCheck" required>
-            <label class="form-check-label" for="agreeCheck">
-              구매 약관에 동의합니다
-            </label>
+            <label class="form-check-label" for="agreeCheck">구매 약관에 동의합니다</label>
           </div>
-          <button class="btn btn-success w-100">결제하기</button>
+          <button id="payBtn" class="btn btn-success w-100">결제하기</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<div th:replace="~{fragments/common :: alert}"></div>
+
 <script>
     document.addEventListener("DOMContentLoaded", async () => {
-        const cart = {}; // { itemId: { name, price, count } }
+        let cart = {};
 
-        // ✅ 장바구니 DB에서 불러오기
+        const currentPointEl = document.getElementById("currentPoint");
+        let currentPoint = parseInt(currentPointEl.dataset.value, 10);
+
+        const usedPointEl = document.getElementById("usedPoint");
+        const remainPointEl = document.getElementById("remainPoint");
+        const itemCountEl = document.getElementById("itemCount");
+
+        const t = document.querySelector('meta[name="_csrf"]')?.content;
+        const h = document.querySelector('meta[name="_csrf_header"]')?.content;
+        const headers = { "Content-Type": "application/json" };
+        if (t && h) headers[h] = t;
+
+        // ✅ 장바구니 불러오기
         try {
-            const response = await fetch("/cart/list");
+            const response = await fetch("/cart/list", { headers });
             if (!response.ok) throw new Error("장바구니 불러오기 실패");
 
             const cartData = await response.json();
-
             cartData.forEach(item => {
                 cart[item.itemId] = {
                     name: item.itemName,
@@ -229,7 +116,6 @@
                     count: item.itemCount
                 };
 
-                // input value 반영
                 const input = document.querySelector(`.point-item[data-id="${item.itemId}"]`)
                     ?.closest(".card-body")
                     .querySelector("input");
@@ -238,28 +124,23 @@
 
             updateCartUI();
         } catch (err) {
-            console.error(err);
+            console.error("장바구니 초기화 실패", err);
         }
 
         // ✅ 서버에 업데이트
         async function updateCart(itemId, count) {
             try {
-                const t = document.querySelector('meta[name="_csrf"]')?.content;
-                const h = document.querySelector('meta[name="_csrf_header"]')?.content;
-                const headers = { "Content-Type": "application/json" };
-                if (t && h) headers[h] = t;
-
                 await fetch("/cart/update", {
                     method: "POST",
                     headers,
                     body: JSON.stringify({ itemId, count })
                 });
             } catch (err) {
-                console.error(err);
+                console.error("updateCart 실패", err);
             }
         }
 
-        // ✅ 각 카드에 버튼 이벤트 연결
+        // ✅ 버튼 이벤트 연결
         document.querySelectorAll(".card").forEach(card => {
             const itemEl = card.querySelector(".point-item");
             const input = card.querySelector("input");
@@ -277,12 +158,10 @@
             }
 
             plusBtn.addEventListener("click", () => {
-                if (cart[itemId].count < 100) {
-                    cart[itemId].count++;
-                    input.value = cart[itemId].count;
-                    updateCartUI();
-                    updateCart(itemId, cart[itemId].count);
-                }
+                cart[itemId].count++;
+                input.value = cart[itemId].count;
+                updateCartUI();
+                updateCart(itemId, cart[itemId].count);
             });
 
             minusBtn.addEventListener("click", () => {
@@ -295,23 +174,23 @@
             });
         });
 
-        // ✅ 장바구니 UI 갱신
+        // ✅ 장바구니 UI 업데이트
         function updateCartUI() {
             const cartList = document.getElementById("cartList");
             const cartTotal = document.getElementById("cartTotal");
             cartList.innerHTML = "";
             let total = 0;
+            let totalCount = 0;
+            let typeCount = 0;
 
             Object.entries(cart).forEach(([itemId, item]) => {
                 if (item.count > 0) {
                     const li = document.createElement("li");
                     li.className = "list-group-item d-flex justify-content-between align-items-center";
 
-                    // 왼쪽 (상품명 + 수량)
                     const leftSpan = document.createElement("span");
                     leftSpan.textContent = `${item.name} x ${item.count}`;
 
-                    // 오른쪽 (가격 + 삭제버튼)
                     const rightBox = document.createElement("span");
                     rightBox.className = "d-flex align-items-center gap-2";
 
@@ -321,21 +200,9 @@
                     const delBtn = document.createElement("button");
                     delBtn.className = "btn btn-sm btn-danger";
                     delBtn.textContent = "x";
-
-                    // 삭제 이벤트
                     delBtn.addEventListener("click", async () => {
                         try {
-                            const t = document.querySelector('meta[name="_csrf"]')?.content;
-                            const h = document.querySelector('meta[name="_csrf_header"]')?.content;
-                            const headers = {};
-                            if (t && h) headers[h] = t;
-
-                            const response = await fetch(`/cart/delete/${itemId}`, {
-                                method: "DELETE",
-                                headers
-                            });
-                            if (!response.ok) throw new Error("삭제 실패");
-
+                            await fetch(`/cart/delete/${itemId}`, { method: "DELETE", headers });
                             cart[itemId].count = 0;
                             updateCartUI();
 
@@ -343,26 +210,71 @@
                                 ?.closest(".card-body")
                                 .querySelector("input");
                             if (input) input.value = 0;
-
-                            console.log("DB에서 장바구니 아이템 삭제 성공");
                         } catch (err) {
-                            console.error(err);
+                            console.error("삭제 실패", err);
                         }
                     });
 
                     rightBox.appendChild(priceSpan);
                     rightBox.appendChild(delBtn);
-
                     li.appendChild(leftSpan);
                     li.appendChild(rightBox);
                     cartList.appendChild(li);
 
                     total += item.price * item.count;
+                    totalCount += item.count;
+                    typeCount++;
                 }
             });
 
-            cartTotal.textContent = `총 차감 포인트: ${(total).toLocaleString()}P`;
+            cartTotal.textContent = `총 차감 포인트: ${total.toLocaleString()}P`;
+            usedPointEl.textContent = `${total.toLocaleString()}P`;
+
+            const remain = currentPoint - total;
+            remainPointEl.textContent = `${remain.toLocaleString()}P`;
+            remainPointEl.className = remain < 0 ? "text-danger" : "text-success";
+
+            itemCountEl.textContent = `${typeCount}종 / ${totalCount}개`;
         }
+
+        // ✅ 결제 버튼 이벤트
+        document.getElementById("payBtn").addEventListener("click", async () => {
+            if (!document.getElementById("agreeCheck").checked) {
+                alert("구매 약관에 동의해야 결제가 가능합니다.");
+                return;
+            }
+
+            const usedPoint = parseInt(usedPointEl.textContent.replace(/[^0-9]/g, ""));
+            if (currentPoint < usedPoint) {
+                alert("포인트가 부족합니다!");
+                return;
+            }
+
+            const items = Object.entries(cart)
+                .filter(([_, item]) => item.count > 0)
+                .map(([id, item]) => ({
+                    itemId: id,
+                    itemName: item.name,
+                    itemPrice: item.price,
+                    itemCount: item.count
+                }));
+
+            try {
+                const response = await fetch("/cart/checkout", {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify(items)
+                });
+
+                if (!response.ok) throw new Error("결제 실패");
+
+                alert("결제가 완료되었습니다!");
+                location.reload();
+            } catch (err) {
+                console.error(err);
+                alert("결제 중 오류 발생");
+            }
+        });
     });
 </script>
 

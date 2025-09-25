@@ -15,4 +15,6 @@ public interface UsersService {
   void resend(ResendRequestDTO req);
   void idSearch(IdSearchRequestDTO req);
   void pwSearch(PwSearchRequestDTO req);
+  int getCurrentPoint(Long userNo);
+  void updateBalance(Long userNo, int newBalance);
 }

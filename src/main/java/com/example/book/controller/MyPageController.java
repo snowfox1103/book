@@ -61,11 +61,11 @@ public class MyPageController {
     model.addAttribute("categories", categories);
     model.addAttribute("user", users);
 
-//    List<Qna> myInquiries = qnaService.getRecentInquiries(users.getUserNo());
-//    model.addAttribute("myInquiries", myInquiries);
+    List<Qna> myInquiries = qnaService.getRecentInquiries(users.getUserNo());
+    model.addAttribute("myInquiries", myInquiries);
 
-    List<Qna> myInquiries = Collections.emptyList();
-    model.addAttribute("myInquiries", myInquiries); // 우회용 0924 석준영
+//    List<Qna> myInquiries = Collections.emptyList();
+//    model.addAttribute("myInquiries", myInquiries); // 우회용 0924 석준영
 
     return "mypage/myPage";
   }

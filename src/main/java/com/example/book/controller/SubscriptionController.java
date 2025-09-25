@@ -121,9 +121,9 @@ public class SubscriptionController {
   // ====== ▼ 추가: 알림 노출 마킹 ======
   @PostMapping("/alerts/mark")
   @ResponseBody
-  public ResponseEntity<?> markAlerts(@RequestBody List<Long> ids) {
-    subscriptionsService.markAlertsShown(ids);
-
+  public ResponseEntity<?> markAlerts(@AuthenticationPrincipal UsersSecurityDTO authUser,
+                                      @RequestBody List<Long> ids) {
+    subscriptionsService.markAlertsShown(authUser.getUserNo(), ids);
     return ResponseEntity.ok(Map.of("message", "marked"));
   }
 }

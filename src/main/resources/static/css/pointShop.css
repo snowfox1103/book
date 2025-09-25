@@ -3,7 +3,7 @@ body {
 }
 
 .shop-container {
-    max-width: 1200px;
+    max-width: 1320px;
     margin: 30px auto;
     font-family: "Noto Sans KR", sans-serif;
 }
@@ -20,11 +20,11 @@ body {
     align-items: center;
     margin: 0 auto 10px;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .point-box {
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 500;
     margin-bottom: 3px;
 }
@@ -86,7 +86,7 @@ body {
 /* 결제 요약 박스 */
 .point-info {
     background-color: white;
-    font-size: 15px;
+    font-size: 17px;
     line-height: 1.6;
     display: flex;
     flex-direction: column;
@@ -109,20 +109,20 @@ body {
 
 /* 남는 포인트 강조 */
 .point-info .text-success {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
 }
 
 /* 안내문 (작게, 회색) */
 .point-info .text-muted.small {
-    font-size: 13px;
+    font-size: 15px;
     color: #777 !important;
 }
 
 /* 약관 동의 체크박스 */
 .form-check {
     margin-top: 10px;
-    font-size: 14px;
+    font-size: 16px;
 }
 .form-check-input {
     cursor: pointer;
