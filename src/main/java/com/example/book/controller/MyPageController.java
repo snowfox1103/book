@@ -37,6 +37,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Collections; // 추후 삭제 예정 0924 석준영
 
 @Controller
 @Log4j2
@@ -60,8 +61,11 @@ public class MyPageController {
     model.addAttribute("categories", categories);
     model.addAttribute("user", users);
 
-    List<Qna> myInquiries = qnaService.getRecentInquiries(users.getUserNo());
-    model.addAttribute("myInquiries", myInquiries);
+//    List<Qna> myInquiries = qnaService.getRecentInquiries(users.getUserNo());
+//    model.addAttribute("myInquiries", myInquiries);
+
+    List<Qna> myInquiries = Collections.emptyList();
+    model.addAttribute("myInquiries", myInquiries); // 우회용 0924 석준영
 
     return "mypage/myPage";
   }

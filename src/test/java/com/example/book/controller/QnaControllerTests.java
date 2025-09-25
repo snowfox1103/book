@@ -68,7 +68,7 @@ class QnaControllerTest {
     @Test
     @WithMockUser(username="user1", roles="USER")
     void testReadPublic() throws Exception {
-        Qna q = Qna.builder().qBId(1L).userNo(1L).qBTitle("t").qBContent("c").qBBlind(false).build();
+        Qna q = Qna.builder().qbId(1L).userNo(1L).qbTitle("t").qbContent("c").qbBlind(false).build();
         Mockito.when(qnaService.getForRead(eq(1L), anyLong(), anyBoolean())).thenReturn(q);
         Mockito.when(qnaReplyService.list(1L)).thenReturn(List.of());
 

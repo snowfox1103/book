@@ -37,7 +37,7 @@
     <div th:if="${#lists.isEmpty(replies)}" class="alert alert-secondary">등록된 답변이 없습니다.</div>
     <div th:each="r : ${replies}" class="card mb-2">
         <div class="card-body">
-            <p class="mb-1" th:text="${r.qBContent}">답변 내용</p>
+            <p class="mb-1" th:text="${r.qrContent}">답변 내용</p>
             <small class="text-muted" th:text="${#temporals.format(r.regDate, 'yyyy-MM-dd HH:mm')}">시각</small>
         </div>
     </div>

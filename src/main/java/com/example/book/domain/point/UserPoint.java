@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "userPoint")
@@ -27,7 +28,7 @@ public class UserPoint extends BaseEntity {
     private Long budId;
 
     @Column(name = "pointStartDate")
-    private LocalDate pointStartDate;
+    private LocalDateTime pointStartDate;
 
     @Column(name = "pointAmount")
     private Long pointAmount;
@@ -38,5 +39,8 @@ public class UserPoint extends BaseEntity {
 
     @Column(name = "pointReason")
     private String pointReason;
+
+    // 거래 직후 잔액(선택)
+    private Long runningBalance;
 
 }

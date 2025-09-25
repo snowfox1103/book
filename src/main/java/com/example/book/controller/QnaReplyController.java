@@ -46,7 +46,7 @@ public class QnaReplyController {
                          @PathVariable Long qRId,
                          @RequestParam Long qBId) {
         if (!isAdmin(ud)) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        qnaReplyService.delete(qRId, currentUserNo(ud));
+        qnaReplyService.deleteByAdmin(qRId);
         return "redirect:/qna/" + qBId;
     }
 }

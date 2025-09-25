@@ -24,7 +24,7 @@ public class EmailVerificationToken {
   @Column(nullable = false)
   private LocalDateTime expiryDate;
 
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "userNo")
   private Users users;
 

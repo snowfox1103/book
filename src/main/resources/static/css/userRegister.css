@@ -1,3 +1,8 @@
+.register-container ul li{display: inline; margin: 10px; list-style: none;}
+.register-container li a{white-space: nowrap; color:#1D4ED8FF; text-decoration: none;}
+.register-container li a:hover{text-decoration: underline;}
+.register-container button:hover{opacity: 0.5;}
+
 /* 전체 컨테이너 */
 .register-container {
     width: 100%;
