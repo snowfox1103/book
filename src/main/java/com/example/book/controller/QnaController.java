@@ -63,18 +63,17 @@ public class QnaController {
     }
 
 
-    @GetMapping("/qna/{qbId}")
+    @GetMapping("/{qbId}")
     public String read(@PathVariable Long qbId,
                        @AuthenticationPrincipal UsersSecurityDTO auth,
                        Model model) {
-        Long userNo  = (auth != null) ? auth.getUserNo() : null;
-        boolean isAdmin = (auth != null && auth.hasRole("ADMIN"));
+        Long userNo   = (auth != null) ? auth.getUserNo() : null;
+        boolean admin = (auth != null && auth.hasRole("ADMIN"));
 
-        Qna q = qnaService.getForRead(qbId, userNo, isAdmin); // ← boolean 전달
+        Qna q = qnaService.getForRead(qbId, userNo, admin); // 비공개 접근 로직은 서비스에서 처리
         model.addAttribute("q", q);
-
         model.addAttribute("replies", qnaReplyService.list(qbId));
-        model.addAttribute("canEdit", isAdmin || (userNo != null && userNo.equals(q.getUserNo())));
+        model.addAttribute("canEdit", admin || (userNo != null && userNo.equals(q.getUserNo())));
         return "qna/read";
     }
 
