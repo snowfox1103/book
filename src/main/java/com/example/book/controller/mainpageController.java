@@ -1,7 +1,7 @@
 package com.example.book.controller;
 
-import com.example.book.domain.Categories;
-import com.example.book.domain.Users;
+import com.example.book.domain.finance.Categories;
+import com.example.book.domain.user.Users;
 import com.example.book.dto.BudgetsDTO;
 import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
@@ -33,7 +33,24 @@ public class mainpageController {
         log.info("--------get mainpage---------");
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
         log.info(responseDTO);
-        List<Categories> categories = categoriesService.categoriesList();
+        List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
+//        Long totalAmount = transactionsService.totals(userNo);
+        model.addAttribute("users",userNo);
+//        model.addAttribute("totals",totalAmount);
+        model.addAttribute("categories", categories);
+        model.addAttribute("responseDTO",responseDTO);
+    }
+    @GetMapping("/stastic")
+    public void getstastic(Users users,PageRequestDTO pageRequestDTO, Model model, TransactionsDTO transactionsDTO, BudgetsDTO budgetsDTO){
+//        Long userNo = users.getUserNo();
+        Long userNo = 1L;
+        log.info("--------get ---------");
+        PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
+        log.info(responseDTO);
+        List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
+//        Long totalAmount = transactionsService.totals(userNo);
+        model.addAttribute("users",userNo);
+//        model.addAttribute("totals",totalAmount);
         model.addAttribute("categories", categories);
         model.addAttribute("responseDTO",responseDTO);
     }

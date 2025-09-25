@@ -29,7 +29,6 @@ public class TransactionsServiceImpl implements TransactionsService{
     private final ModelMapper modelMapper;
     private final TransactionsRepository transactionsRepository;
     private final BudgetsRepository budgetsRepository;
-    private final CategoriesRepository categoriesRepository;
     @Override
     public Long registerTrans(TransactionsDTO transactionsDTO){
         Transactions transactions = modelMapper.map(transactionsDTO,Transactions.class);
@@ -83,10 +82,10 @@ public class TransactionsServiceImpl implements TransactionsService{
                 .total((int)result.getTotalElements())
                 .build();
     }
-    @Override
-    public void autoUpdateBudgetCurrent(Long catId, Long userNo){
-        int year = LocalDate.now().getYear();
-        int month = LocalDate.now().getMonthValue();
+    @Override //입출금 수정,추가,삭제 시 업데이트(이번 달로 한정)
+    public void autoUpdateBudgetCurrentByCategory(Long catId, Long userNo){
+        int year = LocalDate.now().getYear(); //날짜에서 뽑아오기
+        int month = LocalDate.now().getMonthValue(); //날짜에서 뽑아오기
         log.info("------------!!!!!!!!!!!!-----userNo: -------"+userNo);
         Long sumByCategory = transactionsRepository.totalUseByCategory(catId, year, month, userNo);
         log.info("-------------!!!!!!!!--------sum: ---------"+sumByCategory);
@@ -103,5 +102,12 @@ public class TransactionsServiceImpl implements TransactionsService{
 //        );
 //        budgets.autoUpdateCurrentMoney(sumByCategory);
 //        budgetsRepository.save(budgets);
+
+    }
+    @Override //이번 달 총 사용 금액
+    public Long wholeUses(Long userNo){
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+        return transactionsRepository.totalUseByMonth(year,month,userNo);
     }
 }

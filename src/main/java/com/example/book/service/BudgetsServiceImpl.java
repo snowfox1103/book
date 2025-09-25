@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,5 +71,38 @@ public class BudgetsServiceImpl implements BudgetsService {
                 .dtoList(dtoList)
                 .total((int)result.getTotalElements())
                 .build();
+    }
+    @Override
+    public Long totalBudAmountsByMonth(int year,int month,Long userNo){
+        return budgetsRepository.totalBudAmountByMonth(year,month,userNo);
+    }
+    @Override //예산 조회 시 모든 달, 카테고리별로 새로 업데이트
+    public void autoUpdateUsesByCategoriesWhenAccessBudList(Long userNo){
+        int year = 2025; //수정
+        int month = 9; //수정
+        List<Long> allCategories = budgetsRepository.allCategory(userNo,year,month);
+        for(Long i:allCategories){
+            Long sumByAllCategories = transactionsRepository.totalUseByCategory(i,year,month,userNo);
+            log.info("-----이번 달----"+i+" 카테고리의 총합은: "+sumByAllCategories);
+            budgetsRepository.usedBudgetByCategory(i,year,month,userNo)
+                    .ifPresent(budget -> {
+                        budget.autoUpdateCurrentMoney(sumByAllCategories);
+                        budgetsRepository.save(budget);
+                        log.info("예산 자동 업데이트 완료: category={}, year={}, month={}, sum={}",
+                                i, year, month, sumByAllCategories);
+                    });
+        }
+    }
+    @Override //이번 달 총 설정 예산
+    public Long wholeSetBudgetAmount(Long userNo){
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+        return budgetsRepository.totalBudAmountByMonth(year,month,userNo);
+    }
+    @Override
+    public Long budgetUses(Long userNo){
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+        return budgetsRepository.budgetUsesByMonth(year,month,userNo);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.book.repository.search;
 
 import com.example.book.domain.finance.InOrOut;
+import com.example.book.domain.finance.QTransactions;
 import com.example.book.domain.finance.Transactions;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;

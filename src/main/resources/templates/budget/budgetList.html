@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/basic.html}">
+      layout:decorate="~{layout/nyjbasic.html}">
 <div layout:fragment="content">
     <!--  <h1>Board List</h1>-->
     <div class="card mb-3">
@@ -76,7 +76,7 @@
                 <div class="card-header">
                     모든 예산 내역
                 </div>
-                <div class="card-body" >
+                <div class="card-body " >
                     <table class="table">
                         <thead>
                         <tr>
@@ -90,22 +90,25 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="b:${bList.dtoList}"  > <!--응답 페이지 안의 예산 dto 리스트-->
-                            <th scope="row">
-                                <a th:href="|@{/budget/budgetRead(bno =${b.budgetId})}&${link}|"> [[${b.budgetId}]] </a>
-                            </th>
-                            <td th:text="${b.budYear + '  -  ' + b.budMonth + '월'}"></td>
-                            <td>
-                                <span th:each="cat : ${categories}"
-                                      th:if="${cat.catId} == ${b.budCategory}"
-                                      th:text="${cat.catName}">카테고리이름
-                               </span>
-                            </td>
-                            <td>[[${b.budAmount}]]</td>
-                            <td>[[${b.budCurrent}]]</td>
-                            <td>[[${b.budAmount} - ${b.budCurrent}]]</td>
-                            <td>[[${b.budIsOver}]]</td>
-                        </tr>
+                            <tr th:each="b:${bList.dtoList}"  > <!--응답 페이지 안의 예산 dto 리스트-->
+                                <th scope="row">
+                                    <a th:href="|@{/budget/budgetRead(bno =${b.budgetId})}&${link}|"> [[${b.budgetId}]] </a>
+                                </th>
+                                <td th:text="${b.budYear + '  -  ' + b.budMonth + '월'}"></td>
+                                <td>
+                                    <span th:each="cat : ${categories}"
+                                          th:if="${cat.catId} == ${b.budCategory}"
+                                          th:text="${cat.catName}">
+                                   </span>
+                                </td>
+                                <td th:text="${T(java.lang.String).format('%,d', b.budAmount)}"></td>
+                                <td th:text="${T(java.lang.String).format('%,d', b.budCurrent)}"></td>
+                                <td th:text="${T(java.lang.String).format('%,d', b.budAmount - b.budCurrent)}"></td>
+                                <td>
+                                    <span th:if="${b.budIsOver == true}" th:text="O"></span>
+                                    <span th:if="${b.budIsOver == false}" th:text="X"></span>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                     <!-- ------------------------------------------------------------------- 목록 페이지 처리-->

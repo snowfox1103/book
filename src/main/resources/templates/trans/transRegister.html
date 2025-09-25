@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/basic.html}">
+      layout:decorate="~{layout/nyjbasic.html}">
 
 <head>
     <title>Board Register</title>
@@ -48,11 +48,6 @@
                         <div class="input-group mb-3">
                             <span class="input-group-text">메모</span>
                             <input type="text" name="transMemo" class="form-control" placeholder="메모 입력">
-                        </div>
-
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">작성자</span>
-                            <input type="number" th:value="${users}" class="form-control" readonly>
                         </div>
 
                         <div class="input-group mb-3">

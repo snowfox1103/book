@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/nyjbasic.html}">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="stylesheet" href="/css/dashboard.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+    <div layout:fragment="content">
+        <div class="all">
+            <div class="page-container">
+                <div class="page1">
+                    <aside class="page1-left">
+                        <div class="remain">
+                            <!-- 자바스크립트 수정 예정 -->
+                            <p class="bank">신한은행 4322-2233-1253-523</p>
+                            <div class="money">
+                                <h2>잔액</h2>
+                                <h1><th:block th:text="${totals}" ></th:block></h1>
+                            </div>
+                        </div>
+                        <div class="recent">
+                            <!-- 자바스크립트 수정 예정 -->
+                            <table class="recent-list">
+                                <thead>
+                                    <tr>
+                                        <th>날짜</th>
+                                        <th>항목</th>
+                                        <th>금액</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+<!--                                //오늘 날짜로 할 건지 생각..-->
+                                    <tr th:each="dto:${responseDTO.dtoList}" th:if="${dto.userNo == users and dto.transInOut.name() == 'OUT'}">
+                                        <!--                        <tr th:each="dto:${responseDTO.dtoList}">-->
+                                        <td>[[${#temporals.format(dto.transDate, 'MM-dd')}]]</td>
+                                        <td>[[${dto.transTitle}]]</td>
+                                        <td th:text="${T(java.lang.String).format('%,d', dto.transAmount)}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </aside>
+                    <aside class="calendar">
+                        <div class="cal-header">
+                            <h1><th:block th:text="${#temporals.year(#temporals.createNow())}"></th:block></h1>
+                            <div class="cal-month">
+                                <button type="button" id="prev-month">◀</button>
+                                <p><th:block th:text="${#temporals.month(#temporals.createNow())}+'월'"></th:block></p>
+                                <button type="button" id="next-month">▶</button>
+                            </div>
+                        </div>
+                        <div class="cal-body">
+                            <!-- 자바스크립트 수정 예정 -->
+                            <div class="grid-item day" style="color:red">sun</div>
+                            <div class="grid-item day">mon</div>
+                            <div class="grid-item day">tue</div>
+                            <div class="grid-item day">wed</div>
+                            <div class="grid-item day">thu</div>
+                            <div class="grid-item day">fri</div>
+                            <div class="grid-item day" style="color:red">sat</div>
+                            <div class="grid-item"></div>
+                            <div class="grid-item"></div>
+                            <div class="grid-item">1</div>
+                            <div class="grid-item">2</div>
+                            <div class="grid-item">3</div>
+                            <div class="grid-item">4</div>
+                            <div class="grid-item">5</div>
+                            <div class="grid-item">6</div>
+                            <div class="grid-item">7</div>
+                            <div class="grid-item">8</div>
+                            <div class="grid-item">9</div>
+                            <div class="grid-item">10</div>
+                            <div class="grid-item">11</div>
+                            <div class="grid-item">12</div>
+                            <div class="grid-item">13</div>
+                            <div class="grid-item">14</div>
+                            <div class="grid-item">15</div>
+                            <div class="grid-item">16</div>
+                            <div class="grid-item">17</div>
+                            <div class="grid-item">18</div>
+                            <div class="grid-item">19</div>
+                            <div class="grid-item">20</div>
+                            <div class="grid-item">21</div>
+                            <div class="grid-item">22</div>
+                            <div class="grid-item">23</div>
+                            <div class="grid-item">24</div>
+                            <div class="grid-item">25</div>
+                            <div class="grid-item">26</div>
+                            <div class="grid-item">27</div>
+                            <div class="grid-item">28</div>
+                            <div class="grid-item">29</div>
+                            <div class="grid-item">30</div>
+                            <div class="grid-item">31</div>
+                            <div class="grid-item"></div>
+                            <div class="grid-item"></div>
+                        </div>
+                    </aside>
+                </div>
+                <div class="page2">
+                    <div class="auto-pay-list">
+                        <h2>매달 결제</h2>
+                        <table class="pay-table">
+                            <!-- 자바스크립트 수정 예정 -->
+                            <tr>
+                                <th>이름</th>
+                                <th>금액</th>
+                                <th>결제일</th>
+                            </tr>
+                            <tr>
+                                <td>쿠팡</td>
+                                <td>9,000원</td>
+                                <td>10일</td>
+                            </tr>
+                            <tr>
+                                <td>보험비</td>
+                                <td>200,000원</td>
+                                <td>1일</td>
+                            </tr>
+                            <tr>
+                                <td>티빙</td>
+                                <td>10,000원</td>
+                                <td>22일</td>
+                            </tr>
+                            <tr>
+                                <td>넷플릭스</td>
+                                <td>13,500원</td>
+                                <td>21일</td>
+                            </tr>
+                            <tr>
+                                <td>통신비</td>
+                                <td>13,500원</td>
+                                <td>27일</td>
+                            </tr>
+                            <tr>
+                                <td>월세</td>
+                                <td>500,000원</td>
+                                <td>10일</td>
+                            </tr>
+                            <tr>
+                                <td>왓챠</td>
+                                <td>13,500</td>
+                                <td>21일</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="budget">
+                        <h2>예산 현황</h2>
+                        <table class="budget-table" style="border: 1px solid black;">
+                            <tr>
+                                <th>카테고리</th>
+                                <th>설정 금액</th>
+                                <th>남은 금액</th>
+                                <th>소비율(%)</th>
+                            </tr>
+                            <tr>
+                                <td>식비</td>
+                                <td>250,000원</td>
+                                <td>200,000원</td>
+                                <td>20%</td>
+                            </tr>
+                            <tr>
+                                <td>여가비</td>
+                                <td>200,000원</td>
+                                <td>150,000원</td>
+                                <td>25%</td>
+                            </tr>
+                            <tr>
+                                <td>교통비</td>
+                                <td>50,000원</td>
+                                <td>25,000원</td>
+                                <td>50%</td>
+                            </tr>
+                            <tr>
+                                <td>총 예산</td>
+                                <td>500,000원</td>
+                                <td>375,000원</td>
+                                <td>25%</td>
+                            </tr>
+                        </table>
+                        <canvas id="budgetChart" width="700" height="400" style="margin-top: 30px;"></canvas>
+                    </div>
+                </div>
+                <div class="page3">
+                    <div class="category-graph">
+                        <h2>이번 달 지출 카테고리</h2>
+                        <canvas id="categoryChart" width="400" height="400"></canvas>
+                    </div>
+                    <div class="monthly-graph">
+                        <h2>이번 달 입금/ 출금</h2>
+                        <canvas id="monthlyChart" width="500" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 푸터 -->
+        <footer>
+            <ul>
+                <li><a href="#">about us</a></li>
+                <li><a href="#">licenses</a></li>
+                <li><a href="#">공지사항</a></li>
+            </ul>
+        </footer>
+        <script src="/js/dashboard.js"></script>
+    </div>
+    </body>
+</html>
