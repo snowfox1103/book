@@ -33,7 +33,7 @@ public class mainpageController {
         log.info("--------get mainpage---------");
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
         log.info(responseDTO);
-        List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
+        List<Categories> categories = categoriesService.categoriesList(users);
 //        Long totalAmount = transactionsService.totals(userNo);
         model.addAttribute("users",userNo);
 //        model.addAttribute("totals",totalAmount);
@@ -47,7 +47,7 @@ public class mainpageController {
         log.info("--------get ---------");
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
         log.info(responseDTO);
-        List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
+        List<Categories> categories = categoriesService.categoriesList(users);
 //        Long totalAmount = transactionsService.totals(userNo);
         model.addAttribute("users",userNo);
 //        model.addAttribute("totals",totalAmount);
