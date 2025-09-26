@@ -6,7 +6,6 @@ import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
 import com.example.book.dto.TransactionsDTO;
 import com.example.book.repository.BudgetsRepository;
-import com.example.book.repository.CategoriesRepository;
 import com.example.book.repository.TransactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -66,9 +65,9 @@ public class TransactionsServiceImpl implements TransactionsService{
         LocalDate endDay = pageRequestDTO.getEndDay();
         InOrOut io = pageRequestDTO.getIo();
         Pageable pageable = pageRequestDTO.getPageable("transId");
+        Page<Transactions> result = transactionsRepository.searchAllTrans(userNo, types,keyword,category,minn,maxx,startDay,endDay,io,pageable);
         //getContent()을 호출하면 현재 페이지에 해당하는 List<Transactions> 가 반환됩니다.
         //즉, DB에서 가져온 Transactions 엔티티들의 리스트예요
-        Page<Transactions> result = transactionsRepository.searchAllTrans(userNo, types,keyword,category,minn,maxx,startDay,endDay,io,pageable);
         //List<Transactions> → Stream<Transactions> 으로 바꿔줍니다.
         //이제 이 스트림에서 각 원소는 Transactions 타입 객체가 됩니다.
         List<TransactionsDTO> dtoList = result.getContent().stream()
@@ -82,32 +81,27 @@ public class TransactionsServiceImpl implements TransactionsService{
                 .total((int)result.getTotalElements())
                 .build();
     }
-    @Override //입출금 수정,추가,삭제 시 업데이트(이번 달로 한정)
-    public void autoUpdateBudgetCurrentByCategory(Long catId, Long userNo){
-        int year = LocalDate.now().getYear(); //날짜에서 뽑아오기
-        int month = LocalDate.now().getMonthValue(); //날짜에서 뽑아오기
+
+    @Override //입출금 등록,수정,삭제 시 전체 출금 내역 자동 집계
+    public void autoUpdateBudgetCurrent(Long userNo, Long catId, int year, int month){
         log.info("------------!!!!!!!!!!!!-----userNo: -------"+userNo);
-        Long sumByCategory = transactionsRepository.totalUseByCategory(catId, year, month, userNo);
-        log.info("-------------!!!!!!!!--------sum: ---------"+sumByCategory);
+        Long totalUseByCategories = transactionsRepository.totalUseByCategory(catId, year, month, userNo);
+        log.info("-------------!!!!!!!!--------sum: ---------"+totalUseByCategories);
         budgetsRepository.usedBudgetByCategory(catId, year, month, userNo)
                 .ifPresent(budget -> {
-                    budget.autoUpdateCurrentMoney(sumByCategory);
+                    budget.autoUpdateCurrentMoney(totalUseByCategories);
                     budgetsRepository.save(budget);
                     log.info("예산 자동 업데이트 완료: category={}, year={}, month={}, sum={}",
-                            catId, year, month, sumByCategory);
-                });
-//        Optional<Budgets> result = budgetsRepository.pickBudgetCurrentByCategory(catId,year,month,userNo);//설정한 예산이 없으면 집계 안하도록 수정
-//        Budgets budgets = result.orElseThrow(
-//                () -> new RuntimeException("Budget not found for categoryId " + catId + ", year " + year + ", month " + month)
-//        );
-//        budgets.autoUpdateCurrentMoney(sumByCategory);
-//        budgetsRepository.save(budgets);
-
+                            catId, year, month, totalUseByCategories);
+                    });
     }
-    @Override //이번 달 총 사용 금액
+    @Override //이번 달 총 사용 금액 집계
     public Long wholeUses(Long userNo){
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
         return transactionsRepository.totalUseByMonth(year,month,userNo);
     }
+    //해당 달 총 사용 금액 집계
+
+    //
 }

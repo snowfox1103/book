@@ -2,6 +2,7 @@ package com.example.book.controller;
 
 import com.example.book.domain.finance.Categories;
 import com.example.book.domain.user.Users;
+import com.example.book.domain.finance.Categories;
 import com.example.book.dto.BudgetsDTO;
 import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
@@ -32,19 +33,23 @@ public class BudgetsController {
     public void currentList(Users users, PageRequestDTO pageRequestDTO, Model model){
 //        Long userNo = users.getUserNo();
         Long userNo = 1L;
+        Long sumBudgets = budgetsService.wholeSetBudgetAmount(userNo);
+        Long sumUses = budgetsService.budgetUses(userNo);
         PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(userNo);
+        model.addAttribute("sumBudgets",sumBudgets);
+        model.addAttribute("sumUses",sumUses);
         model.addAttribute("users",userNo);
         model.addAttribute("response",pageResponseDTO);
         model.addAttribute("categories",categories);
         log.info("-----------get currentList-----------");
     }
     @GetMapping("/budgetList")
-    public void budgetList(Users users, PageRequestDTO pageRequestDTO, Model model){
+    public void budgetList(Users users,PageRequestDTO pageRequestDTO, Model model){
 //        Long userNo = users.getUserNo();
         Long userNo = 1L;
         PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(userNo);
         model.addAttribute("users",userNo);
         model.addAttribute("bList",pageResponseDTO);
         model.addAttribute("categories",categories);
@@ -56,22 +61,30 @@ public class BudgetsController {
 //        Long userNo = users.getUserNo();
         Long userNo = 1L;
         model.addAttribute("users",userNo);
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(userNo);
         model.addAttribute("categories",categories);
     }
     @PostMapping("/budgetRegister")
     public String postBudgetReg(@Valid BudgetsDTO budgetsDTO, RedirectAttributes redirectAttributes, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             log.info("has errors...................");
-            redirectAttributes.addFlashAttribute("errors",bindingResult.getAllErrors());
+            bindingResult.getFieldErrors().forEach(err -> {
+                if(err.getField().equals("budAmount")) {
+                    redirectAttributes.addFlashAttribute("budAmountError", "금액을 입력하세요");
+                } else {
+                    redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+                }
+            });
+            // 다시 등록 화면으로
             return "redirect:/budget/budgetRegister";
         }
         try{
-            Long bno = budgetsService.registerBudget(budgetsDTO);
-            transactionsService.autoUpdateBudgetCurrentByCategory(budgetsDTO.getBudCategory(),budgetsDTO.getUserNo());
+            Long bno = budgetsService.registerBudget(budgetsDTO); //예산 등록
+            // 등록된 예산의 입출금 내역 가져오기
+            transactionsService.autoUpdateBudgetCurrent(budgetsDTO.getUserNo(),budgetsDTO.getBudCategory(),budgetsDTO.getBudYear(),budgetsDTO.getBudMonth());
             redirectAttributes.addFlashAttribute("result",bno);
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            redirectAttributes.addFlashAttribute("duplicateError", e.getMessage());
             return "redirect:/budget/budgetRegister";
         }catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "예산 등록 중 오류가 발생했습니다.");
@@ -88,7 +101,7 @@ public class BudgetsController {
         Long userNo = 1L;
         PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
         BudgetsDTO budgetsDTO = budgetsService.readOneBudget(bno);
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.categoriesList(userNo);
         model.addAttribute("users",userNo);
         model.addAttribute("categories",categories);
         model.addAttribute("responseDTO",pageResponseDTO);

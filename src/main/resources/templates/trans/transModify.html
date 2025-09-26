@@ -37,9 +37,9 @@
                             <span class="input-group-text">입금/출금 선택</span>
 <!--                    ----------------------------------------------------------원래 선택한 항목이 보이게        수정필요-->
                             <select name="transInOut" class="form-select">
-                                <option th:value="${T(com.example.nyjbook.domain.InOrOut).OUT}" th:text="'출금'"
+                                <option th:value="${T(com.example.book.domain.InOrOut).OUT}" th:text="'출금'"
                                         th:selected="${transDTO.transInOut != null and transDTO.transInOut.name() == 'OUT'}"></option>
-                                <option th:value="${T(com.example.nyjbook.domain.InOrOut).IN}" th:text="'입금'"
+                                <option th:value="${T(com.example.book.domain.InOrOut).IN}" th:text="'입금'"
                                         th:selected="${transDTO.transInOut != null and transDTO.transInOut.name() == 'IN'}"></option>
                             </select>
                         </div>
