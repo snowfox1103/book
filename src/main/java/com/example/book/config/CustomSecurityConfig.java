@@ -48,7 +48,7 @@ public class CustomSecurityConfig {
     log.info("------------------configure----------------------");
     http
       .csrf(csrf -> csrf
-        .ignoringRequestMatchers("/h2-console/**")// 필요하면 특정 경로만 예외
+        .ignoringRequestMatchers("/trans/**", "/budget/**")// 필요하면 특정 경로만 예외
       )
 //      .csrf(csrf -> csrf.disable())
       .authorizeHttpRequests(auth -> auth
