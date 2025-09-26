@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/nyjbasic.html}">
-
+<!--0925 조덕진 basic 수정-->
 <head>
     <title>Board Register</title>
 </head>
@@ -32,8 +32,8 @@
                         <div class="input-group mb-3">
                             <span class="input-group-text">입금/출금 선택</span>
                             <select name="transInOut" class="form-select">
-                                <option th:value="${T(com.example.nyjbook.domain.InOrOut).OUT}" th:text="'출금'"></option>
-                                <option th:value="${T(com.example.nyjbook.domain.InOrOut).IN}" th:text="'입금'"></option>
+                                <option th:value="${T(com.example.book.domain.finance.InOrOut).OUT}" th:text="'출금'"></option>
+                                <option th:value="${T(com.example.book.domain.finance.InOrOut).IN}" th:text="'입금'"></option>
                             </select>
                         </div>
                         <div class="input-group mb-3">

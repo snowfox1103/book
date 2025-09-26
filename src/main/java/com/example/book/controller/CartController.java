@@ -36,4 +36,12 @@ public class CartController {
                              @PathVariable Long itemId) {
     cartService.deleteCartItem(users.getUserNo(), itemId);
   }
+
+  @PostMapping("/checkout")
+  @ResponseBody
+  public String checkout(@AuthenticationPrincipal UsersSecurityDTO user,
+                         @RequestBody List<CartResponseDTO> items) {
+    cartService.checkout(user.getUserNo(), items);
+    return "success";
+  }
 }

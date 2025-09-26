@@ -49,5 +49,7 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
   @Query("select u from Users u where u.userNo = :userNo")
   Users findByUserNoForUpdate(@Param("userNo") Long userNo);
 
+  @Query("select u.balance from Users u where u.userNo = :userNo")
+  int getBalance(@Param("userNo") Long userNo);
 }
 

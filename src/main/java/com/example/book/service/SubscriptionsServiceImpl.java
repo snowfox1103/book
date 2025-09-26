@@ -5,22 +5,27 @@ import com.example.book.domain.finance.SubPeriodUnit;
 import com.example.book.domain.finance.Subscriptions;
 import com.example.book.domain.user.Users;
 import com.example.book.dto.SubscriptionsDTO;
+import com.example.book.repository.BillingDailyGuardRepository;
 import com.example.book.repository.CategoriesRepository;
 import com.example.book.repository.SubscriptionsRepository;
 import com.example.book.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class SubscriptionsServiceImpl implements SubscriptionsService {
   private final SubscriptionsRepository subscriptionsRepository;
   private final UsersRepository usersRepository;
   private final CategoriesRepository categoriesRepository;
+  private final BillingDailyGuardRepository guardRepository;
 
   @Override
   @Transactional
@@ -96,16 +101,67 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
     return summary;
   }
 
+//  @Override
+//  @Transactional(readOnly = true)
+//  public List<Subscriptions> getDueAlertsInWindow(Long userNo, LocalDate today) {
+//    return subscriptionsRepository.findDueAlertsInWindow(userNo, today);
+//  }
+//
+//  @Override
+//  @Transactional
+//  public void markAlertsShown(List<Long> ids) {
+//    if (ids == null || ids.isEmpty()) return;
+//    subscriptionsRepository.markNotified(ids, LocalDateTime.now());
+//  }
+private static final ZoneId KST = ZoneId.of("Asia/Seoul");
+
+//  @Override
+//  @Transactional(readOnly = true)
+//  public List<Subscriptions> getDueAlertsInWindow(Long userNo, LocalDate today) {
+//    // 1) guard 확인: 오늘 이미 알림 마킹 됐으면 바로 빈 배열 리턴
+//    Date last = guardRepository.lockAndGet(userNo);
+//    if (last != null && ((java.sql.Date) last).toLocalDate().equals(today)) {
+//      return Collections.emptyList();
+//    }
+//
+//    // 2) 결제일 임박 구독 조회 (조건 맞는 것만 리턴)
+//    return subscriptionsRepository.findDueAlertsInWindowNative(userNo, java.sql.Date.valueOf(today));
+//  }
   @Override
   @Transactional(readOnly = true)
   public List<Subscriptions> getDueAlertsInWindow(Long userNo, LocalDate today) {
-    return subscriptionsRepository.findDueAlertsInWindow(userNo, today);
+    log.info("== Alert 조회 시작 ==");
+    log.info("userNo = {}", userNo);
+    log.info("today = {}", today);
+
+    // ❌ 여기서는 guard 체크/업데이트 절대 안함
+    List<Subscriptions> list = subscriptionsRepository.findDueAlertsInWindowNative(
+      userNo,
+      java.sql.Date.valueOf(today)
+    );
+
+    log.info("조회 결과 건수 = {}", list.size());
+    for (Subscriptions s : list) {
+      log.info("subId={}, nextPayDate={}, notifyWindowDays={}, lastNotifiedFor={}, subNotice={}",
+        s.getSubId(), s.getNextPayDate(), s.getNotifyWindowDays(),
+        s.getLastNotifiedFor(), s.isSubNotice());
+    }
+
+    return list;
   }
 
   @Override
   @Transactional
-  public void markAlertsShown(List<Long> ids) {
+  public void markAlertsShown(Long userNo, List<Long> ids) {
     if (ids == null || ids.isEmpty()) return;
+
+    // 1) Subscriptions 테이블에 "이번 회차 알림 봤음" 기록
     subscriptionsRepository.markNotified(ids, LocalDateTime.now());
+
+    // 2) ✅ guard는 "오늘 직접 닫은 경우"에만 업데이트
+    LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+    guardRepository.upsertToday(userNo, today);
+
+    log.info("오늘({}) 알림 마킹 완료: userNo={}, ids={}", today, userNo, ids);
   }
 }
