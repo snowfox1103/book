@@ -6,6 +6,7 @@ import com.example.book.domain.finance.Categories;
 import com.example.book.dto.BudgetsDTO;
 import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
+import com.example.book.security.dto.UsersSecurityDTO;
 import com.example.book.service.BudgetsService;
 import com.example.book.service.CategoriesService;
 import com.example.book.service.TransactionsService;
