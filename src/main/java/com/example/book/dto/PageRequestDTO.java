@@ -1,6 +1,9 @@
 package com.example.book.dto;
 
 import com.example.book.domain.finance.InOrOut;
+import com.example.book.domain.qna.Qna;
+import com.example.book.repository.QnaRepository;
+import com.example.book.security.dto.UsersSecurityDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +11,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -18,6 +25,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PageRequestDTO {
+
   @Builder.Default
   private int page = 1;
   @Builder.Default
@@ -31,7 +39,7 @@ public class PageRequestDTO {
   private InOrOut io;
   private Integer selectYear;
   private Integer selectMonth;
-  private Long categoriess;
+  private Long categories;
   private Long userNo;
 
   public String[] getTypes(){
@@ -68,5 +76,10 @@ public class PageRequestDTO {
       link = builder.toString();
     }
     return link;
+  }
+
+  public Pageable getPageable(String sort) {
+    int pageIndex = Math.max(this.page - 1, 0);
+    return PageRequest.of(pageIndex, this.size, Sort.by(Sort.Direction.DESC, sort));
   }
 }

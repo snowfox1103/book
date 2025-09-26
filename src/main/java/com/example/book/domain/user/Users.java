@@ -86,7 +86,7 @@ public class Users extends BaseEntity {
     public long getBalance() { return balance; }
     public void setBalance(long balance) { this.balance = balance; }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userNo", insertable=false, updatable=false)
-    private Users author;   // Users 엔티티 (userId, realName 등 보유)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "userNo", insertable=false, updatable=false)
+//    private Users author;   // Users 엔티티 (userId, realName 등 보유)
 }

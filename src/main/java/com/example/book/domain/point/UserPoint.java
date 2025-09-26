@@ -43,4 +43,20 @@ public class UserPoint extends BaseEntity {
     // 거래 직후 잔액(선택)
     private Long runningBalance;
 
+    public void setPointReason(String pointReason) {
+        this.pointReason = pointReason;
+    }
+
+    // (선택) 승인/반려용 헬퍼를 쓰고 싶다면:
+    public void markApprovedFromPending() {
+        if (this.pointReason != null && this.pointReason.startsWith("PENDING|")) {
+            this.pointReason = "APPROVED|" + this.pointReason.substring("PENDING|".length());
+        }
+    }
+    public void markRejectedFromPending() {
+        if (this.pointReason != null && this.pointReason.startsWith("PENDING|")) {
+            this.pointReason = "REJECTED|" + this.pointReason.substring("PENDING|".length());
+        }
+    }
+
 }

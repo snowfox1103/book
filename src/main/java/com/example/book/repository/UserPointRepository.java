@@ -7,13 +7,12 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface UserPointRepository extends JpaRepository<UserPoint, Long> {
 
-    /** 일반 목록 조회(정렬은 Pageable에서 전달) */
     Page<UserPoint> findByUserNo(Long userNo, Pageable pageable);
 
-    /** 변동액(적립=+, 사용=-) 기준 ASC 정렬 */
     @Query("""
         select p from UserPoint p
         where p.userNo = :userNo
@@ -22,7 +21,6 @@ public interface UserPointRepository extends JpaRepository<UserPoint, Long> {
     """)
     Page<UserPoint> findPageOrderBySignedAmountAsc(@Param("userNo") Long userNo, Pageable pageable);
 
-    /** 변동액(적립=+, 사용=-) 기준 DESC 정렬 */
     @Query("""
         select p from UserPoint p
         where p.userNo = :userNo
@@ -31,7 +29,6 @@ public interface UserPointRepository extends JpaRepository<UserPoint, Long> {
     """)
     Page<UserPoint> findPageOrderBySignedAmountDesc(@Param("userNo") Long userNo, Pageable pageable);
 
-    /** 페이지 시작 이전까지의 누적 총액(정확 잔액 초기값 계산용) */
     @Query("""
       select coalesce(sum(case when p.pointType = com.example.book.domain.point.PointType.EARN
                                then p.pointAmount else -p.pointAmount end), 0)
@@ -40,4 +37,10 @@ public interface UserPointRepository extends JpaRepository<UserPoint, Long> {
         and p.pointStartDate < :cutoff
     """)
     long sumBefore(@Param("userNo") Long userNo, @Param("cutoff") LocalDateTime cutoff);
+
+    // 중복생성 방지 키(사유)에 대한 존재 확인
+    boolean existsByPointReason(String pointReason);
+
+    // ✅ 승인대기 목록: 사유가 'PENDING|' 로 시작하는 행만
+    List<UserPoint> findByPointReasonStartingWithOrderByPointStartDateDesc(String prefix);
 }
