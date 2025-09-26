@@ -28,7 +28,7 @@ public class BudgetsServiceImpl implements BudgetsService {
     private final BudgetsRepository budgetsRepository;
     private final ModelMapper modelMapper;
     @Override
-    public Long registerBudget(BudgetsDTO budgetsDTO){
+    public Long registerBudget(BudgetsDTO budgetsDTO){ //이번 달 것만 등록 가능
         Optional<Budgets> existingBudget = budgetsRepository.usedBudgetByCategory(budgetsDTO.getBudCategory(), budgetsDTO.getBudYear(), budgetsDTO.getBudMonth(), budgetsDTO.getUserNo());
         if(existingBudget.isPresent()){
             throw new IllegalArgumentException("이미 해당 카테고리의 예산이 존재합니다.");
@@ -48,7 +48,7 @@ public class BudgetsServiceImpl implements BudgetsService {
     public void modifyBudget(BudgetsDTO budgetsDTO){
         Optional<Budgets> result = budgetsRepository.findById(budgetsDTO.getBudgetId());
         Budgets budgets = result.orElseThrow();
-        budgets.changeBudget(budgetsDTO.getBudAmount());
+        budgets.changeBudget(budgetsDTO.getBudAmount(),budgetsDTO.getBudNotice());
         budgetsRepository.save(budgets);
     }
     @Override
@@ -78,10 +78,11 @@ public class BudgetsServiceImpl implements BudgetsService {
         int month = LocalDate.now().getMonthValue();
         return budgetsRepository.totalBudAmountByMonth(year,month,userNo);
     }
-    @Override
+    @Override //이번 달 총 예산 사용 내역
     public Long budgetUses(Long userNo){
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
         return budgetsRepository.budgetUsesByMonth(year,month,userNo);
     }
+
 }

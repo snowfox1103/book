@@ -31,9 +31,9 @@
               <span class="input-group-text">입금/출금 선택</span>
               <select name="transInOut" class="form-select" disabled>
 <!--            --------------------------------------------------------------------------    입금이어도 맨 처음 출금으로 보임 수정 필요 수정 완 selected 붙이면 됨-->
-                <option th:value="${T(com.example.nyjbook.domain.InOrOut).OUT}" th:text="'출금'"
+                <option th:value="${T(com.example.book.domain.finance.InOrOut).OUT}" th:text="'출금'"
                         th:selected="${transDTO.transInOut != null and transDTO.transInOut.name() == 'OUT'}"></option>
-                <option th:value="${T(com.example.nyjbook.domain.InOrOut).IN}" th:text="'입금'"
+                <option th:value="${T(com.example.book.domain.finance.InOrOut).IN}" th:text="'입금'"
                         th:selected="${transDTO.transInOut != null and transDTO.transInOut.name() == 'IN'}"></option>
               </select>
             </div>

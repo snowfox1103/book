@@ -39,12 +39,16 @@ public class Budgets extends BaseEntity {
     @Column(name = "budMonth")
     private Integer budMonth;
 
+    @Column(name = "budNotice")
+    private Boolean budNotice;
 
-    public void changeBudget(Long budAmount){
+
+    public void changeBudget(Long budAmount,boolean budNotice){
         if(budAmount != null) this.budAmount = budAmount;
         if(this.budCurrent != null && this.budAmount != null){
             this.budIsOver = this.budCurrent > this.budAmount;
         }
+        if(this.budNotice != null) this.budNotice = budNotice;
     }
     public void autoUpdateCurrentMoney(Long budCurrent){
         if(budCurrent != null) this.budCurrent = budCurrent;

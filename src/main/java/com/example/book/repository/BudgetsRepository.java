@@ -5,7 +5,6 @@ import com.example.book.repository.search.BudgetsSearch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface BudgetsRepository extends JpaRepository<Budgets,Long>, BudgetsSearch {
@@ -16,7 +15,7 @@ public interface BudgetsRepository extends JpaRepository<Budgets,Long>, BudgetsS
             "and b.budMonth = :month "+
             "and b.userNo = :userNo ")
     Optional<Budgets> usedBudgetByCategory(Long catId, int year, int month, Long userNo);
-    //이번 달 해당 카테고리만 뽑기, 중복 방지용
+    //해당 달 해당 카테고리만 뽑기, 해당 월 카테고리 등록 중복 방지
 
     @Query("select coalesce(sum(b.budAmount),0) "+
             "from Budgets b "+
@@ -32,6 +31,7 @@ public interface BudgetsRepository extends JpaRepository<Budgets,Long>, BudgetsS
             "and b.budYear = :year "+
             "and b.budMonth = :month")
     Long budgetUsesByMonth(int year,int month,Long userNo);
-    //유저의 예산 사용 합계 리스트
+    //해당 달 유저의 예산 사용 합계 리스트
+
 }
 

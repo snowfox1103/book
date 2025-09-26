@@ -2,15 +2,16 @@ package com.example.book.controller;
 
 import com.example.book.domain.finance.Categories;
 import com.example.book.domain.finance.InOrOut;
-import com.example.book.domain.user.Users;
 import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
 import com.example.book.dto.TransactionsDTO;
+import com.example.book.security.dto.UsersSecurityDTO;
 import com.example.book.service.CategoriesService;
 import com.example.book.service.TransactionsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -29,12 +31,11 @@ public class TransactionsController {
     private final TransactionsService transactionsService;
     private final CategoriesService categoriesService;
     @GetMapping("/transList")
-    public void getTransList(Users users,PageRequestDTO pageRequestDTO, Model model){
-        Long userNo = 1L;
+    public void getTransList(@AuthenticationPrincipal UsersSecurityDTO users, PageRequestDTO pageRequestDTO, Model model){
+        Long userNo = users.getUserNo();
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
         log.info(responseDTO);
-//        Long userNo = users.getUserNo();
-        List<Categories> categories = categoriesService.categoriesList(users);
+        List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
         model.addAttribute("users",userNo);
         model.addAttribute("active", "board");
         model.addAttribute("categories", categories);
@@ -42,10 +43,9 @@ public class TransactionsController {
         log.info("--------get list---------");
     }
     @GetMapping("/transRegister")
-    public void getTransRegister(Users users,Model model){
-//        Long userNo = users.getUserNo();
-        Long userNo = 1L;
-        List<Categories> categories = categoriesService.categoriesList(users);
+    public void getTransRegister(@AuthenticationPrincipal UsersSecurityDTO users,Model model){
+        Long userNo = users.getUserNo();
+        List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
         model.addAttribute("users",userNo);
         model.addAttribute("categories", categories);
         model.addAttribute("inOrOutValues", InOrOut.values());
@@ -60,18 +60,17 @@ public class TransactionsController {
         }
         log.info(transactionsDTO);
         Long tno = transactionsService.registerTrans(transactionsDTO);
-        transactionsService.autoUpdateBudgetCurrentByCategory(transactionsDTO.getTransCategory(),transactionsDTO.getUserNo());
+        LocalDate date = transactionsDTO.getTransDate();
+        transactionsService.autoUpdateBudgetCurrent(transactionsDTO.getUserNo(),transactionsDTO.getTransCategory(),date.getYear(),date.getMonthValue());
         //result message 안뜸 495p----------------------------------------------------------
         redirectAttributes.addFlashAttribute("result",tno);
         log.info("------------post register------------------");
         return "redirect:/trans/transList";
     }
     @GetMapping({"/transRead","/transModify"})//get mapping은 url을 쳤을 때 url 속에서 값 받아옴 예)/transRead?tno=3;이면 파라미터 tno에 3 저장
-    //@RequestParam("tno") Long tno라고 써도 되지만, 이름이 같으면 생략 가능.
-    public void read(Users users,Long tno,PageRequestDTO pageRequestDTO,Model model){ //url에서 tno값 받아오기, model 이용해서 view(html,jsp 등)에 전달
-//        Long userNo = users.getUserNo();
-        Long userNo = 1L;
-        List<Categories> categories = categoriesService.categoriesList(users);
+    public void read(@AuthenticationPrincipal UsersSecurityDTO users,Long tno,PageRequestDTO pageRequestDTO,Model model){ //url에서 tno값 받아오기, model 이용해서 view(html,jsp 등)에 전달
+        Long userNo = users.getUserNo();
+        List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
         model.addAttribute("categories", categories);
         model.addAttribute("inOrOutValues", InOrOut.values()); //없어도 되는 듯
         TransactionsDTO transactionsDTO = transactionsService.readOneTrans(tno);
@@ -92,9 +91,9 @@ public class TransactionsController {
             return "redirect:/trans/transModify";
         }
         transactionsService.modifyTrans(transactionsDTO);
-        TransactionsDTO updated = transactionsService.readOneTrans(transactionsDTO.getTransId());
-        transactionsService.autoUpdateBudgetCurrentByCategory(updated.getTransCategory(),updated.getUserNo());
-//        transactionsService.autoUpdateBudgetCurrent(transactionsDTO);
+        LocalDate date = transactionsDTO.getTransDate();
+//        TransactionsDTO updated = transactionsService.readOneTrans(transactionsDTO.getTransId());
+        transactionsService.autoUpdateBudgetCurrent(transactionsDTO.getUserNo(),transactionsDTO.getTransCategory(),date.getYear(),date.getMonthValue());
         redirectAttributes.addAttribute("tno",transactionsDTO.getTransId());
         redirectAttributes.addFlashAttribute("result","modified");
         return "redirect:/trans/transRead";
@@ -104,7 +103,8 @@ public class TransactionsController {
         log.info("remove post...."+transId);
         TransactionsDTO transactionsDTO = transactionsService.readOneTrans(transId);
         transactionsService.removeTrans(transId);
-        transactionsService.autoUpdateBudgetCurrentByCategory(transactionsDTO.getTransCategory(),transactionsDTO.getUserNo());
+        LocalDate date = transactionsDTO.getTransDate();
+        transactionsService.autoUpdateBudgetCurrent(transactionsDTO.getUserNo(),transactionsDTO.getTransCategory(),date.getYear(),date.getMonthValue());
         redirectAttributes.addFlashAttribute("result","removed");
         return "redirect:/trans/transList";
     }
