@@ -28,7 +28,7 @@
                         <li class="list-group-item d-flex justify-content-between">
                             <span>남은 금액</span>
 <!--                            0925 조덕진 오류때문에 잠시 주석처리-->
-<!--                            <strong th:text="${T(java.lang.String).format('%,d', sumBudgets - sumUses)}"></strong>-->
+                            <strong th:text="${T(java.lang.String).format('%,d', sumBudgets - sumUses)}"></strong>
                         </li>
                     </ul>
                 </div>
@@ -45,7 +45,7 @@
                         </thead>
                         <tbody>
                         <tr th:each="b: ${response.dtoList}"
-                            th:if="${b.budYear == #temporals.year(#temporals.createNow()) and b.budMonth == #temporals.month(#temporals.createNow()) and b.userNo == 1}"> <!--응답 페이지 안의 budgetDTO, 유저 정보 뽑기-->
+                            th:if="${b.budYear == #temporals.year(#temporals.createNow()) and b.budMonth == #temporals.month(#temporals.createNow()) and b.userNo == users}"> <!--응답 페이지 안의 budgetDTO, 유저 정보 뽑기-->
                             <td>
                                 <span th:each="cat : ${categories}"
                                       th:if="${cat.catId} == ${b.budCategory}">

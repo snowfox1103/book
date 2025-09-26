@@ -48,7 +48,7 @@ public class BudgetsServiceImpl implements BudgetsService {
     public void modifyBudget(BudgetsDTO budgetsDTO){
         Optional<Budgets> result = budgetsRepository.findById(budgetsDTO.getBudgetId());
         Budgets budgets = result.orElseThrow();
-        budgets.changeBudget(budgetsDTO.getBudAmount());
+        budgets.changeBudget(budgetsDTO.getBudAmount(),budgetsDTO.getBudNotice());
         budgetsRepository.save(budgets);
     }
     @Override

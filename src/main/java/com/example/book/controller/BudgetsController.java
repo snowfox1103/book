@@ -13,6 +13,7 @@ import com.example.book.service.TransactionsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -37,29 +38,29 @@ public class BudgetsController {
         Long sumUses = budgetsService.budgetUses(userNo);
         PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
         List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
+        model.addAttribute("sumBudgets",sumBudgets);
+        model.addAttribute("sumUses",sumUses);
         model.addAttribute("users",userNo);
         model.addAttribute("response",pageResponseDTO);
         model.addAttribute("categories",categories);
         log.info("-----------get currentList-----------");
     }
     @GetMapping("/budgetList")
-    public void budgetList(Users users,PageRequestDTO pageRequestDTO, Model model){
-//        Long userNo = users.getUserNo();
-        Long userNo = 1L;
+    public void budgetList(@AuthenticationPrincipal UsersSecurityDTO users,PageRequestDTO pageRequestDTO, Model model){
+        Long userNo = users.getUserNo();
         PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
-        List<Categories> categories = categoriesService.categoriesList(userNo);
+        List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
         model.addAttribute("users",userNo);
         model.addAttribute("bList",pageResponseDTO);
         model.addAttribute("categories",categories);
        log.info("---------get budgetList---------");
     }
     @GetMapping("/budgetRegister")
-    public void budgetRegister1(Users users,Model model){
+    public void budgetRegister1(@AuthenticationPrincipal UsersSecurityDTO users,Model model){
         log.info("----------get register----------");
-//        Long userNo = users.getUserNo();
-        Long userNo = 1L;
+        Long userNo = users.getUserNo();
         model.addAttribute("users",userNo);
-        List<Categories> categories = categoriesService.categoriesList(userNo);
+        List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
         model.addAttribute("categories",categories);
     }
     @PostMapping("/budgetRegister")
@@ -94,12 +95,11 @@ public class BudgetsController {
     }
 
     @GetMapping({"/budgetRead","/budgetModify"})
-    public void budgetRead(Users users,Long bno, PageRequestDTO pageRequestDTO,Model model){
-//        Long userNo = users.getUserNo();
-        Long userNo = 1L;
+    public void budgetRead(@AuthenticationPrincipal UsersSecurityDTO users,Long bno, PageRequestDTO pageRequestDTO,Model model){
+        Long userNo = users.getUserNo();
         PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
         BudgetsDTO budgetsDTO = budgetsService.readOneBudget(bno);
-        List<Categories> categories = categoriesService.categoriesList(userNo);
+        List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
         model.addAttribute("users",userNo);
         model.addAttribute("categories",categories);
         model.addAttribute("responseDTO",pageResponseDTO);
