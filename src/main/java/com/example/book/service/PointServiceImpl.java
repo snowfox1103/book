@@ -25,7 +25,6 @@ public class PointServiceImpl implements PointService {
         Pageable effective = pageable;
 
         if ("delta".equalsIgnoreCase(sort)) {
-            // ✅ Pageable에서 정렬 제거(스프링이 뒤에 ", pointAmount desc" 붙이는 것 방지)
             Pageable unsorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
             entityPage = "asc".equalsIgnoreCase(dir)
                     ? userPointRepository.findPageOrderBySignedAmountAsc(userNo, unsorted)

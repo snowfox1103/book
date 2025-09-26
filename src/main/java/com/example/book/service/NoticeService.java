@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public interface NoticeService {
-    Page<Notice> list(Pageable pageable);
     Page<Notice> list(Pageable pageable, Sort sort);
 
     Notice read(Long id);

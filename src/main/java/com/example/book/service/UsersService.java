@@ -15,4 +15,5 @@ public interface UsersService {
   void resend(ResendRequestDTO req);
   void idSearch(IdSearchRequestDTO req);
   void pwSearch(PwSearchRequestDTO req);
+  String getUserIdByUserNo(Long userNo);
 }

@@ -2,52 +2,26 @@ package com.example.book.service;
 
 import com.example.book.dto.PointSettingsDTO;
 import com.example.book.dto.RuleDTO;
-import lombok.Getter;
-import org.springframework.stereotype.Service;
+import com.example.book.dto.PendingPointDTO;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
-@Service
-public class AdminService {
+public interface AdminService {
+    // 기존
+    PointSettingsDTO getSettings();
+    void addOrUpdateRule(RuleDTO dto);
+    void deleteRule(Integer threshold);
+    void saveExcludedCategories(String csv);
+    void saveMonthlyCap(Integer cap);
 
-    // --- 임시 인메모리 저장소 (추후 JPA로 교체) ---
-    private final Map<Integer, RuleDTO> rules = new TreeMap<>();
-    @Getter
-    private List<String> excluded = new ArrayList<>();
-    @Getter
-    private Integer monthlyCap = 500; // 기본값
+    // 신규: 포인트 산출/승인
+    /** 특정 연/월에 대해 규칙을 적용해 "승인 대기" 항목을 생성한다. 반환값은 생성 건수 */
+    int scanMonthlyAccruals(int year, int month);
 
-    public PointSettingsDTO getSettings() {
-        return new PointSettingsDTO(
-                monthlyCap,
-                new ArrayList<>(rules.values()),
-                new ArrayList<>(excluded)
-        );
-    }
+    /** 승인 대기 목록 */
+    List<PendingPointDTO> listPendings();
 
-    public void addOrUpdateRule(RuleDTO dto) {
-        rules.put(dto.threshold(), dto);
-    }
-
-    public void deleteRule(Integer threshold) {
-        rules.remove(threshold);
-    }
-
-    public void saveExcludedCategories(String csv) {
-        if (csv == null || csv.isBlank()) {
-            excluded = new ArrayList<>();
-        } else {
-            excluded = Arrays.stream(csv.split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isBlank())
-                    .distinct()
-                    .collect(Collectors.toList());
-        }
-    }
-
-    public void saveMonthlyCap(Integer cap) {
-        if (cap == null || cap < 0) cap = 0;
-        monthlyCap = cap;
-    }
+    /** 승인/거절 처리 */
+    void approvePending(Long pendingId);
+    void rejectPending(Long pendingId);
 }

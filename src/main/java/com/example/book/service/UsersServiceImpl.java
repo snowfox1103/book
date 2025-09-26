@@ -191,4 +191,12 @@ public class UsersServiceImpl implements UsersService {
     emailService.sendPw(email);
     log.info("pw email send success ...........");
   }
+
+  @Override
+  public String getUserIdByUserNo(Long userNo) {
+    if (userNo == null) return "-";
+    return usersRepository.findById(userNo)
+            .map(Users::getUserId)   // Users 엔티티에 getUserId() 존재 가정
+            .orElse("-");
+  }
 }

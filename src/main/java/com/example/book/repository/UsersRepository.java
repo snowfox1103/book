@@ -1,5 +1,8 @@
 package com.example.book.repository;
 
+import com.example.book.domain.notice.Notice;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
 import com.example.book.domain.user.Users;
 import jakarta.persistence.LockModeType;
@@ -45,5 +48,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query("select u from Users u where u.userNo = :userNo")
   Users findByUserNoForUpdate(@Param("userNo") Long userNo);
+
 }
 
