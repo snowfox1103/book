@@ -29,14 +29,16 @@ public interface SubscriptionsRepository extends JpaRepository<Subscriptions, Lo
   List<Object[]> sumAmountByCategory(@Param("userNo") Long userNo);
 
   // ====== ▼ 추가: 3일 이내(D-3 ~ D-1) & 이번 회차 미노티파이드 ======
-  @Query("""
-    select s from Subscriptions s
-    where s.users.userNo = :userNo
-      and s.subNotice = true
-      and function('DATEDIFF', s.nextPayDate, :today) between 0 and s.notifyWindowDays
-      and (s.lastNotifiedFor is null or s.lastNotifiedFor <> s.nextPayDate)
-  """)
-  List<Subscriptions> findDueAlertsInWindow(@Param("userNo") Long userNo, @Param("today") LocalDate today);
+  @Query(value = """
+    SELECT * 
+    FROM subscription s
+    WHERE s.userNo = :userNo
+      AND s.subNotice = 1
+      AND DATEDIFF(DATE(s.nextPayDate), :today) BETWEEN 0 AND COALESCE(s.notifyWindowDays, 3)
+      AND (s.lastNotifiedFor IS NULL OR s.lastNotifiedFor <> DATE(s.nextPayDate))
+""", nativeQuery = true)
+  List<Subscriptions> findDueAlertsInWindowNative(@Param("userNo") Long userNo,
+                                                  @Param("today") java.sql.Date today);
 
   // ====== ▼ 추가: 표시 후 마킹 ======
   @Modifying
@@ -56,8 +58,7 @@ public interface SubscriptionsRepository extends JpaRepository<Subscriptions, Lo
     and s.nextPayDate is not null
     and s.nextPayDate <= :today
 """)
-  List<Subscriptions> findDueByUser(@Param("userNo") Long userNo,
-                                    @Param("today") java.time.LocalDate today);
+  List<Subscriptions> findDueByUser(@Param("userNo") Long userNo, @Param("today") java.time.LocalDate today);
 
   @Query("SELECT COALESCE(SUM(s.subAmount),0) " +
     "FROM Subscriptions s " +

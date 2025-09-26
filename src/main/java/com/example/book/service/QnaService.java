@@ -12,4 +12,5 @@ public interface QnaService {
     Long create(Long currentUserNo, String title, String content, boolean blind);
     void update(Long qbId, Long currentUserNo, String title, String content, boolean blind);
     void delete(Long qbId, Long currentUserNo);
+    List<Qna> getRecentInquiries(Long userNo); // 0925 조덕진 마이페이지 문의글 ~
 }

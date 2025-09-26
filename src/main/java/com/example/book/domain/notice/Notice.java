@@ -4,6 +4,8 @@ import com.example.book.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "notice")
 @Getter
@@ -28,8 +30,24 @@ public class Notice extends BaseEntity { // Notices -> Notice 0917 석준영
     @Column(name = "nBContent")
     private String nBContent;
 
-    // notice 작성자 지정용 추가 0919 석준영
+    @Column(nullable = false)
+    private LocalDateTime nBCreatedAt;
 
+    @Column(nullable = false)
+    private LocalDateTime nBUpdatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.nBCreatedAt = LocalDateTime.now();
+        this.nBUpdatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.nBUpdatedAt = LocalDateTime.now();
+    }
+
+    // notice 작성자 지정용 추가 0919 석준영
     public void assignWriter(Long userNo) {
         this.userNo = userNo;
     }

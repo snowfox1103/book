@@ -78,7 +78,7 @@ public class CustomSecurityConfig {
         .loginPage("/users/login")
         .loginProcessingUrl("/users/login")
         .failureHandler(authFailureHandler())
-        .defaultSuccessUrl("/", true)
+        .defaultSuccessUrl("/mainPage/mainpage", true) //0925 조덕진 로그인 성공시 메인페이지로 이동하도록 수정
       )
       .rememberMe(httpSecurityRememberMeConfigurer -> { //자동 로그인 기능 처리하는 부분
         httpSecurityRememberMeConfigurer

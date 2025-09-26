@@ -7,6 +7,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@AttributeOverrides({
+        @AttributeOverride(name = "regDate", column = @Column(name = "qRCreatedAt")),
+        @AttributeOverride(name = "modDate", column = @Column(name = "qRUpdatedAt"))
+})
 @Entity
 @Table(name = "qnaReply")
 @Getter

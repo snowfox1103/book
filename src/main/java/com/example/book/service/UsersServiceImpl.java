@@ -191,4 +191,25 @@ public class UsersServiceImpl implements UsersService {
     emailService.sendPw(email);
     log.info("pw email send success ...........");
   }
+
+  @Override
+  public String getUserIdByUserNo(Long userNo) {
+    if (userNo == null) return "-";
+    return usersRepository.findById(userNo)
+            .map(Users::getUserId)   // Users 엔티티에 getUserId() 존재 가정
+            .orElse("-");
+  }
+
+  @Override
+  public int getCurrentPoint(Long userNo) {
+    return usersRepository.getBalance(userNo);
+  }
+
+  @Override
+  @Transactional
+  public void updateBalance(Long userNo, int newBalance) {
+    Users user = usersRepository.findById(userNo)
+      .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+    user.setBalance(newBalance);
+  }
 }
