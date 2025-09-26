@@ -66,14 +66,7 @@ public class TransactionsServiceImpl implements TransactionsService{
         InOrOut io = pageRequestDTO.getIo();
         Pageable pageable = pageRequestDTO.getPageable("transId");
         Page<Transactions> result = transactionsRepository.searchAllTrans(userNo, types,keyword,category,minn,maxx,startDay,endDay,io,pageable);
-        //getContent()을 호출하면 현재 페이지에 해당하는 List<Transactions> 가 반환됩니다.
-        //즉, DB에서 가져온 Transactions 엔티티들의 리스트예요
-        //List<Transactions> → Stream<Transactions> 으로 바꿔줍니다.
-        //이제 이 스트림에서 각 원소는 Transactions 타입 객체가 됩니다.
         List<TransactionsDTO> dtoList = result.getContent().stream()
-                //map()은 스트림의 각 원소(Transactions)를 다른 타입(TransactionsDTO)으로 변환할 때 쓰는 함수입니다.
-                //여기서 transactions는 스트림의 각 원소를 임시로 가리키는 변수예요.
-                //즉, for-each 문에서의 for(Transactions t : list)의 t와 똑같은 역할이에요.
                 .map(transactions -> modelMapper.map(transactions,TransactionsDTO.class)).collect(Collectors.toList());
         return PageResponseDTO.<TransactionsDTO>withAll()
                 .pageRequestDTO(pageRequestDTO)
