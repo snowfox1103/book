@@ -2,7 +2,6 @@ package com.example.book.controller;
 
 import com.example.book.domain.finance.Categories;
 import com.example.book.domain.user.Users;
-import com.example.book.domain.finance.Categories;
 import com.example.book.dto.BudgetsDTO;
 import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
@@ -32,6 +31,7 @@ public class BudgetsController {
     @GetMapping("/currentList")
     public void currentList(Users users, PageRequestDTO pageRequestDTO, Model model){
 //        Long userNo = users.getUserNo();
+        //
         Long userNo = 1L;
         Long sumBudgets = budgetsService.wholeSetBudgetAmount(userNo);
         Long sumUses = budgetsService.budgetUses(userNo);
