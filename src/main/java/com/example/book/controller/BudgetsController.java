@@ -2,6 +2,7 @@ package com.example.book.controller;
 
 import com.example.book.domain.finance.Categories;
 import com.example.book.domain.user.Users;
+import com.example.book.domain.finance.Categories;
 import com.example.book.dto.BudgetsDTO;
 import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
@@ -29,16 +30,12 @@ public class BudgetsController {
     private final BudgetsService budgetsService;
     private final CategoriesService categoriesService;
     @GetMapping("/currentList")
-    public void currentList(Users users, PageRequestDTO pageRequestDTO, Model model){
-//        Long userNo = users.getUserNo();
-        //
-        Long userNo = 1L;
+    public void currentList(@AuthenticationPrincipal UsersSecurityDTO users, PageRequestDTO pageRequestDTO, Model model){
+        Long userNo = users.getUserNo();
         Long sumBudgets = budgetsService.wholeSetBudgetAmount(userNo);
         Long sumUses = budgetsService.budgetUses(userNo);
         PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
-        List<Categories> categories = categoriesService.categoriesList(userNo);
-        model.addAttribute("sumBudgets",sumBudgets);
-        model.addAttribute("sumUses",sumUses);
+        List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
         model.addAttribute("users",userNo);
         model.addAttribute("response",pageResponseDTO);
         model.addAttribute("categories",categories);

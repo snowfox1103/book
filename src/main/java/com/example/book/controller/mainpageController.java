@@ -3,6 +3,7 @@ package com.example.book.controller;
 import com.example.book.domain.user.Users;
 import com.example.book.domain.finance.Categories;
 import com.example.book.dto.*;
+import com.example.book.security.dto.UsersSecurityDTO;
 import com.example.book.service.BudgetsService;
 import com.example.book.service.CategoriesService;
 import com.example.book.service.StatisticsService;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,13 +32,12 @@ public class mainpageController {
     private final CategoriesService categoriesService;
     private final StatisticsService statisticsService;
     @GetMapping("/mainpage")
-    public void getMain(Users users, PageRequestDTO pageRequestDTO, Model model, TransactionsDTO transactionsDTO, BudgetsDTO budgetsDTO){
-//        Long userNo = users.getUserNo();
-        Long userNo = 1L;
+    public void getMain(@AuthenticationPrincipal UsersSecurityDTO users, PageRequestDTO pageRequestDTO, Model model, TransactionsDTO transactionsDTO, BudgetsDTO budgetsDTO){
+        Long userNo = users.getUserNo();
         log.info("--------get mainpage---------");
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
         log.info(responseDTO);
-        List<Categories> categories = categoriesService.categoriesList(userNo);
+        List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
 //        Long totalAmount = transactionsService.totals(userNo);
         model.addAttribute("users",userNo);
 //        model.addAttribute("totals",totalAmount);
