@@ -24,12 +24,22 @@ public class QSubscriptions extends EntityPathBase<Subscriptions> {
 
     public final com.example.book.domain.common.QBaseEntity _super = new com.example.book.domain.common.QBaseEntity(this);
 
+    public final BooleanPath anchorToMonthEnd = createBoolean("anchorToMonthEnd");
+
     public final QCategories categories;
 
     public final BooleanPath isSub = createBoolean("isSub");
 
+    public final DateTimePath<java.time.LocalDateTime> lastNotifiedAt = createDateTime("lastNotifiedAt", java.time.LocalDateTime.class);
+
+    public final DatePath<java.time.LocalDate> lastNotifiedFor = createDate("lastNotifiedFor", java.time.LocalDate.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
+
+    public final DatePath<java.time.LocalDate> nextPayDate = createDate("nextPayDate", java.time.LocalDate.class);
+
+    public final NumberPath<Integer> notifyWindowDays = createNumber("notifyWindowDays", Integer.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regDate = _super.regDate;

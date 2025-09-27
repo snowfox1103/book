@@ -32,6 +32,7 @@ public class TransactionsServiceImpl implements TransactionsService{
     public Long registerTrans(TransactionsDTO transactionsDTO){
         Transactions transactions = modelMapper.map(transactionsDTO,Transactions.class);
         Long transId = transactionsRepository.save(transactions).getTransId();
+        autoUpdateBudgetCurrent(transactionsDTO.getUserNo(),transactionsDTO.getTransCategory(),transactionsDTO.getTransDate().getYear(),transactionsDTO.getTransDate().getMonthValue());
         return transId;
     }
     @Override

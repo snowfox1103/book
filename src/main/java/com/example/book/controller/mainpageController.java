@@ -1,13 +1,11 @@
 package com.example.book.controller;
 
+import com.example.book.domain.finance.Subscriptions;
 import com.example.book.domain.user.Users;
 import com.example.book.domain.finance.Categories;
 import com.example.book.dto.*;
 import com.example.book.security.dto.UsersSecurityDTO;
-import com.example.book.service.BudgetsService;
-import com.example.book.service.CategoriesService;
-import com.example.book.service.StatisticsService;
-import com.example.book.service.TransactionsService;
+import com.example.book.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +29,7 @@ public class mainpageController {
     private final BudgetsService budgetsService;
     private final CategoriesService categoriesService;
     private final StatisticsService statisticsService;
+    private final SubscriptionsService subscriptionsService;
     @GetMapping("/mainpage")
     public void getMain(@AuthenticationPrincipal UsersSecurityDTO users, PageRequestDTO pageRequestDTO, Model model, TransactionsDTO transactionsDTO, BudgetsDTO budgetsDTO){
         Long userNo = users.getUserNo();
@@ -38,6 +37,8 @@ public class mainpageController {
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
         log.info(responseDTO);
         List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
+        List<Subscriptions> subs = subscriptionsService.getSubscriptions(userNo);
+        model.addAttribute("subsList",subs);
 //        Long totalAmount = transactionsService.totals(userNo);
         model.addAttribute("users",userNo);
 //        model.addAttribute("totals",totalAmount);

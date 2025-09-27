@@ -50,8 +50,8 @@ public class CategoriesServiceImpl implements CategoriesService {
   }
 
   @Override
-  public List<Categories> categoriesList(Users users){
-    return categoriesRepository.findAllByUsers_UserNo(users.getUserNo());
+  public List<Categories> categoriesList(Long users){
+    return categoriesRepository.findAllByUsers_UserNo(users);
   }
 
   @Override

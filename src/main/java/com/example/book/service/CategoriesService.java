@@ -12,7 +12,7 @@ public interface CategoriesService {
   void addCategory(Long userId, String catName);
   Long registerCategories(CategoriesDTO categoriesDTO);
   void removeCategories(Long catId);
-  List<Categories> categoriesList(Users users);
+  List<Categories> categoriesList(Long users);
   boolean existsByUserNoAndCatName(Long userNo, String catName);
   void deleteCategory(Long userNo, Long catId);
   void updateCategory(Long catId, String catName);

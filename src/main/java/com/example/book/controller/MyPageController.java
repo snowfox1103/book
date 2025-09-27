@@ -57,7 +57,7 @@ public class MyPageController {
     Users users = usersRepository.findByUserId(authUser.getUserId())
       .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    List<Categories> categories = categoriesService.categoriesList(users);
+    List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
     model.addAttribute("categories", categories);
     model.addAttribute("user", users);
 

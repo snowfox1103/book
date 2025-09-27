@@ -60,8 +60,6 @@ public class TransactionsController {
         }
         log.info(transactionsDTO);
         Long tno = transactionsService.registerTrans(transactionsDTO);
-        LocalDate date = transactionsDTO.getTransDate();
-        transactionsService.autoUpdateBudgetCurrent(transactionsDTO.getUserNo(),transactionsDTO.getTransCategory(),date.getYear(),date.getMonthValue());
         //result message 안뜸 495p----------------------------------------------------------
         redirectAttributes.addFlashAttribute("result",tno);
         log.info("------------post register------------------");

@@ -26,7 +26,7 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
   private final UsersRepository usersRepository;
   private final CategoriesRepository categoriesRepository;
   private final BillingDailyGuardRepository guardRepository;
-
+  private final SchedulerService schedulerService;
   @Override
   @Transactional
   public void addSubscription(SubscriptionsDTO dto) {
@@ -52,6 +52,12 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
 
     sub.initNextPayDateIfNeeded(); // ★ 생성 시 필수
     subscriptionsRepository.save(sub);
+
+    //등록 시 해당 날이 정기 결제일이면 바로 입출금 내역 추가
+    if (sub.getSubPayDate() == LocalDate.now().getDayOfMonth()) {
+      schedulerService.createTransactionFromSubscription(sub);
+    }
+
   }
 
   @Override
