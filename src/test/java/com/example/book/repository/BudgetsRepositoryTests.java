@@ -47,7 +47,7 @@ class BudgetsRepositoryTests {
         Long tno = 2L;
         Optional<Budgets> result = budgetsRepository.findById(tno);
         Budgets budgets = result.orElseThrow();
-        budgets.changeBudget(850000L,3L,100000L,false,2025,2);
+        budgets.changeBudget(850000L,false);
         budgetsRepository.save(budgets);
     }
     @Test
