@@ -1,7 +1,9 @@
 package com.example.book.security;
 
+import com.example.book.domain.finance.Budgets;
 import com.example.book.domain.user.MemberRole;
 import com.example.book.domain.user.Users;
+import com.example.book.repository.BudgetsRepository;
 import com.example.book.repository.UsersRepository;
 import com.example.book.security.dto.UsersSecurityDTO;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,6 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
   private final UsersRepository usersRepository;
+  private final BudgetsRepository budgetsRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -79,6 +83,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         .build();
 
       usersRepository.save(users); // 회원 정보 저장
+
+      Budgets budgets = Budgets.builder()
+        .userNo(users.getUserNo())
+        .budCategory(0L)  // 카테고리 0 (전체/미분류 같은 의미)
+        .budAmount(0L)    // 설정금액
+        .budCurrent(0L)   // 사용금액
+        .budIsOver(false) // 처음엔 초과 아님
+        .budYear(LocalDate.now().getYear())
+        .budMonth(LocalDate.now().getMonthValue())
+        .build();
+
+      budgetsRepository.save(budgets);
 
       UsersSecurityDTO usersSecurityDTO = new UsersSecurityDTO(users.getUserNo(), users.getRealName(), email,
         "1111", email, true, true, firstLogin, users.isPrivacyCheck(), users.isTermsCheck(),
