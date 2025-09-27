@@ -5,32 +5,30 @@ import com.example.book.repository.search.TransactionsSearch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+
 public interface TransactionsRepository extends JpaRepository<Transactions, Long>, TransactionsSearch {
     @Query("select COALESCE(SUM(t.transAmount),0)"+
             "from Transactions t "+
             "where t.transCategory = :catId "+
             "and t.userNo = :userNo "+
             "and year(t.transDate) = :year "+
-            "and month(t.transDate) = :month "+
-            "and t.transInOut = 'OUT'")
+            "and month(t.transDate) = :month ")
     Long totalUseByCategory(Long catId,int year,int month, Long userNo);
-    //해당 달 해당 카테고리 출금 금액 총합 계산
+    //해당 달 해당 카테고리 사용 금액 총합 계산
 
     @Query("select COALESCE(SUM(t.transAmount),0)"+
             "from Transactions t "+
             "where t.userNo = :userNo "+
             "and year(t.transDate) = :year "+
-            "and month(t.transDate) = :month " +
-            "and t.transInOut = 'OUT'")
+            "and month(t.transDate) = :month ")
     Long totalUseByMonth(int year, int month, Long userNo);
-    //해당 달 모든 출금 금액 총합 계산
+    //해당 달 모든 사용 금액 총합 계산
 
-    @Query("select COALESCE(SUM(t.transAmount),0)"+
-            "from Transactions t "+
-            "where t.userNo = :userNo "+
-            "and year(t.transDate) = :year "+
-            "and month(t.transDate) = :month " +
-            "and t.transInOut = 'IN'")
-    Long totalIncomeByMonth(int year,int month,Long userNo);
-    //해당 달 모든 입금 금액 계산
+    //point 승인용 쿼리문 0927 석준영
+    @Query("""
+      select t from Transactions t
+      where t.transDate between :from and :to
+        and t.transCategory in :categories
+    """)
+    List<Transactions> findPointable(LocalDate from, LocalDate to, Collection<Long> categories);
 }

@@ -33,6 +33,8 @@ public class QBudgets extends EntityPathBase<Budgets> {
 
     public final NumberPath<Integer> budMonth = createNumber("budMonth", Integer.class);
 
+    public final BooleanPath budNotice = createBoolean("budNotice");
+
     public final NumberPath<Integer> budYear = createNumber("budYear", Integer.class);
 
     //inherited

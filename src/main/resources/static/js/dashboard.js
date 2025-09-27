@@ -127,18 +127,92 @@ const monthlyChart = new Chart(ctx3, {
         }
     }
 });
-//달력 파트
-let dt = new Date();
-//달력 테이블 만들기
-let cY = dt.getFullYear();
-let cM = dt.getMonth()+1;
-let firstofMonth = new Date(cY,cM-1,1)
-let weekday = firstofMonth.getDay();
-let week = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-document.createElement('table');
-let week_tr = document.createElement('tr');
-for(i=0;i<7;i++){
-    let week_td = week_tr.createElement('td');
-    week_td.innerHTML = week[i];
+let today = new Date();
+let currentYear = today.getFullYear();
+let currentMonth = today.getMonth(); // 0~11 (1월=0)
+
+const calHeaderYear = document.querySelector(".cal-header h1");
+const calHeaderMonth = document.querySelector(".cal-month p");
+const calBody = document.querySelector(".cal-body");
+
+function renderCalendar(year, month) {
+    // 달력 헤더 변경
+    calHeaderYear.textContent = year;
+    calHeaderMonth.textContent = (month + 1) + "월";
+
+    // 기존 날짜 지우기
+    calBody.innerHTML = "";
+
+    // 요일 헤더
+    const week = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    week.forEach((day, idx) => {
+        const div = document.createElement("div");
+        div.classList.add("grid-item", "day");
+        div.textContent = day;
+        if (idx === 0 || idx === 6) div.style.color = "red"; // 주말 빨강
+        calBody.appendChild(div);
+    });
+
+    // 이번 달 1일 요일
+    const firstDay = new Date(year, month, 1).getDay();
+    // 이번 달 마지막 날짜
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    // 빈칸 채우기
+    for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement("div");
+        empty.classList.add("grid-item");
+        calBody.appendChild(empty);
+    }
+
+    // 날짜 채우기
+    for (let d = 1; d <= lastDate; d++) {
+        const dateDiv = document.createElement("div");
+        dateDiv.classList.add("grid-item");
+        dateDiv.textContent = d;
+
+        // 오늘 날짜 표시
+        if (
+            year === today.getFullYear() &&
+            month === today.getMonth() &&
+            d === today.getDate()
+        ) {
+            dateDiv.style.backgroundColor = "#d1ecf1";
+            dateDiv.style.fontWeight = "bold";
+        }
+
+        calBody.appendChild(dateDiv);
+    }
+    // 마지막 줄 남은 칸 채우기
+    const totalCells = firstDay + lastDate;
+    const remain = 7 - (totalCells % 7);
+    if (remain < 7) {
+        for (let i = 0; i < remain; i++) {
+            const empty = document.createElement("div");
+            empty.classList.add("grid-item");
+            calBody.appendChild(empty);
+        }
+    }
 }
 
+// 초기 렌더링
+renderCalendar(currentYear, currentMonth);
+
+// 버튼 이벤트
+document.getElementById("prev-month").addEventListener("click", () => {
+    currentMonth--;
+    if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+    }
+    renderCalendar(currentYear, currentMonth);
+});
+
+document.getElementById("next-month").addEventListener("click", () => {
+    currentMonth++;
+    if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+    }
+    renderCalendar(currentYear, currentMonth);
+});

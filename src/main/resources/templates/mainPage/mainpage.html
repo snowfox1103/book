@@ -28,18 +28,22 @@
                             <table class="recent-list">
                                 <thead>
                                     <tr>
-                                        <th>날짜</th>
-                                        <th>항목</th>
+                                        <th>이름</th>
                                         <th>금액</th>
+                                        <th>결제일</th>
                                     </tr>
+
                                 </thead>
                                 <tbody>
-<!--                                //오늘 날짜로 할 건지 생각..-->
-                                    <tr th:each="dto:${responseDTO.dtoList}" th:if="${dto.userNo == users and dto.transInOut.name() == 'OUT'}">
-                                        <!--                        <tr th:each="dto:${responseDTO.dtoList}">-->
-                                        <td>[[${#temporals.format(dto.transDate, 'MM-dd')}]]</td>
-                                        <td>[[${dto.transTitle}]]</td>
-                                        <td th:text="${T(java.lang.String).format('%,d', dto.transAmount)}"></td>
+                                    <tr th:each="sub : ${subsList}">
+                                        <td th:text="${sub.subTitle}"></td>
+                                        <td th:text="${sub.subAmount}"></td>
+                                        <td th:text="${sub.subPayDate}"></td>
+                                    </tr>
+
+                                    <!-- 남은 행 채우기 -->
+                                    <tr th:each="i : ${#numbers.sequence(subsList.size() + 1, 6)}">
+                                        <td colspan="3">&nbsp;</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -104,48 +108,24 @@
                 <div class="page2">
                     <div class="auto-pay-list">
                         <h2>매달 결제</h2>
-                        <table class="pay-table">
+                        <table class="pay-table" >
                             <!-- 자바스크립트 수정 예정 -->
-                            <tr>
-                                <th>이름</th>
-                                <th>금액</th>
-                                <th>결제일</th>
-                            </tr>
-                            <tr>
-                                <td>쿠팡</td>
-                                <td>9,000원</td>
-                                <td>10일</td>
-                            </tr>
-                            <tr>
-                                <td>보험비</td>
-                                <td>200,000원</td>
-                                <td>1일</td>
-                            </tr>
-                            <tr>
-                                <td>티빙</td>
-                                <td>10,000원</td>
-                                <td>22일</td>
-                            </tr>
-                            <tr>
-                                <td>넷플릭스</td>
-                                <td>13,500원</td>
-                                <td>21일</td>
-                            </tr>
-                            <tr>
-                                <td>통신비</td>
-                                <td>13,500원</td>
-                                <td>27일</td>
-                            </tr>
-                            <tr>
-                                <td>월세</td>
-                                <td>500,000원</td>
-                                <td>10일</td>
-                            </tr>
-                            <tr>
-                                <td>왓챠</td>
-                                <td>13,500</td>
-                                <td>21일</td>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th>날짜</th>
+                                    <th>항목</th>
+                                    <th>금액</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--                                //오늘 날짜로 할 건지 생각..-->
+                                <tr th:each="dto:${responseDTO.dtoList}" th:if="${dto.userNo == users and dto.transInOut.name() == 'OUT'}">
+                                    <!--                        <tr th:each="dto:${responseDTO.dtoList}">-->
+                                    <td>[[${#temporals.format(dto.transDate, 'MM-dd')}]]</td>
+                                    <td>[[${dto.transTitle}]]</td>
+                                    <td th:text="${T(java.lang.String).format('%,d', dto.transAmount)}"></td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <div class="budget">

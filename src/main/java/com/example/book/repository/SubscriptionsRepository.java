@@ -65,4 +65,7 @@ public interface SubscriptionsRepository extends JpaRepository<Subscriptions, Lo
     "WHERE s.users.userNo = :userNo " +
     "AND s.isSub = true")
   Long getActiveTotal(@Param("userNo") Long userNo);
+
+  //결제일 목록 불러오기
+  List<Subscriptions> findBySubPayDate(int subPayDate);
 }

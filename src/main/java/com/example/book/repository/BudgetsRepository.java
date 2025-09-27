@@ -16,7 +16,7 @@ public interface BudgetsRepository extends JpaRepository<Budgets,Long>, BudgetsS
             "and b.budMonth = :month "+
             "and b.userNo = :userNo ")
     Optional<Budgets> usedBudgetByCategory(Long catId, int year, int month, Long userNo);
-    //해당 달 해당 카테고리만 뽑기, 해당 월 카테고리 등록 중복 방지
+    //해당 달 해당 카테고리만 뽑기, 해당 월 카테고리 등록 중복 방지,없으면 null
 
     @Query("select coalesce(sum(b.budAmount),0) "+
             "from Budgets b "+

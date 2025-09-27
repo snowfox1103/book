@@ -62,7 +62,7 @@ public class BudgetsServiceImpl implements BudgetsService {
     public PageResponseDTO<BudgetsDTO> budgetListByUser(Long userNo, PageRequestDTO pageRequestDTO){
         Integer selectYear = pageRequestDTO.getSelectYear();
         Integer selectMonth = pageRequestDTO.getSelectMonth();
-        Long budCategories = pageRequestDTO.getCategoriess();
+        Long budCategories = pageRequestDTO.getCategories();
         Long amountMin = pageRequestDTO.getAmountMin();
         Long amountMax = pageRequestDTO.getAmountMax();
         Pageable pageable = pageRequestDTO.getPageable("budgetId");

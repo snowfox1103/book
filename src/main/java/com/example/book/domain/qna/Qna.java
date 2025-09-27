@@ -1,6 +1,7 @@
 package com.example.book.domain.qna;
 
 import com.example.book.domain.common.BaseEntity;
+import com.example.book.domain.user.Users;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,5 +36,9 @@ public class Qna extends BaseEntity {
         this.qBContent = content;
         this.qBBlind   = blind;
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userNo", insertable = false, updatable = false)
+    private Users writer;
 
 }

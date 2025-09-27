@@ -108,7 +108,16 @@
 
     if(errors){
         for (let i = 0; i < errors.length; i++) {
-            errorMsg += `${errors[i].field}은(는) ${errors[i].code} \n`
+            let errorMsg1 = errors[i].field;
+            if (errorMsg1.includes("Title")){
+                errorMsg += `제목을 입력해주세요\n`
+            }
+            else if(errorMsg1.includes("Date")){
+                errorMsg += `날짜를 입력해주세요\n`
+            }
+            else if(errorMsg1.includes("Amount")){
+                errorMsg+=`금액을 입력해주세요\n`
+            }
         }
         alert(errorMsg)
     }
