@@ -1,13 +1,16 @@
 package com.example.book.controller;
 
 import com.example.book.domain.qna.Qna;
+import com.example.book.dto.PageRequestDTO;
 import com.example.book.repository.QnaReplyRepository;
 import com.example.book.security.dto.UsersSecurityDTO;
 import com.example.book.service.QnaReplyService;
 import com.example.book.service.QnaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,50 +33,58 @@ public class QnaController {
     private final QnaReplyService qnaReplyService;
     private final QnaReplyRepository qnaReplyRepository;
 
-    // 임시: 로그인 사용자 번호 매핑 (DB 스키마 정리 전까지 1L로 고정)
-    private Long currentUserNo(UserDetails ud) { return 1L; }
-    private boolean isAdmin(UserDetails ud) {
-        return ud != null && ud.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    private Long currentUserNo(UsersSecurityDTO auth) {
+        return (auth != null) ? auth.getUserNo() : null;
+    }
+
+    private boolean isAdmin(UsersSecurityDTO auth) {
+        return auth != null && auth.hasRole("ADMIN");
     }
 
     @GetMapping
-    public String list(@AuthenticationPrincipal UserDetails ud,
+    public String list(@AuthenticationPrincipal UsersSecurityDTO auth,
                        @PageableDefault(size = 10) Pageable pageable,
                        Model model) {
 
-        // 목록 페이지
-        Page<Qna> page = qnaService.listForUser(currentUserNo(ud), isAdmin(ud), pageable);
+        Pageable sorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "regDate"));
+        Page<Qna> page = qnaService.listForUser(currentUserNo(auth), isAdmin(auth), sorted);
         model.addAttribute("page", page);
 
-        // 해당 페이지의 qBId 모아 답변 수 집계
-        List<Long> ids = page.getContent().stream()
-                .map(Qna::getQBId)   // Qna 필드가 qBId 이므로 getter는 getQBId()
-                .toList();
-
+        // 이하 그대로 (답변 수 집계 등)
+        List<Long> ids = page.getContent().stream().map(Qna::getQBId).toList();
         Map<Long, Long> counts = ids.isEmpty()
                 ? java.util.Map.of()
                 : qnaReplyRepository.countByQbIdIn(ids).stream()
-                .collect(java.util.stream.Collectors.toMap(
+                .collect(Collectors.toMap(
                         QnaReplyRepository.ReplyCountRow::getQbId,
                         QnaReplyRepository.ReplyCountRow::getCnt));
-
         model.addAttribute("counts", counts);
 
         return "qna/list";
     }
 
-
-    @GetMapping("/{qbId}")
-    public String read(@PathVariable Long qbId,
+    @GetMapping("/{qBId}")
+    public String read(@PathVariable Long qBId,
                        @AuthenticationPrincipal UsersSecurityDTO auth,
                        Model model) {
-        Long userNo   = (auth != null) ? auth.getUserNo() : null;
+
+        Long userNo = (auth != null ? auth.getUserNo() : null);
         boolean admin = (auth != null && auth.hasRole("ADMIN"));
 
-        Qna q = qnaService.getForRead(qbId, userNo, admin); // 비공개 접근 로직은 서비스에서 처리
+        Qna q = qnaService.getForRead(qBId, userNo, admin);
         model.addAttribute("q", q);
-        model.addAttribute("replies", qnaReplyService.list(qbId));
-        model.addAttribute("canEdit", admin || (userNo != null && userNo.equals(q.getUserNo())));
+
+        PageRequestDTO pr = PageRequestDTO.builder()
+                .page(1)
+                .size(50)
+                .build();
+
+        boolean owner = (userNo != null && userNo.equals(q.getUserNo()));
+
+        model.addAttribute("replies", qnaReplyService.list(qBId, pr).getDtoList());
+
+        model.addAttribute("canEdit", admin || owner);
         return "qna/read";
     }
 
@@ -84,21 +95,21 @@ public class QnaController {
     }
 
     @PostMapping("/write")
-    public String create(@AuthenticationPrincipal UserDetails ud,
+    public String create(@AuthenticationPrincipal UsersSecurityDTO auth,
                          @RequestParam String title,
                          @RequestParam String content,
-                         @RequestParam(name = "blind", required = false) String blind) {
-        Long id = qnaService.create(currentUserNo(ud), title, content, blind != null);
+                         @RequestParam(name="blind", required=false) String blind) {
+        Long id = qnaService.create(currentUserNo(auth), title, content, blind != null);
         return "redirect:/qna/" + id;
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@AuthenticationPrincipal UserDetails ud,
+    public String editForm(@AuthenticationPrincipal UsersSecurityDTO auth,
                            @PathVariable Long id,
                            Model model) {
-        Qna q = qnaService.getForRead(id, currentUserNo(ud), isAdmin(ud));
+        Qna q = qnaService.getForRead(id, currentUserNo(auth), isAdmin(auth));
 
-        if (!isAdmin(ud) && !q.getUserNo().equals(currentUserNo(ud))) {
+        if (!isAdmin(auth) && !q.getUserNo().equals(currentUserNo(auth))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         model.addAttribute("q", q);
@@ -106,19 +117,19 @@ public class QnaController {
     }
 
     @PostMapping("/{id}/edit")
-    public String edit(@AuthenticationPrincipal UserDetails ud,
+    public String edit(@AuthenticationPrincipal UsersSecurityDTO auth,
                        @PathVariable Long id,
                        @RequestParam String title,
                        @RequestParam String content,
                        @RequestParam(name = "blind", required = false) String blind) {
-        qnaService.update(id, currentUserNo(ud), title, content, blind != null);
+        qnaService.update(id, currentUserNo(auth), title, content, blind != null);
         return "redirect:/qna/" + id;
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@AuthenticationPrincipal UserDetails ud,
+    public String delete(@AuthenticationPrincipal UsersSecurityDTO auth,
                          @PathVariable Long id) {
-        qnaService.delete(id, currentUserNo(ud));
+        qnaService.delete(id, currentUserNo(auth));
         return "redirect:/qna";
     }
 }

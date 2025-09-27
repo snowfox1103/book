@@ -59,7 +59,7 @@ public class TransactionsServiceImpl implements TransactionsService{
     public PageResponseDTO<TransactionsDTO> listByUser(Long userNo, PageRequestDTO pageRequestDTO){
         String[] types = pageRequestDTO.getTypes();
         String keyword = pageRequestDTO.getKeyword();
-        Long category = pageRequestDTO.getCategoriess();
+        Long category = pageRequestDTO.getCategories();
         Long minn = pageRequestDTO.getAmountMin();
         Long maxx = pageRequestDTO.getAmountMax();
         LocalDate startDay = pageRequestDTO.getStartDay();
