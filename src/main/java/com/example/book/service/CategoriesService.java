@@ -3,10 +3,12 @@ package com.example.book.service;
 import com.example.book.domain.finance.Categories;
 import com.example.book.domain.user.Users;
 import com.example.book.dto.CategoriesDTO;
+import com.example.book.dto.CategoryThresholdDTO;
 
 import java.util.List;
 
 public interface CategoriesService {
+  String getCatNameByCatId(Long catId);
   static class overExistsException extends Exception { }
   static class sameCategoryExistsException extends Exception { }
   void addCategory(Long userId, String catName);
@@ -17,4 +19,5 @@ public interface CategoriesService {
   void deleteCategory(Long userNo, Long catId);
   void updateCategory(Long catId, String catName);
   List<Categories> getCategoriesForUser(Long userNo);
+  List<CategoryThresholdDTO> getCategoriesWithThreshold(Long userNo, int year, int month);
   }

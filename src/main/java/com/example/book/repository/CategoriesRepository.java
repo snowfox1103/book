@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoriesRepository extends JpaRepository<Categories,Long> {
-  Optional<Categories> findByCatName(String catName);
   Optional<Categories> findByCatId(Long catId);
   List<Categories> findAllByUsers_UserNo(Long userNo);
   boolean existsByUsers_UserNoAndCatName(Long userNo, String catName);

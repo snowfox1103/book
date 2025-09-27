@@ -19,13 +19,12 @@
     <div class="col-md-3" th:each="item : ${items}">
       <div class="card h-100 text-center">
         <div class="card-body">
-
           <!-- 상품 이미지 -->
           <div class="point-item"
                th:data-id="${item.itemId}"
                th:data-name="${item.itemName}"
                th:data-price="${item.itemPrice}">
-            <img th:src="@{/images/${imagesitem.itemImage}}"
+            <img th:src="@{'/images/' + ${item.itemImage}}"
                  alt="상품 이미지"
                  class="img-fluid"
                  style="max-height: 100px;">
@@ -45,6 +44,11 @@
           </div>
         </div>
       </div>
+    </div>
+
+<!--    상품 없을 떄-->
+    <div th:if="${#lists.isEmpty(items)}" class="text-center text-muted">
+      아직 등록된 상품이 없습니다.
     </div>
 
     <!-- 장바구니 + 포인트/결제 정보 -->
@@ -227,6 +231,16 @@
                 }
             });
 
+            // ❗ cart가 비었거나 count>0인 항목이 하나도 없을 때 안내문 추가
+            if (typeCount === 0) {
+                cartList.innerHTML = `
+          <li class="text-center text-muted">
+            장바구니가 비어있습니다. 상품을 추가해 주세요.
+          </li>
+        `;
+            }
+
+            // 총합/잔여 포인트 등 업데이트
             cartTotal.textContent = `총 차감 포인트: ${total.toLocaleString()}P`;
             usedPointEl.textContent = `${total.toLocaleString()}P`;
 

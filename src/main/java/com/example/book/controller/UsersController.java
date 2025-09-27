@@ -41,6 +41,12 @@ public class UsersController {
   public String userRegisterPost(UsersDTO usersDTO, RedirectAttributes redirectAttributes) {
     log.info("userRegister post.........");
     log.info(usersDTO);
+    if (!usersDTO.isTermsCheck() || !usersDTO.isPrivacyCheck()) {
+      redirectAttributes.addFlashAttribute("error", "약관과 개인정보 수집·이용에 모두 동의해야 가입이 가능합니다.");
+
+      return "redirect:/users/userRegister"; // 가입 폼으로 되돌아감
+    }
+
     try {
       Users users = usersService.register(usersDTO);
 

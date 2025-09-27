@@ -22,11 +22,14 @@ public class UsersSecurityDTO extends User implements OAuth2User {
   private String role;
   private boolean social;
   private boolean enabled;
+  private boolean firstLogin;
+  private boolean privacyCheck;
+  private boolean termsCheck;
   private Map<String, Object> props;
 
   public UsersSecurityDTO(
           Long userNo, String realName, String userId, String password, String email,
-          boolean social, boolean enabled,
+          boolean social, boolean enabled, boolean firstLogin, boolean privacyCheck, boolean termsCheck,
           Collection<? extends GrantedAuthority> authorities
   ) {
     super(userId, password, enabled, true, true, true, authorities);
@@ -37,6 +40,9 @@ public class UsersSecurityDTO extends User implements OAuth2User {
     this.email = email;
     this.social = social;
     this.enabled = enabled;
+    this.firstLogin = firstLogin;
+    this.privacyCheck = privacyCheck;
+    this.termsCheck = termsCheck;
   }
 
   // ====== Role helpers ======

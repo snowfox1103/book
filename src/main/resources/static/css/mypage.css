@@ -32,19 +32,21 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 180px;
+    /*width: 180px;*/
+    flex: 0 0 240px;
 }
 
 /* 컨테이너 (원 모양 + flex 중앙정렬) */
 .profile-img {
-    width: 150px;
-    height: 150px;
+    width: 170px;
+    height: 170px;
     border-radius: 50%;
     background-color: #e0e0e0;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    margin-bottom: 5px;
 }
 
 .profile-photo {
@@ -112,8 +114,28 @@ body {
 /* 버튼 스타일 */
 .btn-darkmode,
 .btn-edit,
-.btn-add,
+/*.btn-add,*/
 .btn-delete {
+    /*padding: 6px 12px;*/
+    /*border-radius: 6px;*/
+    /*border: 1px solid #0d6efd;*/
+    /*background-color: #0d6efd;*/
+    /*color: #fff;*/
+    /*font-size: 1rem;*/
+    /*cursor: pointer;*/
+    /*transition: 0.2s ease;*/
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #0d6efd;
+    background-color: #0d6efd;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s ease;
+    width: 120px;   /* 고정 폭 (원하는 크기로 조절) */
+    text-align: center;
+}
+.btn-add {
     padding: 6px 12px;
     border-radius: 6px;
     border: 1px solid #0d6efd;

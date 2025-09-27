@@ -102,29 +102,73 @@ body {
 .login-sec .form-check-input {
   margin-left: 44px;
 }
-#loginBtn{
-  display:block;
-  width:100%;
-  max-width:300px;
-  height:40px;
+
+.login-btn-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* 버튼 사이 간격 */
   margin: 16px auto 8px;
-  border:none;
-  border-radius:10px;
-  font-weight:600;
-  color:#fff;
-  background: #2563EBFF;
-  transition:background .15s ease, transform .02s ease, box-shadow .15s ease;
 }
+
+/* 로그인 버튼 크기 조절 */
+#loginBtn {
+  flex: 1;              /* 남는 공간 채우기 */
+  max-width: 240px;     /* 원래 300px → 줄이기 */
+  margin-left: 44px;
+  margin-right: 10px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #fff;
+  background: #2563EBFF;
+  transition: background .15s ease, transform .02s ease, box-shadow .15s ease;
+}
+/*#loginBtn{*/
+/*  display:block;*/
+/*  width:100%;*/
+/*  max-width:300px;*/
+/*  height:40px;*/
+/*  margin: 16px auto 8px;*/
+/*  border:none;*/
+/*  border-radius:10px;*/
+/*  font-weight:600;*/
+/*  color:#fff;*/
+/*  background: #2563EBFF;*/
+/*  transition:background .15s ease, transform .02s ease, box-shadow .15s ease;*/
+/*}*/
 
 #loginBtn:hover{ background:#1D4ED8FF; }
 #loginBtn:active{ background:#1E40AFFF; transform: translateY(1px); }
 #loginBtn:focus-visible{ outline:3px solid #DBEAFEFF; outline-offset:2px; }
 
+/* 카카오 버튼 (원형) */
+.kakao-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #FEE500; /* 카카오 노란색 */
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.kakao-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .login-sec ul{
+  margin-top: 10px;
   padding: 0px 30px;
 }
 
 .login-container .login-sec li a{ color: #1D4ED8FF !important; }
+
 .use-sec{
   display: flex;
   flex-direction: column;

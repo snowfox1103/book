@@ -43,11 +43,25 @@
             <button type="button" id="checkEmailBtn">중복확인</button>
         </div>
 
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="termsCheck" name="termsCheck" required>
+            <label class="form-check-label" for="termsCheck">
+                <a href="#">서비스 이용약관</a> 및
+                <a href="#">포인트 정책</a>에 동의합니다.
+            </label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="privacyCheck" name="privacyCheck" required>
+            <label class="form-check-label" for="privacyCheck">
+                <a href="#">개인정보 수집·이용</a>에 동의합니다.
+            </label>
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn-primary">가입하기</button>
             <button type="reset" class="btn-secondary">다시작성</button>
         </div>
-        <ul>
+        <ul class = "etc">
             <li><a href="#" data-bs-toggle="modal" data-bs-target="#resendModal">인증메일 재전송</a></li>
             <li><a href="/users/login">로그인으로 돌아가기</a></li>
         </ul>
@@ -82,6 +96,22 @@
     const h = document.querySelector('meta[name="_csrf_header"]')?.content;
     const headers = {'Content-Type':'application/json'};
     if(t && h) headers[h] = t;
+
+    const error = /*[[${error}]]*/ null;
+    if (error) {
+        if (error === 'userId') {
+            alert('이미 사용중인 아이디입니다.');
+        } else if (error === 'email') {
+            alert('이미 사용중인 이메일입니다.');
+        } else {
+            alert('약관과 개인정보 수집·이용에 모두 동의해야 가입이 가능합니다.');
+        }
+    }
+
+    const message = /*[[${message}]]*/ null;
+    if (message) {
+        alert(message);
+    }
 
     document.getElementById("checkUserIdBtn").addEventListener("click", async () => {
         const userId = document.getElementById("userId").value.trim();

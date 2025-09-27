@@ -1,8 +1,11 @@
 package com.example.book.service;
 
+import com.example.book.domain.finance.Budgets;
 import com.example.book.domain.finance.Categories;
 import com.example.book.domain.user.Users;
 import com.example.book.dto.CategoriesDTO;
+import com.example.book.dto.CategoryThresholdDTO;
+import com.example.book.repository.BudgetsRepository;
 import com.example.book.repository.CategoriesRepository;
 import com.example.book.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -20,6 +24,7 @@ public class CategoriesServiceImpl implements CategoriesService {
   private final UsersRepository usersRepository;
   private final CategoriesRepository categoriesRepository;
   private final ModelMapper modelMapper;
+  private final BudgetsRepository budgetsRepository;
 
   @Override
   public void addCategory(Long userNo, String catName){
@@ -82,5 +87,34 @@ public class CategoriesServiceImpl implements CategoriesService {
     all.addAll(userCategories);
 
     return all;
+  }
+
+  @Override
+  public String getCatNameByCatId(Long catId) {
+    Categories categories = categoriesRepository.findByCatId(catId)
+      .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+
+    return categories.getCatName();
+  }
+
+  @Override
+  public List<CategoryThresholdDTO> getCategoriesWithThreshold(Long userNo, int year, int month) {
+    List<Budgets> budgets = budgetsRepository
+      .findByUserNoAndBudYearAndBudMonthAndBudNoticeTrue(userNo, year, month);
+
+    return budgets.stream()
+      .map(budget -> new CategoryThresholdDTO(
+        budget.getBudCategory(),      // 카테고리 ID
+        getCategoryName(budget.getBudCategory()), // 카테고리 이름
+        budget.getBudThreshold() != null ? budget.getBudThreshold() : 90 // 기본값 90
+      ))
+      .collect(Collectors.toList());
+  }
+
+  // 🔹 카테고리 이름 가져오기 (예시: Categories 테이블에서 조회)
+  private String getCategoryName(Long catId) {
+    return categoriesRepository.findById(catId)
+      .map(Categories::getCatName)
+      .orElse("알 수 없음");
   }
 }

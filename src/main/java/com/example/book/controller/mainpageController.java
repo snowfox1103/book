@@ -75,5 +75,4 @@ public class mainpageController {
         log.info(currentMonth);
         log.info(yearlyStats);
     }
-
 }

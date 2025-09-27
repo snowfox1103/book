@@ -1,6 +1,7 @@
 package com.example.book.service;
 
 import com.example.book.domain.finance.Budgets;
+import com.example.book.dto.BudgetAlertDTO;
 import com.example.book.dto.BudgetsDTO;
 import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
@@ -27,6 +28,8 @@ public class BudgetsServiceImpl implements BudgetsService {
     private final TransactionsRepository transactionsRepository;
     private final BudgetsRepository budgetsRepository;
     private final ModelMapper modelMapper;
+    private final CategoriesService categoriesService; //0926 조덕진 알림용
+
     @Override
     public Long registerBudget(BudgetsDTO budgetsDTO){ //이번 달 것만 등록 가능
         Optional<Budgets> existingBudget = budgetsRepository.usedBudgetByCategory(budgetsDTO.getBudCategory(), budgetsDTO.getBudYear(), budgetsDTO.getBudMonth(), budgetsDTO.getUserNo());
@@ -85,4 +88,37 @@ public class BudgetsServiceImpl implements BudgetsService {
         return budgetsRepository.budgetUsesByMonth(year,month,userNo);
     }
 
+    //0926 조덕진 수정 알림용
+    @Override
+    public List<BudgetAlertDTO> getBudgetAlerts(Long userNo) {
+        List<Budgets> budgets = budgetsRepository.findByUserNoAndBudNoticeTrue(userNo);
+
+        return budgets.stream()
+          .filter(b -> b.getBudAmount() != null && b.getBudAmount() > 0)
+          .map(b -> {
+              int rate = (int) Math.round((double) b.getBudCurrent() / b.getBudAmount() * 100);
+              int threshold = (b.getBudThreshold() != null) ? b.getBudThreshold() : 90; // 기본값 90%
+              return new BudgetAlertDTO(
+                b.getBudgetId(),
+                categoriesService.getCatNameByCatId(b.getBudCategory()),
+                b.getBudAmount(),
+                b.getBudCurrent(),
+                rate,
+                threshold
+              );
+          })
+          .filter(dto -> dto.getRate() >= dto.getThreshold()) // ⚠️ 설정한 비율 이상일 때만 알림
+          .toList();
+    }
+
+    @Override
+    @Transactional
+    public void updateCategoryThreshold(Long userNo, Long catId, int threshold, int year, int month) {
+        Budgets budget = budgetsRepository
+          .findByUserNoAndBudCategoryAndBudYearAndBudMonth(userNo, catId, year, month)
+          .orElseThrow(() -> new IllegalArgumentException(
+            "이번 달 예산을 찾을 수 없습니다. userNo=" + userNo + ", catId=" + catId));
+
+        budget.changeThreshold(threshold);
+    }
 }

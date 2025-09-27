@@ -9,12 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PasswordChangeRequestDTO {
-  @Column(nullable = false)
   private String currentPassword;
-
-  @Column(nullable = false)
   private String newPassword;
-
-  @Column(nullable = false)
   private String confirmPassword;
+  private boolean termsCheck;
+  private boolean privacyCheck;
 }

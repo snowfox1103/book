@@ -42,6 +42,15 @@ public class Users extends BaseEntity {
     private boolean enabled = false;
     private String profileImage;
 
+    @Column(name = "firstLogin")
+    private boolean firstLogin;
+
+    @Column(name="termsCheck")
+    private boolean termsCheck;   // 약관동의
+
+    @Column(name = "privacyCheck")
+    private boolean privacyCheck; // 개인정보 수집동의
+
     @Builder.Default
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subscriptions> subscriptions = new ArrayList<>();
@@ -86,7 +95,7 @@ public class Users extends BaseEntity {
     public long getBalance() { return balance; }
     public void setBalance(long balance) { this.balance = balance; }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userNo", insertable=false, updatable=false)
-    private Users author;   // Users 엔티티 (userId, realName 등 보유)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "userNo", insertable=false, updatable=false)
+//    private Users author;   // Users 엔티티 (userId, realName 등 보유)
 }
