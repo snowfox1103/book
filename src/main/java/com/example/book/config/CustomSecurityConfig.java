@@ -12,10 +12,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -38,71 +41,90 @@ public class CustomSecurityConfig {
     private final DataSource dataSource;
     private final CustomUserDetailsService userDetailsService;
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    log.info("------------------configure----------------------");
-    http
-      .csrf(csrf -> csrf
-        .ignoringRequestMatchers("/trans/**", "/budget/**")// 필요하면 특정 경로만 예외
-      )
+    @Bean
+    public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
+        return org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    //로그인 안되는 오류로 추가 0928 석준영
+    @Bean
+    public AuthenticationProvider authenticationProvider(
+            UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
+        p.setUserDetailsService(userDetailsService); // 네 CustomUserDetailsService
+        p.setPasswordEncoder(passwordEncoder);
+        return p;
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        log.info("------------------configure----------------------");
+        http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/trans/**", "/budget/**")// 필요하면 특정 경로만 예외
+                )
 //      .csrf(csrf -> csrf.disable())
-      .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/error", "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**", "/fragments/**").permitAll()
-        // 2.2 화면들
-        .requestMatchers("/users/login", "/users/checkUserId", "/users/checkEmail", "/users/userRegister", "/users/verify",
-          "/users/searchAndResend").permitAll()
-        // 2.3 공개 API (resend/id/pw)
-        .requestMatchers("/users/resend", "/users/idSearch", "/users/pwSearch").permitAll()
-        // 2.4 그 외는 인증
-        .anyRequest().authenticated()
-      )
-      .logout(logout -> logout
-          .logoutUrl("/users/logout")
-          .logoutSuccessHandler((request, response, authentication) -> {
-            // 세션을 완전히 무효화
-            request.getSession().invalidate();
-            // 새 세션 강제 생성
-            request.getSession(true);
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/error", "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**", "/fragments/**").permitAll()
+                        // 2.2 화면들
+                        .requestMatchers("/users/login", "/users/checkUserId", "/users/checkEmail", "/users/userRegister", "/users/verify",
+                                "/users/searchAndResend").permitAll()
+                        // 2.3 공개 API (resend/id/pw)
+                        .requestMatchers("/users/resend", "/users/idSearch", "/users/pwSearch").permitAll()
+                        // 2.4 그 외는 인증
+                        .anyRequest().authenticated()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/users/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            // 세션을 완전히 무효화
+                            request.getSession().invalidate();
+                            // 새 세션 강제 생성
+                            request.getSession(true);
 
-            // 리다이렉트
-            response.sendRedirect("/users/login?logout");
-          })
-          .permitAll()
-      )
-      .formLogin(form -> form
-        .loginPage("/users/login")
-        .loginProcessingUrl("/users/login")
-        .failureHandler(authFailureHandler())
-        .defaultSuccessUrl("/mainPage/mainpage", true) //0925 조덕진 로그인 성공시 메인페이지로 이동하도록 수정
-      )
-      .rememberMe(httpSecurityRememberMeConfigurer -> { //자동 로그인 기능 처리하는 부분
-        httpSecurityRememberMeConfigurer
-          .key("12345678")
-          .tokenRepository(persistentTokenRepository())
-          .userDetailsService(userDetailsService)
-          .tokenValiditySeconds(60*60*24*30);
-      })
-      .exceptionHandling(ex -> ex
-        .accessDeniedHandler(new Custom403Handler()) // 등록
-      )
-      .oauth2Login(httpSecurityOauth2LoginConfigurer -> {
+                            // 리다이렉트
+                            response.sendRedirect("/users/login?logout");
+                        })
+                        .permitAll()
+                )
+                .formLogin(form -> form
+                        .loginPage("/users/login")
+                        .loginProcessingUrl("/users/login")
+                        .usernameParameter("userId") // login이 안 되서 추가함 0928 석준영
+                        .passwordParameter("password") // login이 안 되서 추가함 0928 석준영
+                        .failureHandler(authFailureHandler())
+                        .defaultSuccessUrl("/mainPage/mainpage", true) //0925 조덕진 로그인 성공시 메인페이지로 이동하도록 수정
+
+                )
+                .rememberMe(httpSecurityRememberMeConfigurer -> { //자동 로그인 기능 처리하는 부분
+                    httpSecurityRememberMeConfigurer
+                            .key("12345678")
+                            .tokenRepository(persistentTokenRepository())
+                            .userDetailsService(userDetailsService)
+                            .tokenValiditySeconds(60 * 60 * 24 * 30);
+                })
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(new Custom403Handler()) // 등록
+                )
+                .oauth2Login(httpSecurityOauth2LoginConfigurer -> {
 //      httpSecurityOauth2LoginConfigurer.loginPage("/member/login");
-        httpSecurityOauth2LoginConfigurer.successHandler(authenticationSuccessHandler());
-      });
+                    httpSecurityOauth2LoginConfigurer.successHandler(authenticationSuccessHandler());
+                });
 
-    return http.build();
-  }
+        return http.build();
+    }
 //    @Bean
 //    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 //        log.info("===== Security configure =====");
 //
 //        // CSRF – 필요 시 다시 켜자 (H2 콘솔 쓰면 .ignoringRequestMatchers("/h2-console/**") 추가)
-////    http.csrf(csrf -> csrf.disable()); 로그인 기능 활성화로 주석처리 0918 석준영
+
+    /// /    http.csrf(csrf -> csrf.disable()); 로그인 기능 활성화로 주석처리 0918 석준영
 //
 //        // 폼 로그인
 //        http.formLogin(form -> form
@@ -155,39 +177,39 @@ public class CustomSecurityConfig {
 //
 //        return http.build();
 //    }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        log.info("-----------------web configure-------------------");
+        return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations()); //정적 자원들은 필터에서 제외한다는 뜻
+    }
 
-  @Bean
-  public WebSecurityCustomizer webSecurityCustomizer() {
-    log.info("-----------------web configure-------------------");
-    return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations()); //정적 자원들은 필터에서 제외한다는 뜻
-  }
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
+        repo.setDataSource(dataSource);
 
-  @Bean
-  public PersistentTokenRepository persistentTokenRepository() {
-    JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
-    repo.setDataSource(dataSource);
+        return repo;
+    }
 
-    return repo;
-  }
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return new Custom403Handler();
+    }
 
-  @Bean
-  public AccessDeniedHandler accessDeniedHandler() {
-    return new Custom403Handler();
-  }
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new CustomSocialLoginSuccessHandler(passwordEncoder());
+    }
 
-  @Bean
-  public AuthenticationSuccessHandler authenticationSuccessHandler() {
-    return new CustomSocialLoginSuccessHandler(passwordEncoder());
-  }
-
-  @Bean
-  AuthenticationFailureHandler authFailureHandler() {
-    return (request, response, ex) -> {
-      String code = "bad";
-      if (ex instanceof org.springframework.security.authentication.DisabledException) {
-        code = "disabled";
-      }
-      response.sendRedirect("/users/login?error=" + code);
-    };
-  }
+    @Bean
+    AuthenticationFailureHandler authFailureHandler() {
+        return (request, response, ex) -> {
+            ex.printStackTrace(); // 에러 확인용
+            String code = "bad";
+            if (ex instanceof org.springframework.security.authentication.DisabledException) {
+                code = "disabled";
+            }
+            response.sendRedirect("/users/login?error=" + code);
+        };
+    }
 }

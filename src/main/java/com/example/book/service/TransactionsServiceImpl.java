@@ -32,6 +32,7 @@ public class TransactionsServiceImpl implements TransactionsService{
     public Long registerTrans(TransactionsDTO transactionsDTO){
         Transactions transactions = modelMapper.map(transactionsDTO,Transactions.class);
         Long transId = transactionsRepository.save(transactions).getTransId();
+        autoUpdateBudgetCurrent(transactionsDTO.getUserNo(),transactionsDTO.getTransCategory(),transactionsDTO.getTransDate().getYear(),transactionsDTO.getTransDate().getMonthValue());
         return transId;
     }
     @Override
@@ -65,11 +66,9 @@ public class TransactionsServiceImpl implements TransactionsService{
         LocalDate endDay = pageRequestDTO.getEndDay();
         InOrOut io = pageRequestDTO.getIo();
         Pageable pageable = pageRequestDTO.getPageable("transId");
-        Page<Transactions> result = transactionsRepository.searchAllTrans(userNo, types,keyword,category,minn,maxx,startDay,endDay,io,pageable);
         //getContent()을 호출하면 현재 페이지에 해당하는 List<Transactions> 가 반환됩니다.
         //즉, DB에서 가져온 Transactions 엔티티들의 리스트예요
-        //List<Transactions> → Stream<Transactions> 으로 바꿔줍니다.
-        //이제 이 스트림에서 각 원소는 Transactions 타입 객체가 됩니다.
+        Page<Transactions> result = transactionsRepository.searchAllTrans(userNo, types,keyword,category,minn,maxx,startDay,endDay,io,pageable);
         List<TransactionsDTO> dtoList = result.getContent().stream()
                 //map()은 스트림의 각 원소(Transactions)를 다른 타입(TransactionsDTO)으로 변환할 때 쓰는 함수입니다.
                 //여기서 transactions는 스트림의 각 원소를 임시로 가리키는 변수예요.
@@ -100,12 +99,5 @@ public class TransactionsServiceImpl implements TransactionsService{
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
         return transactionsRepository.totalUseByMonth(year,month,userNo);
-    }
-    //이번 달 총 입금 금액 집계
-    @Override
-    public Long wholeIncome(Long userNo){
-        int year = LocalDate.now().getYear();
-        int month = LocalDate.now().getMonthValue();
-        return transactionsRepository.totalIncomeByMonth(year,month,userNo);
     }
 }

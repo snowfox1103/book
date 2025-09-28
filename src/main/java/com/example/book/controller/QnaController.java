@@ -14,15 +14,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -41,6 +40,7 @@ public class QnaController {
         return auth != null && auth.hasRole("ADMIN");
     }
 
+    /** 문의 목록: regDate DESC + ‘답변 여부’ 셋 전달 */
     @GetMapping
     public String list(@AuthenticationPrincipal UsersSecurityDTO auth,
                        @PageableDefault(size = 10) Pageable pageable,
@@ -48,19 +48,17 @@ public class QnaController {
 
         Pageable sorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, "regDate"));
+
         Page<Qna> page = qnaService.listForUser(currentUserNo(auth), isAdmin(auth), sorted);
         model.addAttribute("page", page);
 
-        // 이하 그대로 (답변 수 집계 등)
+        // 이번 페이지 문의 ID만 뽑아서 ‘답변이 있는 문의 ID’ 셋 생성
         List<Long> ids = page.getContent().stream().map(Qna::getQBId).toList();
-        Map<Long, Long> counts = ids.isEmpty()
-                ? java.util.Map.of()
-                : qnaReplyRepository.countByQbIdIn(ids).stream()
-                .collect(Collectors.toMap(
-                        QnaReplyRepository.ReplyCountRow::getQbId,
-                        QnaReplyRepository.ReplyCountRow::getCnt));
-        model.addAttribute("counts", counts);
+        Set<Long> answeredIds = ids.isEmpty()
+                ? Set.of()
+                : new HashSet<>(qnaReplyRepository.findAnsweredQbIds(ids));
 
+        model.addAttribute("answeredIds", answeredIds);
         return "qna/list";
     }
 
@@ -75,15 +73,10 @@ public class QnaController {
         Qna q = qnaService.getForRead(qBId, userNo, admin);
         model.addAttribute("q", q);
 
-        PageRequestDTO pr = PageRequestDTO.builder()
-                .page(1)
-                .size(50)
-                .build();
-
+        PageRequestDTO pr = PageRequestDTO.builder().page(1).size(50).build();
         boolean owner = (userNo != null && userNo.equals(q.getUserNo()));
 
         model.addAttribute("replies", qnaReplyService.list(qBId, pr).getDtoList());
-
         model.addAttribute("canEdit", admin || owner);
         return "qna/read";
     }
@@ -108,7 +101,6 @@ public class QnaController {
                            @PathVariable Long id,
                            Model model) {
         Qna q = qnaService.getForRead(id, currentUserNo(auth), isAdmin(auth));
-
         if (!isAdmin(auth) && !q.getUserNo().equals(currentUserNo(auth))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }

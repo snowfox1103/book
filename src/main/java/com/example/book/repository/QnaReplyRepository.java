@@ -44,4 +44,12 @@ public interface QnaReplyRepository extends JpaRepository<QnaReply, Long> {
     order by r.qRId asc
 """)
     List<QnaReplyDTO> findDtoByQbId(@Param("qBId") Long qBId);
+
+    @Query("""
+      select r.qbId
+      from QnaReply r
+      where r.qbId in :qbIds
+      group by r.qbId
+    """)
+    List<Long> findAnsweredQbIds(@Param("qbIds") List<Long> qbIds);
 }
