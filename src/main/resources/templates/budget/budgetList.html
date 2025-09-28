@@ -40,7 +40,7 @@
                             <option th:each="cat: ${categories}"
                                     th:value="${cat.catId}"
                                     th:text="${cat.catName}"
-                                    th:selected="${cat.catId == pageRequestDTO.categoriess}">
+                                    th:selected="${cat.catId == pageRequestDTO.categories}">
                             </option>
                         </select>
                     </div>

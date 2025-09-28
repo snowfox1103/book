@@ -41,15 +41,15 @@ public class CustomSecurityConfig {
     private final DataSource dataSource;
     private final CustomUserDetailsService userDetailsService;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 //    @Bean
-//    public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
-//        return org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder();
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
 //    }
+
+    @Bean
+    public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
+        return org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 
     //로그인 안되는 오류로 추가 0928 석준영
     @Bean

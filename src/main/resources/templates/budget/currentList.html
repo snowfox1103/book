@@ -42,24 +42,24 @@
                             <th scope="col">예산 초과 여부</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr th:each="b: ${response.dtoList}"
-                            th:if="${b.budYear == #temporals.year(#temporals.createNow()) and b.budMonth == #temporals.month(#temporals.createNow()) and b.userNo == 1}"> <!--응답 페이지 안의 budgetDTO, 유저 정보 뽑기-->
-                            <td>
-                                <span th:each="cat : ${categories}"
-                                      th:if="${cat.catId} == ${b.budCategory}">
-                                    <a th:href="|@{/budget/budgetRead(bno =${b.budgetId})}&${link}|" th:text="${cat.catName}"></a>
-                               </span>
-                            </td>
-                            <td th:text="${T(java.lang.String).format('%,d', b.budAmount)}"></td>
-                            <td th:text="${T(java.lang.String).format('%,d', b.budCurrent)}"></td>
-                            <td th:text="${T(java.lang.String).format('%,d', b.budAmount - b.budCurrent )}"></td>
-                            <td>
-                                <span th:if="${b.budIsOver == true}" th:text="O"></span>
-                                <span th:if="${b.budIsOver == false}" th:text="X"></span>
-                            </td>
-                        </tr>
-                        </tbody>
+                            <tbody>
+                            <tr th:each="b: ${response.dtoList}"
+                                th:if="${b.budYear == #temporals.year(#temporals.createNow()) and b.budMonth == #temporals.month(#temporals.createNow())}"> <!--응답 페이지 안의 budgetDTO, 유저 정보 뽑기-->
+                                <td>
+                                    <span th:each="cat : ${categories}"
+                                          th:if="${cat.catId} == ${b.budCategory}">
+                                        <a th:href="|@{/budget/budgetRead(bno =${b.budgetId})}&${link}|" th:text="${cat.catName}"></a>
+                                   </span>
+                                </td>
+                                <td th:text="${T(java.lang.String).format('%,d', b.budAmount)}"></td>
+                                <td th:text="${T(java.lang.String).format('%,d', b.budCurrent)}"></td>
+                                <td th:text="${T(java.lang.String).format('%,d', b.budAmount - b.budCurrent )}"></td>
+                                <td>
+                                    <span th:if="${b.budIsOver == true}" th:text="O"></span>
+                                    <span th:if="${b.budIsOver == false}" th:text="X"></span>
+                                </td>
+                            </tr>
+                            </tbody>
                     </table>
                     <!-- ------------------------------------------------------------------- 목록 페이지 처리-->
                     <div class="d-flex justify-content-between align-items-center mt-3 ">

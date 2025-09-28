@@ -69,7 +69,7 @@ public class BudgetsController {
         model.addAttribute("categories",categories);
     }
     @PostMapping("/budgetRegister")
-    public String postBudgetReg(@Valid BudgetsDTO budgetsDTO, RedirectAttributes redirectAttributes, BindingResult bindingResult){
+    public String postBudgetReg(@Valid BudgetsDTO budgetsDTO , BindingResult bindingResult, RedirectAttributes redirectAttributes){
         if(bindingResult.hasErrors()){
             log.info("has errors...................");
             bindingResult.getFieldErrors().forEach(err -> {
@@ -88,9 +88,11 @@ public class BudgetsController {
             transactionsService.autoUpdateBudgetCurrent(budgetsDTO.getUserNo(),budgetsDTO.getBudCategory(),budgetsDTO.getBudYear(),budgetsDTO.getBudMonth());
             redirectAttributes.addFlashAttribute("result",bno);
         } catch (IllegalArgumentException e) {
+            log.info("--------------------123------------");
             redirectAttributes.addFlashAttribute("duplicateError", e.getMessage());
-            return "redirect:/budget/budgetRegister";
+            return "redirect:/budget/budgetRegister111";
         }catch (Exception e) {
+            log.error("예산 등록 중 오류 발생", e);
             redirectAttributes.addFlashAttribute("error", "예산 등록 중 오류가 발생했습니다.");
             return "redirect:/budget/budgetRegister";
         }

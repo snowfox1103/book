@@ -38,4 +38,6 @@ public class BudgetsDTO {
     private Boolean budReduction = false;
 
     private Boolean budNotice = false;
+
+    private Integer budThreshold = 90;
 }
