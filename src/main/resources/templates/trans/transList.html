@@ -31,7 +31,7 @@
             <div class="row g-3 align-items-end mt-1">
                 <div class="col-md-3">
                     <label for="cats" class="form-label">카테고리</label>
-                    <select class="form-select" name="categoriess" id="cats">
+                    <select class="form-select" name="categories" id="cats">
                         <option value="">전체</option>
                         <option th:each="cat: ${categories}"
                                 th:value="${cat.catId}"
