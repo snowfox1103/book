@@ -36,10 +36,15 @@ public class TransactionsController {
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo,pageRequestDTO);
         log.info(responseDTO);
         List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
+        Long UsesThisMonth = transactionsService.wholeUses(userNo);
+        Long incomeThisMonth = transactionsService.wholeIncome(userNo);
         model.addAttribute("users",userNo);
         model.addAttribute("active", "board");
         model.addAttribute("categories", categories);
         model.addAttribute("responseDTO",responseDTO);
+        model.addAttribute("totalUseByThisMonth",UsesThisMonth);
+        model.addAttribute("totalIncomeByThisMonth",incomeThisMonth);
+
         log.info("--------get list---------");
     }
     @GetMapping("/transRegister")
