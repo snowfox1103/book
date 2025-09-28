@@ -1,6 +1,7 @@
 package com.example.book.repository;
 
 import com.example.book.domain.finance.BillingDailyGuard;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,8 @@ public interface BillingDailyGuardRepository extends JpaRepository<BillingDailyG
     ON DUPLICATE KEY UPDATE lastRunDate = :today, updatedAt = NOW(6)
   """, nativeQuery = true)
   int upsertToday(@Param("userNo") Long userNo, @Param("today") java.time.LocalDate today);
+
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Query("delete from BillingDailyGuard b where b.userNo = :userNo")
+  void deleteByUserNo(@Param("userNo") Long userNo);
 }

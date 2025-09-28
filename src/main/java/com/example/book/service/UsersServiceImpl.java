@@ -63,6 +63,8 @@ public class UsersServiceImpl implements UsersService {
       .role(MemberRole.USER)
       .social(false)
       .enabled(false)   // 중요: 미인증 상태
+      .privacyCheck(true)
+      .termsCheck(true)
       .build();
 
 //    users.changePassword(passwordEncoder.encode(usersDTO.getPassword()));

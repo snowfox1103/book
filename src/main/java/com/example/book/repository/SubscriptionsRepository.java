@@ -68,4 +68,8 @@ public interface SubscriptionsRepository extends JpaRepository<Subscriptions, Lo
 
   //결제일 목록 불러오기
   List<Subscriptions> findBySubPayDate(int subPayDate);
+
+  @Modifying
+  @Transactional
+  void deleteByUsers_UserNo(Long userNo);
 }

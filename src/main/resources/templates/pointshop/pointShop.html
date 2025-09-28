@@ -68,7 +68,7 @@
           <p>현재 포인트:
             <strong id="currentPoint"
                     th:data-value="${currentPoint}"
-                    th:text="${#numbers.formatInteger(currentPoint, 3, 'COMMA')} + 'P'"></strong>
+                    th:text="${#numbers.formatInteger(currentPoint, 1, 'COMMA')} + 'P'"></strong>
           </p>
           <p>선택 상품: <strong id="itemCount">0종 / 0개</strong></p>
           <p>차감 포인트: <strong id="usedPoint">0P</strong></p>
