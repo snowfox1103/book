@@ -62,6 +62,7 @@ public class MyPageController {
       .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     List<Categories> categories = categoriesService.categoriesList(users.getUserNo());
+    log.info("categories = {}", categories);
     model.addAttribute("categories", categories);
     model.addAttribute("user", users);
 

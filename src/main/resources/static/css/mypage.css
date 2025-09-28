@@ -203,7 +203,7 @@ body {
     grid-template-columns: repeat(4, 130px);
     gap: 8px 12px;
 
-    padding: 0;
+    padding: 0px 20px;
     margin: 0;
     list-style: none;
 
@@ -243,11 +243,33 @@ body {
 }
 
 /* 삭제 버튼(카테고리 전용) */
+/*.category-box li .btn-delete {*/
+/*    flex-shrink: 0;*/
+/*    padding: 2px 6px;*/
+/*    font-size: 0.9rem;*/
+/*    line-height: 1;*/
+/*}*/
 .category-box li .btn-delete {
     flex-shrink: 0;
-    padding: 2px 6px;
+    width: 24px;           /* 고정 너비 */
+    height: 24px;          /* 고정 높이 */
+    padding: 0;
+    border: none;              /* 테두리 없음 */
+    background-color: #dc3545; /* 빨간 배경 */
+    color: #fff;               /* 흰색 글자 */
     font-size: 0.9rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;        /* 모서리 살짝 둥글게 */
+    cursor: pointer;
     line-height: 1;
+}
+
+.category-box li .btn-delete:hover {
+    background-color: #b02a37; /* hover 시 더 어두운 빨강 */
+    color: #fff;               /* x는 계속 흰색 */
 }
 
 /* 문의사항 */

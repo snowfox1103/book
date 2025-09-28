@@ -101,6 +101,9 @@
                 data-bs-target="#editCategoryModal"
                 th:text="${cat.catName}">카테고리</span>
           <button type="button" class="btn btn-sm btn-danger btn-delete">X</button>
+<!--          <button type="button" class="btn-delete">-->
+<!--            <i class="bi bi-x-lg"></i>  &lt;!&ndash; X 아이콘 &ndash;&gt;-->
+<!--          </button>-->
         </li>
       </ul>
       <div th:if="${#lists.isEmpty(categories)}" class="text-center text-muted">
