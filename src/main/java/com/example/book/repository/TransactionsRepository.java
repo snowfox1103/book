@@ -41,6 +41,13 @@ public interface TransactionsRepository extends JpaRepository<Transactions, Long
                          @Param("month") int month,
                          @Param("userNo") Long userNo);
 
+    @Query("select COALESCE(SUM(t.transAmount),0)"+
+            "from Transactions t "+
+            "where t.userNo = :userNo "+
+            "and year(t.transDate) = :year "+
+            "and month(t.transDate) = :month " +
+            "and t.transInOut = 'IN'")
+    Long totalIncomeByMonth(int year,int month,Long userNo);
 
     default Page<Transactions> searchAllTrans(Long userNo,
                                               String[] types,

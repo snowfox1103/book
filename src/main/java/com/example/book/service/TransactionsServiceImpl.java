@@ -100,4 +100,11 @@ public class TransactionsServiceImpl implements TransactionsService{
         int month = LocalDate.now().getMonthValue();
         return transactionsRepository.totalUseByMonth(year,month,userNo);
     }
+    //이번 달 총 입금 금액 집계
+    @Override
+    public Long wholeIncome(Long userNo){
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+        return transactionsRepository.totalIncomeByMonth(year,month,userNo);
+    }
 }
