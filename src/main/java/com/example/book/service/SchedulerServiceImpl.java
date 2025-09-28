@@ -57,6 +57,7 @@ public class SchedulerServiceImpl implements SchedulerService{
                 .transCategory(sub.getCategories().getCatId())
                 .transDate(LocalDate.now())
                 .transInOut(InOrOut.OUT)
+                .subId(sub.getSubId())
                 .build();
 
         transactionsService.registerTrans(transactionsDTO);

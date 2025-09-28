@@ -23,12 +23,5 @@ public interface TransactionsRepository extends JpaRepository<Transactions, Long
             "and month(t.transDate) = :month ")
     Long totalUseByMonth(int year, int month, Long userNo);
     //해당 달 모든 사용 금액 총합 계산
-
-    //point 승인용 쿼리문 0927 석준영
-    @Query("""
-      select t from Transactions t
-      where t.transDate between :from and :to
-        and t.transCategory in :categories
-    """)
-    List<Transactions> findPointable(LocalDate from, LocalDate to, Collection<Long> categories);
+    
 }
