@@ -45,6 +45,7 @@ public class CustomUserDetailsService implements UserDetailsService {
       users.isTermsCheck(),
       java.util.List.of(new SimpleGrantedAuthority("ROLE_" + users.getRole().name()))
     );
+    log.info("authorities = {}", new SimpleGrantedAuthority("ROLE_" + users.getRole().name()));
     log.info("userSecurityDTO");
     log.info(usersSecurityDTO);
 

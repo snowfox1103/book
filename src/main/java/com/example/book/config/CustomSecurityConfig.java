@@ -95,7 +95,7 @@ public class CustomSecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/users/login")
                         .loginProcessingUrl("/users/login")
-                        .usernameParameter("userId") // login이 안 되서 추가함 0928 석준영
+                        .usernameParameter("username") // login이 안 되서 추가함 0928 석준영 >> username으로 수정 0928 조덕진
                         .passwordParameter("password") // login이 안 되서 추가함 0928 석준영
                         .failureHandler(authFailureHandler())
                         .defaultSuccessUrl("/mainPage/mainpage", true) //0925 조덕진 로그인 성공시 메인페이지로 이동하도록 수정
