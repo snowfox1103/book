@@ -4,8 +4,10 @@ import com.example.book.domain.qna.Qna;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -50,4 +52,9 @@ public interface QnaRepository extends JpaRepository<Qna, Long> {
     // 마이페이지 등 최근 글 조회 시도 최신순이 자연스럽지만,
     // "Top10 최신"이 필요하면 아래처럼 DESC로 두는 게 일반적임.
     List<Qna> findTop10ByUserNoOrderByRegDateDesc(@Param("userNo") Long userNo);
+
+    //0928 조덕진 회원탈퇴용
+    @Modifying
+    @Query("delete from Qna q where q.userNo = :userNo")
+    void deleteAllByUserNo(@Param("userNo") Long userNo);
 }

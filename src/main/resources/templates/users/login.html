@@ -178,6 +178,13 @@
         alert('이메일을 확인해주세요.');
     }
 
+    const msg = /*[[${msg}]]*/ null;
+    console.log("msg param: " + msg);
+
+    if (msg) {
+        alert(msg);
+    }
+
     // 이미지 슬라이더
     const images = [
         /*[[@{/images/sample-img.png}]]*/,

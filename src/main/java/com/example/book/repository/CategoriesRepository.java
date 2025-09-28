@@ -29,4 +29,8 @@ public interface CategoriesRepository extends JpaRepository<Categories,Long> {
   @Transactional
   @Query("update Categories c set c.catName = :catName where c.catId = :catId")
   void updateCatNameByCatId(Long catId, String catName);
+
+  @Modifying
+  @Transactional
+  void deleteByUsers_UserNo(Long userNo);
 }

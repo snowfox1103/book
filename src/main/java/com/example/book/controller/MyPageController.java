@@ -4,8 +4,7 @@ import com.example.book.domain.finance.Categories;
 import com.example.book.domain.qna.Qna;
 import com.example.book.domain.user.Users;
 import com.example.book.dto.*;
-import com.example.book.repository.EmailVerificationTokenRepository;
-import com.example.book.repository.UsersRepository;
+import com.example.book.repository.*;
 import com.example.book.security.dto.UsersSecurityDTO;
 import com.example.book.service.BudgetsService;
 import com.example.book.service.CategoriesService;
@@ -49,6 +48,12 @@ public class MyPageController {
   private final CategoriesService categoriesService;
   private final QnaService qnaService;
   private final BudgetsService budgetsService;
+  private final BillingDailyGuardRepository  billingDailyGuardRepository;
+  private final CategoriesRepository  categoriesRepository;
+  private final SubscriptionsRepository subscriptionsRepository;
+  private final CartRepository cartRepository;
+  private final NoticeRepository noticeRepository;
+  private final QnaRepository qnaRepository;
 
   @GetMapping("/myPage")
   public String myPageGet(@AuthenticationPrincipal UsersSecurityDTO authUser, @RequestParam(value="first", required=false) Boolean first, Model model) {
@@ -87,11 +92,23 @@ public class MyPageController {
 
     // 2) 자식 데이터 먼저 삭제 (토큰/구독 등)
     tokenRepository.deleteByUsers_UserNo(userNo);
-//    subscriptionsRepository.deleteByUsers_UserNo(userNo);
+    log.info("token delete ..........");
+    billingDailyGuardRepository.deleteByUserNo(userNo);
+    log.info("bill delete ..........");
+    cartRepository.deleteByUsers_UserNo(userNo);
+    log.info("cart delete ..........");
+    subscriptionsRepository.deleteByUsers_UserNo(userNo);
+    log.info("sub delete ..........");
+    categoriesRepository.deleteByUsers_UserNo(userNo);
+    log.info("cate delete ..........");
+    qnaRepository.deleteAllByUserNo(userNo);
+    log.info("qna delete ..........");
+//    noticeRepository.deleteByUsers_UserNo(userNo);
     // 다른 연관도 있으면 같은 방식으로
 
     // 3) 사용자 삭제
     usersRepository.deleteByUserId(users.getUserId()); // 또는 usersRepository.deleteByUserId(user.getUserId());
+    log.info("user delete ..........");
 
     // 4) 로그아웃 처리
     new SecurityContextLogoutHandler().logout(request, response, null);
