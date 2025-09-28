@@ -42,6 +42,9 @@ public class Budgets extends BaseEntity {
     @Column(name = "budNotice")
     private Boolean budNotice;
 
+    //0926 조덕진 수정 예산 알림용
+    @Column(name = "budThreshold")
+    private Integer budThreshold;  // % 단위 (예: 90 → 90%)
 
     public void changeBudget(Long budAmount,boolean budNotice){
         if(budAmount != null) this.budAmount = budAmount;
@@ -55,5 +58,10 @@ public class Budgets extends BaseEntity {
         if(this.budCurrent != null && this.budAmount != null){
             this.budIsOver = this.budCurrent > this.budAmount;
         }
+    }
+
+    //0926 조덕진 수정 예산 알림용
+    public void changeThreshold(Integer threshold) {
+        this.budThreshold = threshold;
     }
 }

@@ -42,6 +42,15 @@ public class Users extends BaseEntity {
     private boolean enabled = false;
     private String profileImage;
 
+    @Column(name = "firstLogin")
+    private boolean firstLogin = false;
+
+    @Column(name="termsCheck")
+    private boolean termsCheck = false;   // 약관동의
+
+    @Column(name = "privacyCheck")
+    private boolean privacyCheck = false; // 개인정보 수집동의
+
     @Builder.Default
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subscriptions> subscriptions = new ArrayList<>();

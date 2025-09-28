@@ -40,6 +40,9 @@ public class CustomUserDetailsService implements UserDetailsService {
       users.getEmail(),
       false,
       users.isEnabled(),
+      users.isFirstLogin(),
+      users.isPrivacyCheck(),
+      users.isTermsCheck(),
       java.util.List.of(new SimpleGrantedAuthority("ROLE_" + users.getRole().name()))
     );
     log.info("userSecurityDTO");

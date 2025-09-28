@@ -1,8 +1,10 @@
 package com.example.book.controller;
 
+import com.example.book.domain.finance.Budgets;
 import com.example.book.domain.finance.Categories;
 import com.example.book.domain.user.Users;
 import com.example.book.domain.finance.Categories;
+import com.example.book.dto.BudgetAlertDTO;
 import com.example.book.dto.BudgetsDTO;
 import com.example.book.dto.PageRequestDTO;
 import com.example.book.dto.PageResponseDTO;
@@ -20,9 +22,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/budget")
 @RequiredArgsConstructor
@@ -128,5 +133,12 @@ public class BudgetsController {
         budgetsService.removeBudget(budgetId);
         redirectAttributes.addFlashAttribute("result","removed");
         return "redirect:/budget/currentList";
+    }
+
+    //0926 조덕진 예산 알림용
+    @GetMapping("/alerts")
+    @ResponseBody
+    public List<BudgetAlertDTO> getBudgetAlerts(@AuthenticationPrincipal UsersSecurityDTO authUser) {
+        return budgetsService.getBudgetAlerts(authUser.getUserNo());
     }
 }

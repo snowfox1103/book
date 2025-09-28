@@ -1,8 +1,10 @@
 package com.example.book.service;
 
+import com.example.book.domain.finance.Budgets;
 import com.example.book.domain.user.MemberRole;
 import com.example.book.domain.user.Users;
 import com.example.book.dto.*;
+import com.example.book.repository.BudgetsRepository;
 import com.example.book.repository.EmailVerificationTokenRepository;
 import com.example.book.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Log4j2
@@ -23,6 +26,7 @@ public class UsersServiceImpl implements UsersService {
   private final PasswordEncoder passwordEncoder;
   private final EmailService emailService;
   private final EmailVerificationTokenRepository tokenRepository;
+  private final BudgetsRepository budgetsRepository;
 
   @Override
   public Users register(UsersDTO usersDTO) throws userIdExistsException, emailExistsException {
@@ -66,8 +70,20 @@ public class UsersServiceImpl implements UsersService {
     log.info("============================");
     log.info(newUsers);
     log.info(newUsers.getRole());
-
     usersRepository.save(newUsers);
+
+    //유저 예산 0으로 설정
+    Budgets budgets = Budgets.builder()
+      .userNo(newUsers.getUserNo())
+      .budCategory(0L)  // 카테고리 0 (전체/미분류 같은 의미)
+      .budAmount(0L)    // 설정금액
+      .budCurrent(0L)   // 사용금액
+      .budIsOver(false) // 처음엔 초과 아님
+      .budYear(LocalDate.now().getYear())
+      .budMonth(LocalDate.now().getMonthValue())
+      .build();
+
+    budgetsRepository.save(budgets);
 
     return newUsers;
   }
@@ -102,10 +118,31 @@ public class UsersServiceImpl implements UsersService {
   }
 
   @Override
+  @Transactional
   public void changePassword(String userId, PasswordChangeRequestDTO req) {
     Users users = usersRepository.findByUserId(userId)
       .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
 
+    // ✅ 소셜 로그인 + firstLogin이면 현재 비밀번호 확인 건너뛰고 변경
+    if (users.isSocial() && Boolean.TRUE.equals(users.isFirstLogin())) {
+      // 새 비밀번호 확인
+      if (!req.getNewPassword().equals(req.getConfirmPassword())) {
+        throw new IllegalArgumentException("새 비밀번호와 확인이 일치하지 않습니다.");
+      }
+      if (passwordEncoder.matches(req.getNewPassword(), users.getPassword())) {
+        throw new IllegalArgumentException("새 비밀번호는 기존과 달라야 합니다.");
+      }
+
+      users.changePassword(passwordEncoder.encode(req.getNewPassword())); // 엔티티 메서드 사용
+      // 약관 동의 값 저장 (Users 엔티티에 이런 필드가 있어야 함)
+      users.setTermsCheck(true);
+      users.setPrivacyCheck(true);
+      users.setFirstLogin(false); // 첫 로그인 처리 완료
+      usersRepository.save(users);
+      return;
+    }
+
+    // ✅ 일반 사용자(또는 이미 firstLogin 처리된 사용자)
     if (!passwordEncoder.matches(req.getCurrentPassword(), users.getPassword())) {
       throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
     }
@@ -115,10 +152,8 @@ public class UsersServiceImpl implements UsersService {
     if (passwordEncoder.matches(req.getNewPassword(), users.getPassword())) {
       throw new IllegalArgumentException("새 비밀번호는 기존과 달라야 합니다.");
     }
-    log.info("changePassword success ........... ");
 
     users.changePassword(passwordEncoder.encode(req.getNewPassword())); // 엔티티 메서드 사용
-
     usersRepository.save(users);
   }
 

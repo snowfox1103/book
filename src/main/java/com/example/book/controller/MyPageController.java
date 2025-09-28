@@ -3,12 +3,11 @@ package com.example.book.controller;
 import com.example.book.domain.finance.Categories;
 import com.example.book.domain.qna.Qna;
 import com.example.book.domain.user.Users;
-import com.example.book.dto.CategoryRequestDTO;
-import com.example.book.dto.EmailChangeRequestDTO;
-import com.example.book.dto.PasswordChangeRequestDTO;
+import com.example.book.dto.*;
 import com.example.book.repository.EmailVerificationTokenRepository;
 import com.example.book.repository.UsersRepository;
 import com.example.book.security.dto.UsersSecurityDTO;
+import com.example.book.service.BudgetsService;
 import com.example.book.service.CategoriesService;
 import com.example.book.service.QnaService;
 import com.example.book.service.UsersService;
@@ -33,11 +32,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.Collections; // 추후 삭제 예정 0924 석준영
 
 @Controller
 @Log4j2
@@ -50,9 +48,10 @@ public class MyPageController {
   private final EmailVerificationTokenRepository tokenRepository;
   private final CategoriesService categoriesService;
   private final QnaService qnaService;
+  private final BudgetsService budgetsService;
 
   @GetMapping("/myPage")
-  public String myPageGet(@AuthenticationPrincipal UsersSecurityDTO authUser, Model model) {
+  public String myPageGet(@AuthenticationPrincipal UsersSecurityDTO authUser, @RequestParam(value="first", required=false) Boolean first, Model model) {
     log.info("myPageGet success ........... ");
     Users users = usersRepository.findByUserId(authUser.getUserId())
       .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -64,8 +63,13 @@ public class MyPageController {
     List<Qna> myInquiries = qnaService.getRecentInquiries(users.getUserNo());
     model.addAttribute("myInquiries", myInquiries);
 
-//    List<Qna> myInquiries = Collections.emptyList();
-//    model.addAttribute("myInquiries", myInquiries); // 우회용 0924 석준영
+    int year = LocalDate.now().getYear();
+    int month = LocalDate.now().getMonthValue();
+    List<CategoryThresholdDTO> categoriesWithThreshold = categoriesService.getCategoriesWithThreshold(authUser.getUserNo(), year, month);
+    model.addAttribute("catWthre", categoriesWithThreshold);
+
+    // ✅ firstLogin 플래그 내려주기
+    model.addAttribute("firstLogin", first != null && first);
 
     return "mypage/myPage";
   }
@@ -100,8 +104,12 @@ public class MyPageController {
 
   @PostMapping("/userPasswordModify")
   public ResponseEntity<?> changePassword(@AuthenticationPrincipal UsersSecurityDTO principal,
-                                          @Valid @RequestBody PasswordChangeRequestDTO passwordChangeRequestDTO) {
+                                          @Valid @RequestBody PasswordChangeRequestDTO passwordChangeRequestDTO,
+                                          HttpServletRequest request,
+                                          HttpServletResponse response) {
     usersService.changePassword(principal.getUserId(), passwordChangeRequestDTO);
+    // ✅ 비밀번호 변경 후 세션/인증정보 강제 로그아웃
+    new SecurityContextLogoutHandler().logout(request, response, null);
 
     return ResponseEntity.ok().build();
   }
@@ -186,5 +194,21 @@ public class MyPageController {
 
     log.info("Saved profile image: " + savedFileName);
     return "redirect:/mypage/myPage";
+  }
+
+  @PostMapping("/budget/thresholds")
+  @ResponseBody
+  public ResponseEntity<?> updateThresholds(
+    @RequestBody List<ThresholdDTO> thresholds,
+    @AuthenticationPrincipal UsersSecurityDTO user) {
+
+    int year = LocalDate.now().getYear();
+    int month = LocalDate.now().getMonthValue();
+
+    thresholds.forEach(dto ->
+      budgetsService.updateCategoryThreshold(user.getUserNo(), dto.getCatId(), dto.getThreshold(), year, month)
+    );
+
+    return ResponseEntity.ok("success");
   }
 }

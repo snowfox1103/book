@@ -5,6 +5,7 @@ import com.example.book.repository.search.BudgetsSearch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BudgetsRepository extends JpaRepository<Budgets,Long>, BudgetsSearch {
@@ -33,5 +34,11 @@ public interface BudgetsRepository extends JpaRepository<Budgets,Long>, BudgetsS
     Long budgetUsesByMonth(int year,int month,Long userNo);
     //해당 달 유저의 예산 사용 합계 리스트
 
+    List<Budgets> findByUserNoAndBudNoticeTrue(Long userNo); //0926 조덕진 수정 예산 알림용
+    Optional<Budgets> findByUserNoAndBudCategoryAndBudYearAndBudMonth(
+      Long userNo, Long budCategory, Integer budYear, Integer budMonth); //마찬가지
+    List<Budgets> findByUserNoAndBudYearAndBudMonthAndBudNoticeTrue(
+      Long userNo, Integer budYear, Integer budMonth
+    ); //마찬가지
 }
 

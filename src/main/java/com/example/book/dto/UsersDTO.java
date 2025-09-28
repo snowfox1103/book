@@ -12,4 +12,6 @@ public class UsersDTO {
   private boolean social;
   private boolean enabled;
   private String profileImage;
+  private boolean termsCheck;   // 약관동의
+  private boolean privacyCheck; // 개인정보 수집동의
 }

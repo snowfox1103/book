@@ -51,8 +51,42 @@
   <!-- 알림 + 카테고리 -->
   <section class="notify-category">
     <div class="notify-box">
-      <h4>알림</h4>
-      <p>ex) 경고 - 설정 예산의 90% 사용</p>
+      <h4>예산 알림 설정</h4>
+      <form id="thresholdForm">
+        <table class="table table-bordered align-middle">
+          <thead>
+          <tr>
+            <th style="width: 30%">카테고리</th>
+            <th style="width: 50%">알림 기준 (%)</th>
+            <th style="width: 20%">값</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="cwt : ${catWthre}">
+            <td th:text="${cwt.catName}"></td>
+            <td>
+              <input type="range" class="form-range threshold-range" min="30" max="100" step="1"
+                     th:value="${cwt.threshold}" th:data-id="${cwt.catId}">
+            </td>
+            <td>
+              <input type="number" class="form-control threshold-input" min="30" max="100" step="1"
+                     th:value="${cwt.threshold}" th:data-id="${cwt.catId}">
+            </td>
+          </tr>
+
+<!--          아직 값이 없을 때-->
+          <tr th:if="${#lists.isEmpty(catWthre)}">
+            <td colspan="3" class="text-center text-muted">
+              알림을 설정하신 예산이 아직 없습니다.
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <div class="text-end">
+          <button type="button" class="btn btn-primary" id="saveThresholdsBtn">저장</button>
+        </div>
+      </form>
     </div>
     <div class="category-box">
       <div class="category-header">
@@ -69,6 +103,9 @@
           <button type="button" class="btn btn-sm btn-danger btn-delete">X</button>
         </li>
       </ul>
+      <div th:if="${#lists.isEmpty(categories)}" class="text-center text-muted">
+        등록된 카테고리가 없습니다. 추가해 주세요.
+      </div>
     </div>
   </section>
 
@@ -86,6 +123,11 @@
         </div>
         <!-- 오른쪽: 날짜 -->
         <small class="text-muted" th:text="${#temporals.format(qna.getRegDate(), 'yyyy-MM-dd')}"></small>
+      </li>
+
+      <!-- 데이터가 없는 경우 -->
+      <li th:if="${#lists.isEmpty(myInquiries)}" class="list-group-item text-center text-muted">
+        아직 문의하신 글이 없습니다.
       </li>
     </ul>
   </section>
@@ -130,12 +172,13 @@
     <div class="modal-dialog">
       <form id="pwdChangeForm" class="modal-content">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" id="firstLoginFlag" th:value="${firstLogin}">
         <div class="modal-header">
           <h5 class="modal-title">비밀번호 변경</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
+          <div id="currentPwGroup" class="mb-3">
             <label class="form-label">현재 비밀번호</label>
             <input type="password" class="form-control" name="currentPassword" required minlength="4">
           </div>
@@ -147,6 +190,22 @@
           <div class="mb-3">
             <label class="form-label">새 비밀번호 확인</label>
             <input type="password" class="form-control" name="confirmPassword" required minlength="8">
+          </div>
+
+          <!-- ✅ 첫 로그인일 때만 약관동의 표시 -->
+          <div class="mb-3" th:if="${firstLogin}">
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="termsCheck" name="termsCheck" required>
+              <label class="form-check-label" for="termsCheck">
+                <a href="#">가계북 서비스 이용약관 및 포인트 정책</a>에 동의합니다.
+              </label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="privacyCheck" name="privacyCheck" required>
+              <label class="form-check-label" for="privacyCheck">
+                <a href="#">개인정보 수집 및 이용</a>에 동의합니다.
+              </label>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -261,22 +320,68 @@
               });
           }
 
-          // ✅ 비밀번호 변경
+          // 서버에서 내려준 firstLogin 여부
+          const firstLoginFlag = document.getElementById('firstLoginFlag')?.value === 'true';
+
+// 첫 로그인이라면 모달 강제로 띄우기
+          if (firstLoginFlag) {
+              const modal = new bootstrap.Modal(document.getElementById('pwdChangeModal'), {
+                  backdrop: 'static',
+                  keyboard: false
+              });
+              modal.show();
+          }
+
+// ✅ 비밀번호 변경
           const pwForm = document.getElementById('pwdChangeForm');
           if (pwForm) {
+
+              if (firstLoginFlag) {
+                  const curGroup = document.getElementById('currentPwGroup');
+                  const curInput = pwForm.currentPassword;
+
+                  // 현재 비밀번호 입력칸 숨김
+                  curGroup.style.display = 'none';
+                  // required 해제
+                  curInput.removeAttribute('required');
+              }
+
               pwForm.addEventListener('submit', async (e) => {
                   e.preventDefault();
-                  const cur = pwForm.currentPassword.value.trim();
                   const npw = pwForm.newPassword.value.trim();
                   const cpw = pwForm.confirmPassword.value.trim();
-                  if (!cur) return alert('현재 비밀번호 입력를 입력해주세요.');
+
+                  // 첫 로그인이라면 currentPassword는 빈값
+                  const cur = firstLoginFlag ? "" : pwForm.currentPassword.value.trim();
+
+                  // 첫 로그인이라면 약관동의 확인
+                  let termsAccepted = false;
+                  let privacyAccepted = false;
+                  if (firstLoginFlag) {
+                      termsAccepted = pwForm.termsCheck?.checked;
+                      privacyAccepted = pwForm.privacyCheck?.checked;
+                      if (!termsAccepted || !privacyAccepted) {
+                          alert('약관에 모두 동의해야 합니다.');
+                          return;
+                      }
+                  }
+
+                  if (!firstLoginFlag && !cur) return alert('현재 비밀번호를 입력해주세요.');
                   if (npw !== cpw) return alert('비밀번호 확인과 불일치합니다.');
-                  if (cur === npw) return alert('새 비밀번호는 달라야 합니다.');
+                  if (!firstLoginFlag && cur === npw) return alert('새 비밀번호는 달라야 합니다.');
 
                   try {
                       const res = await fetch('/mypage/userPasswordModify', {
-                          method: 'POST', headers, credentials: 'same-origin',
-                          body: JSON.stringify({ currentPassword: cur, newPassword: npw, confirmPassword: cpw })
+                          method: 'POST',
+                          headers,
+                          credentials: 'same-origin',
+                          body: JSON.stringify({
+                              currentPassword: cur,
+                              newPassword: npw,
+                              confirmPassword: cpw,
+                              termsAccepted: termsAccepted,
+                              privacyAccepted: privacyAccepted
+                          })
                       });
                       if (res.ok) {
                           alert('비밀번호 변경이 완료되었습니다. 다시 로그인 해주세요.');
@@ -285,7 +390,8 @@
                           alert('비밀번호 변경에 실패했습니다.');
                       }
                   } catch (err) {
-                      console.error(err); alert('네트워크 오류가 발생했습니다.');
+                      console.error(err);
+                      alert('네트워크 오류가 발생했습니다.');
                   }
               });
           }
@@ -318,7 +424,7 @@
                       const res = await fetch(`/mypage/category/${id}`, {
                           method: "DELETE", headers, credentials: "same-origin"
                       });
-                      if (res.ok) { li.remove(); alert("삭제되었습니다"); }
+                      if (res.ok) { li.remove(); alert("삭제되었습니다"); location.reload();}
                       else alert("삭제를 실패했습니다");
                   } catch (err) { console.error(err); alert("네트워크 오류가 발생했습니다"); }
               });
@@ -351,6 +457,7 @@
               });
           }
 
+          //프로필 이미지 설정
           document.getElementById("profileImageForm").addEventListener("submit", async (e) => {
               e.preventDefault();
               const form = e.target;
@@ -397,6 +504,77 @@
                   if (fallback) fallback.classList.remove('d-none');
               });
           });
+
+          //알림 비율 설정
+          document.querySelectorAll("tr").forEach(row => {
+              const range = row.querySelector(".threshold-range");
+              const input = row.querySelector(".threshold-input");
+
+              if (range && input) {
+                  // range → input
+                  range.addEventListener("input", () => {
+                      input.value = range.value;
+                  });
+
+                  // input → range
+                  input.addEventListener("input", () => {
+                      let val = parseInt(input.value, 10) || 0;
+                      if (val < 30) val = 30;
+                      if (val > 100) val = 100;
+                      input.value = val;
+                      range.value = val;
+                  });
+              }
+          });
+
+          // ✅ 저장 버튼 처리
+          const saveBtn = document.getElementById("saveThresholdsBtn");
+          if (saveBtn) {
+              saveBtn.addEventListener("click", async () => {
+                  const inputs = document.querySelectorAll(".threshold-input");
+                  const thresholds = [];
+
+                  inputs.forEach(input => {
+                      let value = parseInt(input.value, 10);
+
+                      if (isNaN(value)) return; // 숫자 아니면 skip
+
+                      if (value < 30) value = 30;
+                      if (value > 100) value = 100;
+                      input.value = value; // 보정 반영
+
+                      const id = input.dataset.id;
+                      thresholds.push({ catId: id, threshold: value });
+                  });
+
+                  if (thresholds.length === 0) {
+                      alert("저장할 예산 알림이 아직 없습니다.");
+                      return;
+                  }
+
+                  try {
+                      const res = await fetch("/mypage/budget/thresholds", {
+                          method: "POST",
+                          headers,
+                          body: JSON.stringify(thresholds),
+                          credentials: "same-origin"
+                      });
+
+                      if (res.ok) {
+                          alert("알림 기준이 저장되었습니다!");
+                          // 필요하면 새로고침
+                          location.reload();
+                      } else {
+                          const msg = await res.text();
+                          console.log("저장 실패:" + msg);
+                          alert("저장에 실패했습니다..");
+                      }
+                  } catch (err) {
+                      console.error(err);
+                      alert("네트워크 오류가 발생했습니다.");
+                  }
+              });
+          }
       });
   </script>
 </div>
