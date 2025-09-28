@@ -11,5 +11,6 @@ public interface TransactionsService {
     void removeTrans(Long transId);
     PageResponseDTO<TransactionsDTO> listByUser(Long userNo,PageRequestDTO pageRequestDTO);
     void autoUpdateBudgetCurrent(Long userNo, Long category, int year, int month);
-    Long wholeUses(Long userNo); //이번 달 총 출금액
+    Long wholeUses(Long userNo); //이번 달 총 사용 금액
+    Long wholeIncome(Long userNo);
 }

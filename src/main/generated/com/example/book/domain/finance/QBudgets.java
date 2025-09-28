@@ -35,6 +35,8 @@ public class QBudgets extends EntityPathBase<Budgets> {
 
     public final BooleanPath budNotice = createBoolean("budNotice");
 
+    public final NumberPath<Integer> budThreshold = createNumber("budThreshold", Integer.class);
+
     public final NumberPath<Integer> budYear = createNumber("budYear", Integer.class);
 
     //inherited

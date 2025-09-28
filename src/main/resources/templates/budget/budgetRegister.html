@@ -47,6 +47,23 @@
                             </div>
                         </div>
                     </form>
+                    <!-- 중복 등록 모달 -->
+                    <div th:if="${duplicateError}" class="modal fade" id="duplicateModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">중복 오류</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p th:text="${duplicateError}">이미 등록된 카테고리입니다.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div><!--end card body-->
 
             </div><!--end card-->
@@ -62,13 +79,13 @@
     const errors = [[${errors}]]
     console.log(errors)
 
-    let errorMsg = ''
-
-    if(errors){
-        for (let i = 0; i < errors.length; i++) {
-            errorMsg += `${errors[i].field}은(는) ${errors[i].code} \n`
-        }
-        alert(errorMsg)
+    const budAmountError = /*[[${budAmountError}]]*/ null;
+    if(budAmountError){
+        alert(budAmountError); // "금액 입력" 띄움
+    }
+    if([[${duplicateError != null}]]){
+        var duplicateModal = new bootstrap.Modal(document.getElementById('duplicateModal'));
+        duplicateModal.show();
     }
 
     document.querySelector(".toList").addEventListener("click",function (e){

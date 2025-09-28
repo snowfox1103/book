@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/nyjbasic.html}">
@@ -37,9 +37,9 @@
                             <span class="input-group-text">입금/출금 선택</span>
 <!--                    ----------------------------------------------------------원래 선택한 항목이 보이게        수정필요-->
                             <select name="transInOut" class="form-select">
-                                <option th:value="${T(com.example.book.domain.finance.InOrOut).OUT}" th:text="'출금'"
+                                <option th:value="${T(com.example.book.domain.InOrOut).OUT}" th:text="'출금'"
                                         th:selected="${transDTO.transInOut != null and transDTO.transInOut.name() == 'OUT'}"></option>
-                                <option th:value="${T(com.example.book.domain.finance.InOrOut).IN}" th:text="'입금'"
+                                <option th:value="${T(com.example.book.domain.InOrOut).IN}" th:text="'입금'"
                                         th:selected="${transDTO.transInOut != null and transDTO.transInOut.name() == 'IN'}"></option>
                             </select>
                         </div>
@@ -59,13 +59,6 @@
                             <input type="text" name="transMemo" class="form-control" placeholder="메모 입력" th:value="${transDTO.transMemo}">
                         </div>
 
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">카드 사용 내역 가져오기</span>
-                            <div class="float-end uploadHidden">
-                                <button type="button" class="btn btn-primary uploadFileBtn">ADD Files</button>
-                            </div>
-                        </div>
-
                         <div class="my-4">
                             <div class="float-end">
                                 <button type="submit" class="btn btn-primary modifyBtn">수정 완료</button>
@@ -79,28 +72,6 @@
             </div><!--end card-->
         </div><!-- end col-->
     </div><!-- end row-->
-<!--    <!—- 첨부파일 추가를 위한 모달창 &ndash;&gt;-->
-    <div class="modal uploadModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">카드 사용 내역 csv</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-
-                            label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="input-group mb-3">
-                        <input type="file" name="files" class="form-control" multiple >
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary uploadBtn">업로드</button>
-                    <button type="button" class="btn btn-outline-dark closeUploadBtn"
-                    >취소</button>
-                </div>
-            </div>
-        </div>
-    </div><!-- register modal -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/js/upload.js"></script>
 </div>

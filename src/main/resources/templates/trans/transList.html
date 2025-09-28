@@ -36,7 +36,7 @@
                         <option th:each="cat: ${categories}"
                                 th:value="${cat.catId}"
                                 th:text="${cat.catName}"
-                                th:selected="${cat.catId == pageRequestDTO.categories}">
+                                th:selected="${cat.catId == pageRequestDTO.categoriess}">
                         </option>
                     </select>
                 </div>
@@ -85,7 +85,7 @@
                 </div>
             </div>
         </form>
-        </div>
+      </div>
 
     </div>
     <div class="row mt-3">
@@ -95,6 +95,12 @@
                     입출금 내역
                 </div>
                 <div class="card-body" >
+                    <div>
+                        <h5>이번 달 총 사용 금액: <th:block th:text="${T(java.lang.String).format('%,d', totalUseByThisMonth)}"></th:block></h5>
+                        <hr>
+                        <h5>이번 달 총 입금 금액: <th:block th:text="${T(java.lang.String).format('%,d', totalIncomeByThisMonth)}"></th:block></h5>
+                    </div>
+                    <hr>
                     <table class="table" >
                         <thead>
                         <tr>
@@ -113,7 +119,7 @@
 <!--    ------------------------------------------------ read로 넘어감 여기서 tno는 read의 get controller 파라미터 값과 같음-->
                                 <a th:href="|@{/trans/transRead(tno =${dto.transId})}&${link}|"> [[${dto.transTitle}]] </a>
                             </td>
-                            <td>[[${dto.transAmount}]]</td>
+                            <td th:text="${T(java.lang.String).format('%,d', dto.transAmount)}"></td>
                             <td>
                                 <span th:if="${dto.transInOut.name() == 'IN'}" >입금</span>
                                 <span th:if="${dto.transInOut.name() == 'OUT'}">출금</span>
@@ -179,14 +185,5 @@
         e.stopPropagation();
         self.location = '/trans/transRegister'
     })
-    //show modal
-    // const result = [[${result}]]
-    // const modal = new bootstrap.Modal(document.querySelector(".modal"))
-    // if(result){
-    //     alert(result)
-    // }
-    // if(result){
-    //     modal.show()
-    // }
 </script>
 </html>

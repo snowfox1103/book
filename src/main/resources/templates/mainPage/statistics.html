@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/nyjbasic.html}">
+<head>
+  <meta charset="UTF-8">
+  <title>통계</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/css/statistics.css">
+</head>
+<body>
+<div layout:fragment="content">
+  <h3>통계</h3>
+
+  <!-- 연도/월 선택 -->
+  <form method="get" th:action="@{/mainPage/statistics}">
+    <label for="year">연도:</label>
+    <select id="year" name="year">
+      <option th:each="y : ${#numbers.sequence(2020, currentYear)}"
+              th:value="${y}" th:text="${y}" th:selected="${y == year}"></option>
+    </select>
+
+    <label for="month">월:</label>
+    <select id="month" name="month">
+      <option th:each="m : ${#numbers.sequence(1,12)}"
+              th:value="${m}" th:text="${m}" th:selected="${m == month}"></option>
+    </select>
+
+    <button type="submit">조회</button>
+  </form>
+
+  <div class="grid-container">
+    <!-- 1. 입출금 도넛 -->
+    <div class="chart-card">
+      <div class="chart-title">해당 달 카테고리별 출금</div>
+      <canvas id="monthlyExpensesDonut"></canvas>
+    </div>
+
+    <!-- 2. 입출금 꺾은선 -->
+    <div class="chart-card">
+      <div class="chart-title">해당 연도 월별 총 입금/출금</div>
+      <canvas id="yearlyTransactionsLine"></canvas>
+    </div>
+
+    <!-- 3. 예산 막대 -->
+    <div class="chart-card">
+      <div class="chart-title">해당 달 카테고리별 예산 vs 사용금액</div>
+      <canvas id="monthlyBudgetBar"></canvas>
+    </div>
+
+    <!-- 4. 예산 꺾은선 -->
+    <div class="chart-card">
+      <div class="chart-title">해당 연도 월별 총 예산 설정/사용</div>
+      <canvas id="yearlyBudgetLine"></canvas>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript" layout:fragment="script">
+  /*<![CDATA[*/
+  const monthlyExpenses = /*[[${monthlyExpenses}]]*/ '[]';
+  const yearlyTransactions = /*[[${yearlyTransactions}]]*/ '[]';
+  const monthlyBudgets = /*[[${monthlyBudgets}]]*/ '[]';
+  const yearlyBudgets = /*[[${yearlyBudgets}]]*/ '[]';
+  /*]]>*/
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+    // 1. 입출금 도넛
+    new Chart(document.getElementById("monthlyExpensesDonut"), {
+      type: 'doughnut',
+      data: {
+        labels: monthlyExpenses.map(m => m.categoryName || m.categoryId),
+        datasets: [{
+          label: "출금액",
+          data: monthlyExpenses.map(m => m.totalExpense),
+          backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF']
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              pointStyle: 'circle',
+              boxWidth: 12,
+              padding: 15
+            }
+          }
+        }
+      }
+    });
+
+    new Chart(document.getElementById("yearlyTransactionsLine"), {
+      type: 'line',
+      data: {
+        labels: yearlyTransactions.map(y => y.month + "월"),
+        datasets: [
+          { label: "총 입금", borderColor: 'blue', fill: false, tension:0.3, data: yearlyTransactions.map(y => y.totalIncome), pointRadius:5, pointHoverRadius:8 },
+          { label: "총 출금", borderColor: 'red', fill: false, tension:0.3, data: yearlyTransactions.map(y => y.totalExpense), pointRadius:5, pointHoverRadius:8 }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            enabled: true,
+            mode: 'nearest',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ": " + context.parsed.y.toLocaleString() + "원";
+              }
+            }
+          }
+        },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    // 3. 예산 막대
+    new Chart(document.getElementById("monthlyBudgetBar"), {
+      type: 'bar',
+      data: {
+        labels: monthlyBudgets.map(b => b.categoryName || b.categoryId),
+        datasets: [
+          { label: "설정예산", data: monthlyBudgets.map(b => b.budgetAmount), backgroundColor: '#36A2EB' },
+          { label: "사용금액", data: monthlyBudgets.map(b => b.budgetUsed), backgroundColor: '#FF6384' }
+        ]
+      },
+      options: {
+        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle:'circle', boxWidth:10, padding:10 } } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    // 4. 예산 꺾은선
+    new Chart(document.getElementById("yearlyBudgetLine"), {
+      type: 'line',
+      data: {
+        labels: yearlyBudgets.map(y => y.month + "월"),
+        datasets: [
+          { label: "총 예산 설정", borderColor: 'green', fill: false, tension:0.3, data: yearlyBudgets.map(y => y.budgetAmount) },
+          { label: "총 예산 사용", borderColor: 'orange', fill: false, tension:0.3, data: yearlyBudgets.map(y => y.budgetUsed) }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            enabled: true,
+            mode: 'nearest',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ": " + context.parsed.y.toLocaleString() + "원";
+              }
+            }
+          }
+        },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+  });
+</script>
+</body>
+</html>

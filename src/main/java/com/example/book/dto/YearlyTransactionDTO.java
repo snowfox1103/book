@@ -1,16 +1,17 @@
 package com.example.book.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class YearlyTransactionDTO {
-    private int month;
-    private Long totalIncome;
-    private Long totalExpense;
+
+    private int month;            // 몇 월인지
+
+    private Long totalIncome;     // 월별 총 수입
+    private Long totalExpense;    // 월별 총 지출
+
+    private Long budgetAmount;    // 월별 예산 금액
+    private Long budgetUsed;      // 월별 사용 금액
 }

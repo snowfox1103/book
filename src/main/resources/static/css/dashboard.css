@@ -1,280 +1,327 @@
-*{margin: 0; padding: 0; box-sizing: border-box;}
-li{list-style: none;}
-li a{text-decoration: none; white-space: nowrap; color: black;}
-li a:hover{text-decoration: underline;}
+/* ==================================================
+   Reset & 기본 스타일
+================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Noto Sans KR', sans-serif;
+}
 
-/* 헤더 */
-.all{margin: 0 auto;}
-.page-container{
-    margin: 0 auto;
-    width: 1400px;
-    padding: 0 50px;
-    background-color: rgb(248, 248, 248);
-}
-.header-top{
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    position: relative;
-    height: 50px;
-    padding: 0 50px;
-}
-.logo{
-    position: absolute;
-    left: 50%;
-}
-.setting li{
-    display: inline;
-    margin: 0 10px;
-}
-.header-bottom{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #ccc;
-    height: 80px;
-}
-.contents{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 500px;
-    font-size: 1.5em;
-    height: 80px;
-}
-.contents li{
-    display: inline;
-}
-.header-bottom-wrap{
-    background-color: white;
-    position:relative;
-}
-.hidebar-wrap{
-    display: none;
-    justify-content: space-between;
-    position: absolute;
-    left: 0;
-    top: 100%; /* header-bottom 바로 아래 ,, 위에서 header-bottom의 높이를 50으로 줬으므로 top:50px도 가능*/
-    width: 100%; /*header-bottom-wrap과 가로 크기 같게*/
-    z-index: 100;
-    background-color: white /* 배경색 추가해서 가려지지 않게 */
-}
-.hidebar{
-    display: flex;
-    justify-content: space-between;
-    width: 600px;
-    height: 200px;
-    margin: 10px auto;
-}
-.hidebar li{margin-top: 5px;}
-.assets{margin-left: 50px;}
-.graph{margin-left: 30px;}
-.etc{margin-right: 45px;}
-
-.header-bottom-wrap:hover .hidebar-wrap{
-    display: flex;
-}
-/* .page1 */
-.page1{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    height: 1000px;
-    z-index: 1;
-    padding-top: 50px;
-}
-.page1-left{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 400px;
-    height: 800px;
-}
-.remain{
-    border: 1px solid #ccc;
-    background-color: lightskyblue;
-    width: 400px;
-    height: 200px;
-    margin-top: 80px;
-    border-radius: 20px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
-.bank{font-size: 1.2em;}
-.money{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 50px;
-}
-.money h1{font-size: 2em;}
-.recent{
-    width: 400px;
-    height: 450px;
-    border: 1px solid gray;
-    display: grid;
-    grid-template-rows: repeat(9,50px);
-    align-items: stretch;
-    justify-content: stretch;
-}
-.recent-list{
-    width: 400px;
-    height: 450px;
-
-    border-collapse: collapse;
-    padding: 10px;
-    text-align: center;
-    border: 1px solid gray;
-}
-.recent-list td{
-    border: 1px solid gray;
-    /* height: 50px; */
-}
-.recent-list th{
-    border: 1px solid gray;
-    /* height: 50px; */
-}
-/* 달력 */
-.calendar{
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    width: 840px;
-    /* background-color: orange; */
-    height: 800px;
-}
-.cal-header{
-    height: 80px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    /* background-color: yellowgreen; */
-}
-.cal-header h1{
-    font-size: 3em;
-}
-.cal-month{
-    display: flex;
-    flex-direction: row;
-}
-.cal-month p{
-    display: flex;
-    align-items: center;
-    font-size: 1.5em;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-/* 캘린더 버튼 */
-.cal-month button {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
+body {
+    background-color: #f5f7fa;
     color: #333;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+/* ==================================================
+   전체 컨테이너
+================================================== */
+.all {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* ==================================================
+   page1 : 왼쪽 카드 + 캘린더
+================================================== */
+.page1 {
+    display: flex;
+    gap: 20px;
+    align-items: stretch; /* 자식 높이 맞춤 */
+}
+
+.page1-left {
+    flex: 3.5;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 잔액 카드 */
+.remain .money {
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    text-align: left; /* 중앙 정렬 -> 왼쪽 정렬 */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.remain .money .money-item {
+    display: flex;
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    align-items: center;
+    gap: 10px;
+}
+
+.remain .money .money-item h2 {
+    font-size: 1.2rem;
+    color: #888;
+    margin: 0;
+}
+
+.remain .money .money-item h1 {
     font-size: 1.5rem;
-    padding: 8px 14px;
-    border-radius: 8px;
+    font-weight: 700;
+    margin: 0;
+}
+
+
+/* 정기 결제 내역 */
+.recent {
+    flex: 1; /* 달력과 높이 맞춤 */
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.recent h4 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.recent-list {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.recent-list th, .recent-list td {
+    text-align: left;
+    padding: 10px 15px;
+}
+
+.recent-list th {
+    background-color: #f0f2f5;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.recent-list tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* ==================================================
+   캘린더
+================================================== */
+.calendar {
+    flex: 6.5;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.cal-header h1 {
+    font-size: 1.5rem;
+}
+
+.cal-month {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cal-month button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4f63f4;
+    color: white;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: 0.3s;
 }
+
 .cal-month button:hover {
-    background-color: #dcdcdc;
-    transform: scale(1.05);
-    border-color: #999;
+    background-color: #3b4fd1;
 }
-/* 달력 바디 */
-.cal-body{
+
+.cal-month p {
+    font-weight: 600;
+}
+
+/* 달력 날짜 그리드 */
+.cal-body {
     display: grid;
-    grid-template-columns: repeat(7,120px);
-    grid-template-rows: 60px repeat(5,120px);
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    width: 100%;
+    flex: 1; /* 부모 높이 채움 */
 }
-.cal-body .day{
+
+/* 각 날짜 칸 */
+.cal-body .grid-item {
     text-align: center;
+    padding: 10px;
+    min-height: 120px; /* 충분히 큰 칸 */
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 5px;
+    font-size: 0.9rem;
 }
-.grid-item {
-    border: 1px solid gray; /* 셀 테두리 */
-    padding: 5px;
-    font-size: 1.3em;
+
+/* 요일 헤더 */
+.cal-body .grid-item.day {
+    font-weight: bold;
+    background-color: #f0f2f5;
+    min-height: auto;
+    padding: 8px 0;
+}
+
+/* 오늘 날짜 강조 */
+.cal-body .grid-item.today {
+    background-color: #4f63f4;
+    color: #fff;
     font-weight: bold;
 }
-/* .page2 */
-.page2{
+
+/* 칸 hover 효과 */
+.cal-body .grid-item:hover {
+    background-color: #e0e0e0;
+}
+
+/* 오늘 날짜 내부 정보 표시 */
+.cal-body .grid-item .date-number {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.cal-body .grid-item .total-income,
+.cal-body .grid-item .total-expense {
+    font-size: 0.85rem;
+}
+
+/* ==================================================
+   page2 : 최근 출금 내역 + 예산 현황
+================================================== */
+.page2 {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    /* background-color: #ccc; */
-    height: 1000px;
-    flex-wrap: nowrap;
+    gap: 20px;
 }
-.auto-pay-list{
-    width: 500px;
-    height: 800px;
-    /* background-color: bisque; */
+
+.auto-pay-list, .budget {
+    flex: 1;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
-.pay-table{
+
+.auto-pay-list h2, .budget h2 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.pay-table, .budget-table {
+    width: 100%;
     border-collapse: collapse;
-    text-align: center;
-    width: 500px;
-    height: 680px;
 }
-.pay-table td{
-    border: 1px solid gray;
-    /* height: 50px; */
+
+.pay-table th, .pay-table td,
+.budget-table th, .budget-table td {
+    text-align: left;
+    padding: 10px 15px;
 }
-.pay-table th{
-    border: 1px solid gray;
-    /* height: 50px; */
+
+.pay-table th, .budget-table th {
+    background-color: #f0f2f5;
+    border-bottom: 2px solid #e0e0e0;
+    font-weight: 600;
 }
-.budget{
-    width: 700px;
-    height: 800px;
-    /* background-color: lightpink; */
-    display: flex;
-    flex-direction: column;
+
+.pay-table tr:nth-child(even), .budget-table tr:nth-child(even) {
+    background-color: #fafafa;
 }
-.budget h2, .auto-pay-list h2{
-    text-align: center;
-    height: 50px;
-}
-.budget-table{
-    border-collapse: collapse;
-    text-align: center;
-    height: 250px;
-}
-.budget-table td{
-    border: 1px solid gray;
-    /* height: 50px; */
-}
-.budget-table th{
-    border: 1px solid gray;
-    /* height: 50px; */
-}
-/* .page3 */
+
+/* ==================================================
+   page3 : 그래프
+================================================== */
 .page3 {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 60px;
-    height: 800px;
+    gap: 20px;
+    flex-wrap: wrap;
 }
-.category-graph {
+
+.page3 > div {
+    flex: 1;
+    min-width: 400px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.page3 h2 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* ==================================================
+   푸터
+================================================== */
+footer {
+    margin-top: 50px;
+    padding: 20px 0;
     text-align: center;
+    background-color: #fff;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 15px;
 }
-.category-graph, .monthly-graph{
-    text-align: center;
-    width: 600px;
-    height: 700px;
-}
-/* 푸터 */
-footer{
-    background-color: #fdfdfd;
-    height: 50px;
+
+footer ul {
     display: flex;
     justify-content: center;
-    align-items: center;
+    gap: 30px;
 }
-footer li{
-    display: inline;
-    margin: 30px;
+
+footer a {
+    color: #4f63f4;
+    font-weight: 500;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* ==================================================
+   버튼 & 인터랙션
+================================================== */
+button {
+    font-family: inherit;
+    cursor: pointer;
 }

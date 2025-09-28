@@ -10,30 +10,32 @@ import java.util.List;
 
 public interface StatisticsRepository extends JpaRepository<Transactions, Long> {
 
-    // 해당 달 입출금 내역
-    @Query("select t from Transactions t where t.userNo = :userNo and year(t.transDate) = :year and month(t.transDate) = :month")
-    List<Transactions> findTransactionsByUserAndMonth(@Param("userNo") Long userNo,
-                                                      @Param("year") int year,
-                                                      @Param("month") int month);
+    /** 1. 특정 달 카테고리별 출금 내역 */
+    @Query("select t from Transactions t where t.userNo = :userNo and year(t.transDate) = :year and month(t.transDate) = :month and t.transInOut = 'OUT'")
+    List<Transactions> findExpensesByCategory(@Param("userNo") Long userNo,
+                                              @Param("year") int year,
+                                              @Param("month") int month);
 
-    // 해당 달 예산 내역
-    @Query("select b from Budgets b where b.userNo = :userNo and b.budYear = :year and b.budMonth = :month")
-    List<Budgets> findBudgetsByUserAndMonth(@Param("userNo") Long userNo,
-                                            @Param("year") int year,
-                                            @Param("month") int month);
-
-    // 최근 3개월 예산 내역
-    @Query("select b from Budgets b where b.userNo = :userNo and (b.budYear*100+b.budMonth) >= :fromYearMonth order by b.budYear, b.budMonth")
-    List<Budgets> findBudgetsForRecentMonths(@Param("userNo") Long userNo,
-                                             @Param("fromYearMonth") int fromYearMonth);
-
-    // 최근 3개월 입출금 내역
-    @Query("select t from Transactions t where t.userNo = :userNo and (year(t.transDate)*100+month(t.transDate)) >= :fromYearMonth")
-    List<Transactions> findTransactionsForRecentMonths(@Param("userNo") Long userNo,
-                                                       @Param("fromYearMonth") int fromYearMonth);
-
-    // 연간 월별 총 입출금
+    /** 2. 특정 연도 전체 거래 */
     @Query("select t from Transactions t where t.userNo = :userNo and year(t.transDate) = :year")
-    List<Transactions> findTransactionsForYear(@Param("userNo") Long userNo,
-                                               @Param("year") int year);
+    List<Transactions> findTransactionsByYear(@Param("userNo") Long userNo,
+                                              @Param("year") int year);
+
+    /** 3. 이번 달 입출금 */
+    @Query("select t from Transactions t where t.userNo = :userNo and year(t.transDate) = :year and month(t.transDate) = :month")
+    List<Transactions> findTransactionsByMonth(@Param("userNo") Long userNo,
+                                               @Param("year") int year,
+                                               @Param("month") int month);
+
+    /** 4. 특정 달 예산 */
+    @Query("select b from Budgets b where b.userNo = :userNo and b.budYear = :year and b.budMonth = :month")
+    List<Budgets> findBudgetsByMonth(@Param("userNo") Long userNo,
+                                     @Param("year") int year,
+                                     @Param("month") int month);
+
+    /** 5. 특정 연도 예산 */
+    @Query("select b from Budgets b where b.userNo = :userNo and b.budYear = :year")
+    List<Budgets> findBudgetsByYear(@Param("userNo") Long userNo,
+                                    @Param("year") int year);
+
 }

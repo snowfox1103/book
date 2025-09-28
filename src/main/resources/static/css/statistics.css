@@ -1,0 +1,155 @@
+/* 전체 페이지 기본 스타일 */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px;
+}
+
+/* 컨텐츠 영역 */
+.content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 헤딩 */
+h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+/* 연도/월 선택 폼 */
+form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+form label {
+    font-weight: bold;
+    color: #555;
+}
+
+form select {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+form button {
+    padding: 5px 15px;
+    border-radius: 5px;
+    border: none;
+    background-color: #36A2EB;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+form button:hover {
+    background-color: #2b8ac8;
+}
+
+/* 그리드 레이아웃 */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    margin-top: 20px;
+}
+
+/* 차트 카드 */
+.chart-card {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.chart-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 캔버스 스타일 */
+canvas {
+    width: 100% !important;
+    height: 400px !important;
+}
+
+/* ============================== */
+/* 최근 출금 & 예산 현황 카드 영역 */
+/* ============================== */
+
+.page2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    height: auto;
+    margin-top: 40px;
+}
+
+.auto-pay-list,
+.budget {
+    width: 48%;
+    height: auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* 표 스타일 공통 */
+.pay-table,
+.budget-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.pay-table th, .pay-table td,
+.budget-table th, .budget-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+/* 마지막 td 오른쪽 정렬 */
+.budget-table td:last-child {
+    text-align: right;
+}
+
+/* 반응형 */
+@media (max-width: 1000px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+
+    .page2 {
+        flex-direction: column;
+    }
+
+    canvas {
+        max-width: 90%;
+        height: auto !important;
+    }
+
+    .auto-pay-list,
+    .budget {
+        width: 100%;
+    }
+}
