@@ -21,25 +21,24 @@ import java.util.List;
 
 public interface TransactionsRepository extends JpaRepository<Transactions, Long> {
 
-    @Query("select COALESCE(SUM(t.transAmount),0)" +
-            " from Transactions t" +
-            " where t.transCategory = :catId" +
-            "   and t.userNo = :userNo" +
-            "   and year(t.transDate) = :year" +
-            "   and month(t.transDate) = :month")
-    Long totalUseByCategory(@Param("catId") Long catId,
-                            @Param("year") int year,
-                            @Param("month") int month,
-                            @Param("userNo") Long userNo);
+    @Query("select COALESCE(SUM(t.transAmount),0)"+
+            "from Transactions t "+
+            "where t.transCategory = :catId "+
+            "and t.userNo = :userNo "+
+            "and year(t.transDate) = :year "+
+            "and month(t.transDate) = :month "+
+            "and t.transInOut = 'OUT'")
+    Long totalUseByCategory(Long catId,int year,int month, Long userNo);
+    //해당 달 해당 카테고리 출금 금액 총합 계산
 
-    @Query("select COALESCE(SUM(t.transAmount),0)" +
-            " from Transactions t" +
-            " where t.userNo = :userNo" +
-            "   and year(t.transDate) = :year" +
-            "   and month(t.transDate) = :month")
-    Long totalUseByMonth(@Param("year") int year,
-                         @Param("month") int month,
-                         @Param("userNo") Long userNo);
+    @Query("select COALESCE(SUM(t.transAmount),0)"+
+            "from Transactions t "+
+            "where t.userNo = :userNo "+
+            "and year(t.transDate) = :year "+
+            "and month(t.transDate) = :month " +
+            "and t.transInOut = 'OUT'")
+    Long totalUseByMonth(int year, int month, Long userNo);
+    //해당 달 모든 출금 금액 총합 계산
 
     @Query("select COALESCE(SUM(t.transAmount),0)"+
             "from Transactions t "+
@@ -48,6 +47,7 @@ public interface TransactionsRepository extends JpaRepository<Transactions, Long
             "and month(t.transDate) = :month " +
             "and t.transInOut = 'IN'")
     Long totalIncomeByMonth(int year,int month,Long userNo);
+    //해당 달 모든 입금 금액 계산
 
     default Page<Transactions> searchAllTrans(Long userNo,
                                               String[] types,

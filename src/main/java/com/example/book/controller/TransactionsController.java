@@ -43,7 +43,7 @@ public class TransactionsController {
         model.addAttribute("categories", categories);
         model.addAttribute("responseDTO",responseDTO);
         model.addAttribute("totalUseByThisMonth",UsesThisMonth);
-        model.addAttribute("totalIncomeByThisMonth",incomeThisMonth);
+        model.addAttribute("incomeThisMonth",incomeThisMonth);
 
         log.info("--------get list---------");
     }
