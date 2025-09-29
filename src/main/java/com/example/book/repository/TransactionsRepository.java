@@ -13,11 +13,8 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 
 public interface TransactionsRepository extends JpaRepository<Transactions, Long>, TransactionsSearch {
