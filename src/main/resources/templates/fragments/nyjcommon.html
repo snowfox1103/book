@@ -17,7 +17,7 @@
 
 <body>
 <th:block th:fragment="header(active)">
-    <!-- 로고 + 유저 -->
+    <!-- 상단 로고/유저 바 -->
     <nav class="navbar bg-white border-bottom">
         <div class="container d-flex align-items-center justify-content-between">
             <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/mainPage/mainpage}">
@@ -26,10 +26,11 @@
 
             <div class="d-flex align-items-center gap-3">
         <span class="text-muted">
-                    <b sec:authorize="isAuthenticated()"
-                       th:text="${#authentication.principal.realName}">로그인한이름</b>
-<b sec:authorize="!isAuthenticated()">게스트</b> 님
-                </span>
+          <b sec:authorize="isAuthenticated()"
+             th:text="${#authentication.principal.realName}">로그인한이름</b>
+          <b sec:authorize="!isAuthenticated()">게스트</b> 님
+        </span>
+
                 <a class="btn btn-primary btn-sm" th:href="@{/users/login}" sec:authorize="!isAuthenticated()">로그인</a>
                 <a class="btn btn-outline-secondary btn-sm" th:href="@{/mypage/myPage}" sec:authorize="isAuthenticated()">마이페이지</a>
                 <form th:action="@{/users/logout}" method="post" class="d-inline" sec:authorize="isAuthenticated()">
@@ -39,40 +40,44 @@
         </div>
     </nav>
 
-    <!-- 메인 네비게이션 -->
+    <!-- 메인 네비게이션 (메가메뉴) -->
     <nav class="mega-nav">
-        <ul class="main-menu">
-            <li><a href="#">게시판</a></li>
-            <li><a href="#">자산관리</a></li>
-            <li><a href="#">소비분석</a></li>
-            <li><a href="#">포인트/포인트샵</a></li>
-            <li sec:authorize="hasRole('ADMIN')"><a href="#">관리자</a></li>
-        </ul>
+        <div class="mega-inner">
+            <ul class="main-menu">
+                <li><a href="#">게시판</a></li>
+                <li><a href="#">자산관리</a></li>
+                <li><a href="#">소비분석</a></li>
+                <li><a href="#">포인트/포인트샵</a></li>
+                <li sec:authorize="hasRole('ADMIN')"><a href="#">관리자</a></li>
+            </ul>
 
-        <!-- 메가 드롭다운 -->
-        <div class="mega-dropdown">
-            <div class="dropdown-col">
-                <a th:href="@{/qna}">문의사항</a>
-                <a th:href="@{/notice}">공지사항</a>
-            </div>
+            <!-- 메가 드롭다운: 동일 폭으로 중앙 정렬 -->
+            <div class="mega-dropdown">
+                <div class="mega-dropdown-inner">
+                    <div class="dropdown-col">
+                        <a th:href="@{/qna}">문의사항</a>
+                        <a th:href="@{/notice}">공지사항</a>
+                    </div>
 
-            <div class="dropdown-col">
-                <a th:href="@{/trans/transList}">입출금 내역</a>
-                <a th:href="@{/budget/currentList}">예산 관리</a>
-                <a th:href="@{/subscriptions/subMain}">정기 결제</a>
-            </div>
+                    <div class="dropdown-col">
+                        <a th:href="@{/trans/transList}">입출금 내역</a>
+                        <a th:href="@{/budget/currentList}">예산 관리</a>
+                        <a th:href="@{/subscriptions/subMain}">정기 결제</a>
+                    </div>
 
-            <div class="dropdown-col">
-                <a th:href="@{/mainPage/statistics}">통계</a>
-            </div>
+                    <div class="dropdown-col">
+                        <a th:href="@{/mainPage/statistics}">통계</a>
+                    </div>
 
-            <div class="dropdown-col">
-                <a th:href="@{/point}">포인트</a>
-                <a th:href="@{/pointshop/pointShop}">포인트 샵</a>
-            </div>
+                    <div class="dropdown-col">
+                        <a th:href="@{/point}">포인트</a>
+                        <a th:href="@{/pointshop/pointShop}">포인트 샵</a>
+                    </div>
 
-            <div class="dropdown-col" sec:authorize="hasRole('ADMIN')">
-                <a class="text-danger fw-semibold" th:href="@{/admin}">관리자 페이지</a>
+                    <div class="dropdown-col" sec:authorize="hasRole('ADMIN')">
+                        <a class="text-danger fw-semibold" th:href="@{/admin}">관리자 페이지</a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>

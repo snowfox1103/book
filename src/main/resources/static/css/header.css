@@ -12,9 +12,19 @@
 }
 
 /* 메인 메뉴 */
-.mega-nav .main-menu {
+.mega-nav{
     display: flex;
     justify-content: center;
+    gap: 4rem;   /* 드롭다운과 간격 맞춤 */
+    margin: 0;
+    padding:0;
+    list-style: none;
+}
+.main-menu{
+    width: 1000px;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
     gap: 4rem;   /* 드롭다운과 간격 맞춤 */
     margin: 0;
     padding: 1rem 0;
@@ -34,6 +44,7 @@
 /* 메가 드롭다운 */
 .mega-dropdown {
     display: none;
+    justify-content: center;
     position: absolute;
     left: 0;
     right: 0;
@@ -43,7 +54,6 @@
     border-top: 1px solid #e9ecef;
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
     z-index: 999;
-    justify-content: center;
     gap: 4rem;
 }
 

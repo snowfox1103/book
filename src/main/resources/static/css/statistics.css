@@ -50,3 +50,95 @@
         height: clamp(260px, 40vh, 420px);
     }
 }
+/* =========================
+   통계 상단 필터 스타일
+========================= */
+.stat-filter {
+    display: flex;
+    align-items: end;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #edf0f4;
+    border-radius: 12px;
+    box-shadow: 0 1px 8px rgba(0,0,0,.04);
+
+    margin-top: 50px;     /* 32px, 40px 등 취향대로 */
+    margin-bottom: 12px;
+}
+
+.stat-filter .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 180px;
+}
+
+.stat-filter label {
+    font-size: .85rem;
+    font-weight: 700;
+    color: #556;
+    letter-spacing: -.01em;
+}
+
+/* 기본 셀렉트 리셋 + 커스텀 */
+.stat-filter select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #fff url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg' fill='%23677'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E") no-repeat right .75rem center/16px;
+    border: 1px solid #dfe6ee;
+    border-radius: 10px;
+    padding: .55rem 2.2rem .55rem .8rem; /* 오른쪽 화살표 여백 */
+    font-size: .95rem;
+    color: #2f3640;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s, transform .06s;
+}
+.stat-filter select:focus {
+    border-color: #8fb7ff;
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.12);
+}
+.stat-filter select:hover {
+    border-color: #cfd9e6;
+}
+
+/* 조회 버튼 */
+.stat-filter .btn-submit {
+    margin-left: auto;                 /* 오른쪽 정렬 */
+    padding: .6rem 1.2rem;
+    border: 1px solid #0d6efd;
+    background: linear-gradient(180deg, #2f7bff 0%, #0d6efd 100%);
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(13,110,253,.25);
+    transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
+    cursor: pointer;
+}
+.stat-filter .btn-submit:hover {
+    filter: brightness(1.02);
+    box-shadow: 0 8px 20px rgba(13,110,253,.32);
+}
+.stat-filter .btn-submit:active {
+    transform: translateY(1px);
+}
+
+/* 반응형: 모바일에서 꽉 차게 */
+@media (max-width: 576px) {
+    .stat-filter {
+        margin-top: 24px;   /* 필요하면 32px/40px로 키워도 OK */
+        margin-bottom: 12px;
+        gap: 10px;
+    }
+    .stat-filter .field {
+        min-width: min(240px, 100%);
+        flex: 1 1 100%;
+    }
+    .stat-filter .btn-submit {
+        width: 100%;
+        margin-left: 0;
+    }
+}

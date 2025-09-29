@@ -9,6 +9,7 @@ import com.example.book.repository.BudgetsRepository;
 import com.example.book.repository.TransactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@ToString
 @Service
 @Log4j2
 @RequiredArgsConstructor
@@ -67,8 +68,7 @@ public class TransactionsServiceImpl implements TransactionsService{
         InOrOut io = pageRequestDTO.getIo();
         Pageable pageable = pageRequestDTO.getPageable("transId");
         //getContent()을 호출하면 현재 페이지에 해당하는 List<Transactions> 가 반환됩니다.
-        //즉, DB에서 가져온 Transactions 엔티티들의 리스트예요
-        Page<Transactions> result = transactionsRepository.searchAllTrans(userNo, types,keyword,category,minn,maxx,startDay,endDay,io,pageable);
+        Page<Transactions> result = transactionsRepository.searchAllTransaction(userNo, types,keyword,category,minn,maxx,startDay,endDay,io,pageable);
         List<TransactionsDTO> dtoList = result.getContent().stream()
                 //map()은 스트림의 각 원소(Transactions)를 다른 타입(TransactionsDTO)으로 변환할 때 쓰는 함수입니다.
                 //여기서 transactions는 스트림의 각 원소를 임시로 가리키는 변수예요.
