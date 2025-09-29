@@ -46,6 +46,7 @@ public class CustomUserDetailsService implements UserDetailsService {
       java.util.List.of(new SimpleGrantedAuthority("ROLE_" + users.getRole().name()))
     );
     log.info("authorities = {}", new SimpleGrantedAuthority("ROLE_" + users.getRole().name()));
+    log.info("DB에서 읽은 realName = {}", users.getRealName());
     log.info("userSecurityDTO");
     log.info(usersSecurityDTO);
 
