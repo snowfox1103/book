@@ -51,7 +51,7 @@ public class UsersController {
       Users users = usersService.register(usersDTO);
 
       emailService.sendVerificationEmail(users);
-      redirectAttributes.addFlashAttribute("message", "Checking Email");
+      redirectAttributes.addFlashAttribute("message", "인증 메일을 보냈습니다. 메일함을 확인해 주세요.");
 
       return "redirect:/users/login";
     } catch(UsersService.userIdExistsException e) {

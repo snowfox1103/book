@@ -72,4 +72,13 @@ public interface SubscriptionsRepository extends JpaRepository<Subscriptions, Lo
   @Modifying
   @Transactional
   void deleteByUsers_UserNo(Long userNo);
+
+  @Query("""
+    SELECT SUM(s.subAmount)
+    FROM Subscriptions s
+    WHERE s.users.userNo = :userNo
+      AND s.subPayDate > :day
+""")
+  Long getRemainingThisMonth(@Param("userNo") Long userNo,
+                             @Param("day") int day);
 }

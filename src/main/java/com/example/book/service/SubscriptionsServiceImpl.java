@@ -5,10 +5,7 @@ import com.example.book.domain.finance.SubPeriodUnit;
 import com.example.book.domain.finance.Subscriptions;
 import com.example.book.domain.user.Users;
 import com.example.book.dto.SubscriptionsDTO;
-import com.example.book.repository.BillingDailyGuardRepository;
-import com.example.book.repository.CategoriesRepository;
-import com.example.book.repository.SubscriptionsRepository;
-import com.example.book.repository.UsersRepository;
+import com.example.book.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -26,7 +23,9 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
   private final UsersRepository usersRepository;
   private final CategoriesRepository categoriesRepository;
   private final BillingDailyGuardRepository guardRepository;
+  private final TransactionsRepository transactionsRepository;
   private final SchedulerService schedulerService;
+
   @Override
   @Transactional
   public void addSubscription(SubscriptionsDTO dto) {
@@ -55,9 +54,17 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
 
     //등록 시 해당 날이 정기 결제일이면 바로 입출금 내역 추가
     if (sub.getSubPayDate() == LocalDate.now().getDayOfMonth()) {
-      schedulerService.createTransactionFromSubscription(sub);
+      //중복 확인
+      boolean alreadyExists = transactionsRepository.existsThisMonth(
+        sub.getUsers().getUserNo(),
+        sub.getSubId(),
+        LocalDate.now().getYear(),
+        LocalDate.now().getMonthValue()
+      );
+      if (!alreadyExists) {
+        schedulerService.createTransactionFromSubscription(sub);
+      }
     }
-
   }
 
   @Override
@@ -91,6 +98,20 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
     // ✅ 엔티티에 업데이트 위임
     sub.updateFromDTO(dto, users, category);
     subscriptionsRepository.save(sub);
+
+    // ✅ 수정 후에도 결제일이 오늘이라면 바로 입출금 내역 추가
+    if (sub.getSubPayDate() == LocalDate.now().getDayOfMonth()) {
+      //중복 확인
+      boolean alreadyExists = transactionsRepository.existsThisMonth(
+        sub.getUsers().getUserNo(),
+        sub.getSubId(),
+        LocalDate.now().getYear(),
+        LocalDate.now().getMonthValue()
+      );
+      if (!alreadyExists) {
+        schedulerService.createTransactionFromSubscription(sub);
+      }
+    }
   }
 
   // 카테고리별 합계

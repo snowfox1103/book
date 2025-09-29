@@ -4,6 +4,7 @@ import com.example.book.domain.finance.InOrOut;
 import com.example.book.domain.finance.Subscriptions;
 import com.example.book.dto.TransactionsDTO;
 import com.example.book.repository.SubscriptionsRepository;
+import com.example.book.repository.TransactionsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SchedulerServiceImpl implements SchedulerService{
-
+    private final TransactionsRepository transactionsRepository;
     private final SubscriptionsRepository subscriptionRepository;
     private final TransactionsService transactionsService;
 
@@ -22,11 +23,24 @@ public class SchedulerServiceImpl implements SchedulerService{
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정 실행
     public void processSubscriptions() {
         LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+
         List<Subscriptions> subscriptions = subscriptionRepository.findAll();
 
         for (Subscriptions sub : subscriptions) {
-            if (isDueToday(sub, today)) {
-                createTransactionFromSubscription(sub);
+            if (isDueToday(sub, today) && sub.isSub()) {
+                // 중복 여부 확인
+                boolean alreadyExists = transactionsRepository.existsThisMonth(
+                  sub.getUsers().getUserNo(),
+                  sub.getSubId(),
+                  year,
+                  month
+                );
+
+                if (!alreadyExists) {
+                    createTransactionFromSubscription(sub);
+                }
             }
         }
     }

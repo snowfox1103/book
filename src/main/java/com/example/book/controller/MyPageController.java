@@ -32,9 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @Log4j2
@@ -54,6 +52,7 @@ public class MyPageController {
   private final CartRepository cartRepository;
   private final NoticeRepository noticeRepository;
   private final QnaRepository qnaRepository;
+  private final QnaReplyRepository qnaReplyRepository;
 
   @GetMapping("/myPage")
   public String myPageGet(@AuthenticationPrincipal UsersSecurityDTO authUser, @RequestParam(value="first", required=false) Boolean first, Model model) {
@@ -66,8 +65,16 @@ public class MyPageController {
     model.addAttribute("categories", categories);
     model.addAttribute("user", users);
 
+    // 내 문의글
     List<Qna> myInquiries = qnaService.getRecentInquiries(users.getUserNo());
     model.addAttribute("myInquiries", myInquiries);
+
+    // 문의글들 ID 모아서 답변여부 조회
+    List<Long> ids = myInquiries.stream().map(Qna::getQBId).toList();
+    Set<Long> answeredIds = ids.isEmpty()
+      ? Set.of()
+      : new HashSet<>(qnaReplyRepository.findAnsweredQbIds(ids));
+    model.addAttribute("answeredIds", answeredIds);
 
     int year = LocalDate.now().getYear();
     int month = LocalDate.now().getMonthValue();
