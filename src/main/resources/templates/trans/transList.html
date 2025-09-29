@@ -98,10 +98,23 @@
                     입출금 내역
                 </div>
                 <div class="card-body" >
-                    <div>
-                        <h5>이번 달 총 사용 금액: <th:block th:text="${T(java.lang.String).format('%,d', totalUseByThisMonth)}"></th:block></h5>
-                        <hr>
-                        <h5>이번 달 총 입금 금액: <th:block th:text="${T(java.lang.String).format('%,d', incomeThisMonth)}"></th:block></h5>
+                    <!-- 요약 통계 -->
+                    <div class="summary-stats">
+                        <div class="stat">
+                            <div class="stat-label">이번 달 총 출금</div>
+                            <div class="stat-value text-danger">
+                                <th:block th:text="${T(java.lang.String).format('%,d', totalUseByThisMonth)}"></th:block>
+                            </div>
+                        </div>
+
+                        <div class="divider d-none d-md-block"></div>
+
+                        <div class="stat">
+                            <div class="stat-label">이번 달 총 입금</div>
+                            <div class="stat-value text-primary">
+                                <th:block th:text="${T(java.lang.String).format('%,d', incomeThisMonth)}"></th:block>
+                            </div>
+                        </div>
                     </div>
                     <hr>
                     <table class="table" >
