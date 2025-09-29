@@ -1,0 +1,49 @@
+.card {
+    border: 1px solid #e9ecef;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+}
+.card-header {
+    background: #fff;
+    font-weight: 700;
+    border-bottom: 1px solid #eef1f4;
+}
+
+/* 입력 그룹 */
+.input-group { align-items: center; }
+.input-group-text {
+    min-width: 120px;
+    background: #f6f8fb;
+    border: 1px solid #e3e8ef;
+    color: #334;
+    font-weight: 600;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.form-control, .form-select {
+    border-radius: 10px;
+    border-color: #dfe6ee;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #8fb7ff;
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.1);
+}
+
+/* 버튼 */
+.submitBtn { padding: .55rem 1.2rem; }
+.btn-secondary, .toList { padding: .55rem 1.1rem; }
+.float-end .btn + .btn { margin-left: .5rem; }
+
+/* 체크박스 */
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* 모달 살짝 둥글게 */
+.modal-content { border-radius: 12px; }
+
+/* 모바일 */
+@media (max-width: 576px) {
+    .input-group-text { min-width: 92px; font-size: .9rem; }
+}

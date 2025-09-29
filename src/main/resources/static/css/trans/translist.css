@@ -1,0 +1,89 @@
+/* 카드 기본 */
+.card {
+    border: 1px solid #e9ecef;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+}
+
+.card-header {
+    background: #fff;
+    font-weight: 700;
+    border-bottom: 1px solid #eef1f4;
+}
+
+/* 검색 폼 박스 */
+form.p-3.rounded.shadow-sm.bg-light {
+    border: 1px solid #edf0f4;
+    background: #f8fafc !important;
+    border-radius: 14px !important;
+}
+
+/* 라벨/컨트롤 정돈 */
+.form-label { font-weight: 600; color: #445; }
+.form-control, .form-select {
+    border-radius: 10px;
+    border-color: #dfe6ee;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #8fb7ff;
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.1);
+}
+
+/* 버튼 */
+.searchBtn { padding: .55rem 1.1rem; }
+.clearBtn { padding: .55rem 1.1rem; }
+.trans-register-btn { padding: .5rem 1rem; }
+
+/* 표 */
+.table {
+    border-collapse: separate;
+    border-spacing: 0 6px; /* 행 사이 여백 */
+}
+.table thead th {
+    background: #f3f6fb;
+    color: #445;
+    font-weight: 700;
+    border-bottom: 0;
+}
+.table tbody tr {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.03);
+}
+.table tbody td {
+    border-top: 0;
+    padding: .9rem .85rem;
+    vertical-align: middle;
+}
+.table tbody tr:hover {
+    background: #f9fbff;
+}
+
+/* 페이지네이션 */
+.pagination .page-link {
+    border: none;
+    border-radius: 10px !important;
+    margin: 0 3px;
+    color: #445;
+}
+.pagination .page-item.active .page-link {
+    background: #0d6efd;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(13,110,253,.25);
+}
+
+/* 상단 지표 텍스트 */
+.card-body > div h5 {
+    font-weight: 700;
+    color: #2e3338;
+}
+
+/* 상단/하단 정렬 영역 */
+.toall { gap: 10px; }
+
+/* 모바일 대응 */
+@media (max-width: 992px) {
+    .table thead { display: none; }
+    .table tbody tr { display: block; padding: .6rem; }
+    .table tbody td { display: flex; justify-content: space-between; }
+}

@@ -88,9 +88,8 @@ public class BudgetsController {
             transactionsService.autoUpdateBudgetCurrent(budgetsDTO.getUserNo(),budgetsDTO.getBudCategory(),budgetsDTO.getBudYear(),budgetsDTO.getBudMonth());
             redirectAttributes.addFlashAttribute("result",bno);
         } catch (IllegalArgumentException e) {
-            log.info("--------------------123------------");
             redirectAttributes.addFlashAttribute("duplicateError", e.getMessage());
-            return "redirect:/budget/budgetRegister111";
+            return "redirect:/budget/budgetRegister";
         }catch (Exception e) {
             log.error("예산 등록 중 오류 발생", e);
             redirectAttributes.addFlashAttribute("error", "예산 등록 중 오류가 발생했습니다.");

@@ -1,0 +1,74 @@
+/* 카드 기본 */
+.card {
+    border: 1px solid #e9ecef;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+}
+.card-header {
+    background: #fff;
+    font-weight: 700;
+    border-bottom: 1px solid #eef1f4;
+}
+
+/* 검색 폼 박스 */
+.budget-search-form {
+    padding: .75rem .25rem;
+}
+.budget-search-form .form-label { font-weight: 600; color: #445; }
+.budget-search-form .form-control,
+.budget-search-form .form-select {
+    border-radius: 10px;
+    border-color: #dfe6ee;
+}
+.budget-search-form .form-control:focus,
+.budget-search-form .form-select:focus {
+    border-color: #8fb7ff;
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.1);
+}
+.clearBtn { border-color: #f1c9cd; }
+
+/* 표 */
+.table {
+    border-collapse: separate;
+    border-spacing: 0 6px;
+}
+.table thead th {
+    background: #f3f6fb;
+    color: #445;
+    font-weight: 700;
+    border-bottom: 0;
+}
+.table tbody tr {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.03);
+}
+.table tbody td, .table tbody th {
+    border-top: 0;
+    padding: .9rem .85rem;
+    vertical-align: middle;
+}
+.table tbody tr:hover { background: #f9fbff; }
+
+/* 페이지네이션 */
+.pagination .page-link {
+    border: none;
+    border-radius: 10px !important;
+    margin: 0 3px;
+    color: #445;
+}
+.pagination .page-item.active .page-link {
+    background: #0d6efd;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(13,110,253,.25);
+}
+
+/* 상단/하단 영역 정렬 */
+.d-flex.justify-content-between.align-items-center { gap: .5rem; }
+
+/* 반응형 */
+@media (max-width: 992px) {
+    .table thead { display: none; }
+    .table tbody tr { display: block; padding: .6rem; }
+    .table tbody td, .table tbody th { display: flex; justify-content: space-between; }
+}

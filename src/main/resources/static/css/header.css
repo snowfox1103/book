@@ -1,70 +1,75 @@
-*{margin: 0; padding: 0; box-sizing: border-box;}
-ul li{display: inline; margin: 10px; list-style: none;}
-li a{white-space: nowrap; color:black; text-decoration: none;}
-li a:hover{text-decoration: underline;}
-button:hover{opacity: 0.5;}
-/*---------------------------- 시작 */
-.container{
-    margin: 0 auto;
+/* 로고 */
+.brand-logo {
+    height: 36px;
+    width: auto !important;
 }
-.page-container{
-    width: 1600px;
-    margin: 0 auto;
-}
-.header{
+
+/* 네비게이션 */
+.mega-nav {
     position: relative;
-    z-index: 10;
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
 }
-.header-top{
-    height: 50px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 0 50px;
-    position: relative;
-}
-.logo{
-    position: absolute; /*부모 요소 헤더탑*/
-    left: 50%;
-}
-.header-bottom{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #ccc;
-    height: 80px;
-}
-.contents{
-    height: 80px;
+
+/* 메인 메뉴 */
+.mega-nav .main-menu {
     display: flex;
     justify-content: center;
-    align-items: center;
-    font-size: 1.5em;
+    gap: 4rem;   /* 드롭다운과 간격 맞춤 */
+    margin: 0;
+    padding: 1rem 0;
+    list-style: none;
 }
-.contents li{
-    margin: 10px 100px;
+.mega-nav .main-menu li a {
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.05rem;  /* 글씨 키움 */
+    color: #333;
+    transition: color 0.2s;
 }
-.header-bottom-wrap{
-    position: relative;
-    z-index: 15;
+.mega-nav .main-menu li a:hover {
+    color: #0d6efd;
 }
-.hidebar{
-    background-color: white;
-    position: absolute;
-    top:100%;
-    left: 0;
-    width: 100%;
-    height: 200px;
+
+/* 메가 드롭다운 */
+.mega-dropdown {
     display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: #fff;
+    padding: 2rem 4rem;
+    border-top: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    z-index: 999;
     justify-content: center;
-    z-index: 20;
+    gap: 4rem;
 }
-.header-bottom-wrap:hover .hidebar{
+
+/* hover 시 열기 */
+.mega-nav:hover .mega-dropdown {
     display: flex;
 }
-.hidebar ul{
-    margin: 20px 100px;
+
+/* 드롭다운 컬럼 */
+.dropdown-col {
+    min-width: 180px;
 }
-.hidebar ul li{
+.dropdown-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #212529;
+}
+.dropdown-col a {
     display: block;
+    font-size: 0.95rem;
+    color: #333;
+    padding: 0.25rem 0;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.dropdown-col a:hover {
+    color: #0d6efd;
 }

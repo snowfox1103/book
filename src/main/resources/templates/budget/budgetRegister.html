@@ -4,7 +4,8 @@
       layout:decorate="~{layout/nyjbasic.html}">
 
 <head>
-    <title>Board Register</title>
+    <title>예산 등록</title>
+    <link rel="stylesheet" href="/css/budget/budgetRegister.css">
 </head>
 
 <div layout:fragment="content">
@@ -54,50 +55,38 @@
                             </div>
                         </div>
                     </form>
-                    <!-- 중복 등록 모달 -->
-                    <div th:if="${duplicateError}" class="modal fade" id="duplicateModal" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">중복 오류</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p th:text="${duplicateError}">이미 등록된 카테고리입니다.</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- (모달 제거) duplicateError는 alert로 처리 -->
                 </div><!--end card body-->
-
             </div><!--end card-->
         </div><!-- end col-->
     </div><!-- end row-->
 </div>
 
-
 <script layout:fragment="script" th:inline="javascript">
+    // 인증/검증 정보 로깅(필요 시)
+    const auth = /*[[${#authentication}]]*/ null;
+    const errors = /*[[${errors} ?: null]]*/ null;
+    console.log(errors);
 
-    const auth = [[${#authentication}]]
-
-    const errors = [[${errors}]]
-    console.log(errors)
-
-    const budAmountError = /*[[${budAmountError}]]*/ null;
-    if(budAmountError){
-        alert(budAmountError); // "금액 입력" 띄움
-    }
-    if([[${duplicateError != null}]]){
-        var duplicateModal = new bootstrap.Modal(document.getElementById('duplicateModal'));
-        duplicateModal.show();
+    // 금액 미입력 에러
+    const budAmountError = /*[[${budAmountError} ?: null]]*/ null;
+    if (budAmountError) {
+        alert(budAmountError); // 예: "금액을 입력하세요"
     }
 
-    document.querySelector(".toList").addEventListener("click",function (e){
-        e.preventDefault()
-        e.stopPropagation()
-        self.location='/budget/currentList'
-    })
+    // 중복 예산 에러 → alert로 표시
+    const duplicateMsg = /*[[${duplicateError} ?: null]]*/ null;
+    if (duplicateMsg) {
+        // 서버에서 온 메시지를 그대로 쓰거나, 고정 문구를 원하면 아래 한 줄로 교체
+        // alert('해당 카테고리 예산은 이미 있습니다.');
+        alert(duplicateMsg);
+    }
+
+    // 목록 이동
+    document.querySelector(".toList").addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        self.location = '/budget/currentList';
+    });
 </script>
+</html>

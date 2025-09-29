@@ -13,85 +13,66 @@
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
             rel="stylesheet"/>
-
-    <style>
-        .nav-link.active {
-            font-weight: 700;
-            color: #0d6efd !important;
-        }
-    </style>
 </head>
 
 <body>
 <th:block th:fragment="header(active)">
-
-    <!-- 1단: 로고 + 유저 영역 -->
+    <!-- 로고 + 유저 -->
     <nav class="navbar bg-white border-bottom">
         <div class="container d-flex align-items-center justify-content-between">
-
-            <!-- 좌측: 로고 + 서비스명 -->
             <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/mainPage/mainpage}">
-                <img th:src="@{/images/logo.png}" style="height:36px;width:auto;" alt="가계북" class="brand-logo"/>
+                <img th:src="@{/images/logo.png}" alt="가계북" class="brand-logo"/>
             </a>
 
-            <!-- 우측: 인증 정보/로그인/마이페이지/로그아웃 -->
             <div class="d-flex align-items-center gap-3">
         <span class="text-muted">
           <b th:text="${#authentication?.name} ?: '게스트'"></b> 님
         </span>
-
-                <!-- 로그인 상태별 노출 -->
                 <a class="btn btn-primary btn-sm" th:href="@{/users/login}" sec:authorize="!isAuthenticated()">로그인</a>
-                <a class="btn btn-outline-secondary btn-sm" th:href="@{/mypage/myPage}"
-                   sec:authorize="isAuthenticated()">마이페이지</a>
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/mypage/myPage}" sec:authorize="isAuthenticated()">마이페이지</a>
                 <form th:action="@{/users/logout}" method="post" class="d-inline" sec:authorize="isAuthenticated()">
                     <button class="btn btn-outline-danger btn-sm" type="submit">로그아웃</button>
                 </form>
             </div>
-
         </div>
     </nav>
 
-    <!-- 2단: 상단 메뉴 -->
-    <nav class="flex-grow-1 d-flex justify-content-center">
-        <ul class="nav main-nav justify-content-center gap-5">
-            <li class="nav-item dropdown">
-                <a class="nav-link fw-semibold dropdown-toggle" href="#" data-bs-toggle="dropdown">게시판</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" th:href="@{/qna}">문의사항</a></li>
-                    <li><a class="dropdown-item" th:href="@{/notice}">공지사항</a></li>
-                </ul>
-            </li>
-
-            <li class="nav-item dropdown">
-                <a class="nav-link fw-semibold dropdown-toggle" href="#" data-bs-toggle="dropdown">자산관리</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" th:href="@{/trans/transList}">입출금 내역</a></li>
-                    <li><a class="dropdown-item" th:href="@{/budget/currentList}">예산 관리</a></li>
-                    <li><a class="dropdown-item" th:href="@{/subscriptions/subMain}">정기 결제</a></li>
-                </ul>
-            </li>
-
-            <li class="nav-item dropdown">
-                <a class="nav-link fw-semibold dropdown-toggle" href="#" data-bs-toggle="dropdown">소비분석</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" th:href="@{/mainPage/statistics}">통계</a></li>
-                </ul>
-            </li>
-
-            <li class="nav-item dropdown">
-                <a class="nav-link fw-semibold dropdown-toggle" href="#" data-bs-toggle="dropdown">포인트/포인트샵</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" th:href="@{/point}">포인트</a></li>
-                    <li><a class="dropdown-item" th:href="@{/pointshop/pointShop}">포인트 샵</a></li>
-                </ul>
-            </li>
-
-            <!-- 관리자 전용 -->
-            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                <a class="nav-link text-danger fw-semibold" th:href="@{/admin}">관리자</a>
-            </li>
+    <!-- 메인 네비게이션 -->
+    <nav class="mega-nav">
+        <ul class="main-menu">
+            <li><a href="#">게시판</a></li>
+            <li><a href="#">자산관리</a></li>
+            <li><a href="#">소비분석</a></li>
+            <li><a href="#">포인트/포인트샵</a></li>
+            <li sec:authorize="hasRole('ADMIN')"><a href="#">관리자</a></li>
         </ul>
+
+        <!-- 메가 드롭다운 -->
+        <div class="mega-dropdown">
+            <div class="dropdown-col">
+                <a th:href="@{/qna}">문의사항</a>
+                <a th:href="@{/notice}">공지사항</a>
+            </div>
+
+            <div class="dropdown-col">
+                <a th:href="@{/trans/transList}">입출금 내역</a>
+                <a th:href="@{/budget/currentList}">예산 관리</a>
+                <a th:href="@{/subscriptions/subMain}">정기 결제</a>
+            </div>
+
+            <div class="dropdown-col">
+                <a th:href="@{/mainPage/statistics}">통계</a>
+            </div>
+
+            <div class="dropdown-col">
+                <a th:href="@{/point}">포인트</a>
+                <a th:href="@{/pointshop/pointShop}">포인트 샵</a>
+            </div>
+
+            <div class="dropdown-col" sec:authorize="hasRole('ADMIN')">
+                <a class="text-danger fw-semibold" th:href="@{/admin}">관리자 페이지</a>
+            </div>
+        </div>
     </nav>
 </th:block>
 

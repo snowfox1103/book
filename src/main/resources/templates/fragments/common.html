@@ -67,10 +67,8 @@
             <li class="nav-item dropdown">
                 <a class="nav-link fw-semibold dropdown-toggle" href="#" data-bs-toggle="dropdown">자산관리</a>
                 <ul class="dropdown-menu">
-<!--                    0925 조덕진 입출금, 예산 주소 수정-->
                     <li><a class="dropdown-item" th:href="@{/trans/transList}">입출금 내역</a></li>
                     <li><a class="dropdown-item" th:href="@{/budget/currentList}">예산 관리</a></li>
-                    <!--0922 조덕진 수정 정기결제 href 수정-->
                     <li><a class="dropdown-item" th:href="@{/subscriptions/subMain}">정기 결제</a></li>
                 </ul>
             </li>
@@ -86,7 +84,6 @@
                 <a class="nav-link fw-semibold dropdown-toggle" href="#" data-bs-toggle="dropdown">포인트/포인트샵</a>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" th:href="@{/point}">포인트</a></li>
-                    <!--0922 조덕진 수정 포인트 샵 href 수정-->
                     <li><a class="dropdown-item" th:href="@{/pointshop/pointShop}">포인트 샵</a></li>
                 </ul>
             </li>
@@ -99,7 +96,6 @@
     </nav>
 
 </th:block>
-<!-- 9025 조덕진 :정기 결제 알림 전역으로 나오게 하기 알림이 나와도 되는 html </body>이전 아무곳에나 넣기-->
 <th:block th:fragment="alert">
   <div id="toastArea" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
