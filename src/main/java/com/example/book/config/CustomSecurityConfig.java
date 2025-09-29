@@ -72,8 +72,8 @@ public class CustomSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error", "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**", "/fragments/**").permitAll()
                         // 2.2 화면들
-                        .requestMatchers("/users/login", "/users/checkUserId", "/users/checkEmail", "/users/userRegister", "/users/verify",
-                                "/users/searchAndResend", "/mainPage/intro").permitAll()
+                        .requestMatchers("/mainPage/intro", "/users/login", "/users/checkUserId", "/users/checkEmail", "/users/userRegister", "/users/verify",
+                                "/users/searchAndResend").permitAll()
                         // 2.3 공개 API (resend/id/pw)
                         .requestMatchers("/users/resend", "/users/idSearch", "/users/pwSearch").permitAll()
                         // 2.4 그 외는 인증
