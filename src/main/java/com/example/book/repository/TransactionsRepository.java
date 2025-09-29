@@ -128,4 +128,18 @@ public interface TransactionsRepository extends JpaRepository<Transactions, Long
         LocalDateTime getTransDate();   // TIMESTAMP → LocalDateTime 변환
         Long getTransCategory();
     }
+
+    // 이번 달 특정 구독건이 이미 결제됐는지 여부 0929 조덕진
+    @Query("""
+      SELECT COUNT(t) > 0
+      FROM Transactions t
+      WHERE t.userNo = :userNo
+        AND t.subId = :subId
+        AND FUNCTION('YEAR', t.transDate) = :year
+        AND FUNCTION('MONTH', t.transDate) = :month
+    """)
+    boolean existsThisMonth(@Param("userNo") Long userNo,
+                            @Param("subId") Long subId,
+                            @Param("year") int year,
+                            @Param("month") int month);
 }

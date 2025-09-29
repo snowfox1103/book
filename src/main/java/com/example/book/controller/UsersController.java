@@ -10,11 +10,13 @@ import com.example.book.service.UsersService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -51,7 +53,7 @@ public class UsersController {
       Users users = usersService.register(usersDTO);
 
       emailService.sendVerificationEmail(users);
-      redirectAttributes.addFlashAttribute("message", "Checking Email");
+      redirectAttributes.addFlashAttribute("message", "인증 메일을 보냈습니다. 메일함을 확인해 주세요.");
 
       return "redirect:/users/login";
     } catch(UsersService.userIdExistsException e) {
@@ -121,17 +123,35 @@ public class UsersController {
   @PostMapping("/idSearch")
   public ResponseEntity<?> idSearch(@RequestBody @Valid IdSearchRequestDTO req) {
     log.info("id search Post ...............");
-    usersService.idSearch(req);
-
-    return ResponseEntity.ok().build();
+    try {
+      usersService.idSearch(req);
+      // 정상 처리
+      return ResponseEntity.ok(Map.of("message","아이디 찾기 메일이 발송되었습니다."));
+    } catch (IllegalStateException e) {
+      // 사용자 없음
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(Map.of("message","일치하는 사용자가 없습니다."));
+    } catch (Exception e) {
+      // 기타 에러
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(Map.of("message","서버 오류가 발생했습니다."));
+    }
   }
 
   @PostMapping("/pwSearch")
   public ResponseEntity<?> pwSearch(@RequestBody @Valid PwSearchRequestDTO req) {
     log.info("pwSearch Post ...............");
-    usersService.pwSearch(req); //user의 email + "password"로 비밀번호 변경 후 메일로 보냄
+    try {
+      usersService.pwSearch(req);
 
-    return ResponseEntity.ok().build();
+      return ResponseEntity.ok(Map.of("message","비밀번호 찾기 메일이 발송되었습니다."));
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(Map.of("message","일치하는 사용자가 없습니다."));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(Map.of("message","서버 오류가 발생했습니다."));
+    }
   }
 
   @GetMapping("/checkUserId")

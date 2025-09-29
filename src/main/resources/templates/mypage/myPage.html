@@ -124,8 +124,13 @@
             <span th:text="${qna.getQBTitle()}">문의 제목</span>
           </a>
         </div>
-        <!-- 오른쪽: 날짜 -->
-        <small class="text-muted" th:text="${#temporals.format(qna.getRegDate(), 'yyyy-MM-dd')}"></small>
+        <!-- 오른쪽: 상태 + 날짜 -->
+        <div class="ms-auto d-flex align-items-center gap-2">
+          <span class="badge rounded-pill"
+                th:classappend="${answeredIds != null and answeredIds.contains(qna.qBId)} ? ' bg-primary' : ' bg-secondary'"
+                th:text="${answeredIds != null and answeredIds.contains(qna.qBId)} ? '답변완료' : '답변 대기중'"></span>
+          <small class="text-muted" th:text="${#temporals.format(qna.getRegDate(), 'yyyy-MM-dd')}"></small>
+        </div>
       </li>
 
       <!-- 데이터가 없는 경우 -->

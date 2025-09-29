@@ -115,4 +115,9 @@ public class mainpageController {
         return statisticsService.getDailyIncomeExpense(userNo, year, month);
     }
 
+    //인트로 페이지
+    @GetMapping("/intro")
+    public void introTestGet() {
+        log.info("--------introGet---------");
+    }
 }

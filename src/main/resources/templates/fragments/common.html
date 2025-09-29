@@ -38,7 +38,7 @@
             <!-- 우측: 인증 정보/로그인/마이페이지/로그아웃 -->
             <div class="d-flex align-items-center gap-3">
         <span class="text-muted">
-          <b th:text="${#authentication?.name} ?: '게스트'"></b> 님
+          <b th:text="${#authentication?.principal?.realName} ?: '게스트'"></b> 님
         </span>
                 <!-- 로그인 상태별 노출 -->
                 <a class="btn btn-primary btn-sm" th:href="@{/users/login}" sec:authorize="!isAuthenticated()">로그인</a>

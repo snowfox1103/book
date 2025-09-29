@@ -72,10 +72,21 @@ public class SubscriptionBillingServiceImpl implements SubscriptionBillingServic
       String key = ym.toString(); // "YYYY-MM"
       labels.add(key);
 
+    //현재 달은 현재 구독하고 있는 항목의 총액
+//      if (ym.equals(cur)) {
+//        // 현재 달은 ledger 대신 "활성 구독 총액" 사용
+//        Long curTotal = subsRepo.getActiveTotal(userNo);
+//        amounts.add(curTotal != null ? curTotal : 0L);
+//      } else {
+//        amounts.add(db.getOrDefault(key, 0L));
+//      }
       if (ym.equals(cur)) {
-        // 현재 달은 ledger 대신 "활성 구독 총액" 사용
-        Long curTotal = subsRepo.getActiveTotal(userNo);
-        amounts.add(curTotal != null ? curTotal : 0L);
+        long baseAmount = db.getOrDefault(key, 0L);
+        int todayDay = LocalDate.now(KST).getDayOfMonth();
+        Long remainingSubs = subsRepo.getRemainingThisMonth(userNo, todayDay);
+        long predicted = baseAmount + (remainingSubs != null ? remainingSubs : 0L);
+
+        amounts.add(predicted);
       } else {
         amounts.add(db.getOrDefault(key, 0L));
       }

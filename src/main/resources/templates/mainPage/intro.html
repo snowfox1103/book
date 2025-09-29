@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>가계북 - 소비관리 플랫폼</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <style>
+      .hero {
+          background: linear-gradient(135deg, #e6f0ff, #ffffff);
+          padding: 80px 0;
+          margin-top: 10px;
+          text-align: center;
+      }
+      .hero h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; }
+      .hero p { font-size: 1.2rem; color: #555; margin-bottom: 2rem; }
+      .feature-card img { max-height: 200px; object-fit: cover; }
+      .feature-card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  </style>
+</head>
+<body>
+<!-- 네비게이션 -->
+<div th:replace="~{fragments/common :: header(active='board')}"></div>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <h1>복잡한 소비 내역을 한눈에, <span class="text-primary">가계북</span></h1>
+    <p>자동 등록 · 시각화 · 예산관리 · 정기결제 알림까지<br>당신의 소비를 계획적으로 관리해보세요.</p>
+    <a href="/users/userRegister" class="btn btn-primary btn-lg">지금 시작하기</a>
+  </div>
+</section>
+
+<!-- 주요 기능 Section -->
+<section id="features" class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">주요 기능</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <img src="/images/statisticsMain.png" class="card-img-top" alt="소비 분석">
+          <div class="card-body">
+            <h5 class="card-title">소비 분석</h5>
+            <p class="card-text">카테고리별 지출/입금 현황을 차트로 시각화</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <img src="/images/pointShopMain.png" class="card-img-top" alt="포인트샵">
+          <div class="card-body">
+            <h5 class="card-title">포인트샵</h5>
+            <p class="card-text">적립한 포인트로 다양한 상품을 교환</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <img src="/images/mainPage2.png" class="card-img-top" alt="예산 관리">
+          <div class="card-body">
+            <h5 class="card-title">예산 관리</h5>
+            <p class="card-text">예산 설정·사용금액·남은금액을 한눈에 관리</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 혜택 Section -->
+<section id="benefits" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-4">가계북만의 혜택</h2>
+    <div class="row text-center">
+      <div class="col-md-3">
+        <h5>자동 등록</h5>
+        <p>정기 결제일 거래 내역 자동 등록</p>
+      </div>
+      <div class="col-md-3">
+        <h5>시각화</h5>
+        <p>도넛 차트와 그래프로 간편한 소비 분석</p>
+      </div>
+      <div class="col-md-3">
+        <h5>정기 결제 알림</h5>
+        <p>구독/정기결제 내역 알림 및 관리</p>
+      </div>
+      <div class="col-md-3">
+        <h5>포인트 적립</h5>
+        <p>소비 패턴에 따른 포인트 적립 및 사용</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-4 bg-white border-top">
+  <div class="container d-flex justify-content-between">
+    <span class="text-muted">© 2025 가계북</span>
+    <ul class="list-inline mb-0">
+      <li class="list-inline-item"><a href="#">About</a></li>
+      <li class="list-inline-item"><a href="#">Contact</a></li>
+      <li class="list-inline-item"><a href="#">공지사항</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
