@@ -10,7 +10,7 @@
     <!--  <h1>Board List</h1>-->
     <div class="card mb-3">
         <div class="card-body">
-            <form action="/budget/budgetList" method="get" class="budget-search-form">
+            <form action="/budget/budgetList" method="get" class="budget-search-form" id="budgetListForm">
                 <input type="hidden" name="size" th:value="${pageRequestDTO.size}">
 
                 <!-- 첫 번째 줄 -->
@@ -51,24 +51,29 @@
                 </div>
 
                 <!-- 두 번째 줄 -->
+                <!-- 두 번째 줄 + 버튼(우측) -->
                 <div class="row g-3 align-items-end mb-2">
                     <div class="col-md-3">
                         <label for="aMin" class="form-label">설정 최소 금액</label>
-                        <input type="number" id="aMin" class="form-control" name="amountMin" th:value="${pageRequestDTO.amountMin}" placeholder="최소금액 입력">
+                        <input type="number" id="aMin" class="form-control" name="amountMin"
+                               th:value="${pageRequestDTO.amountMin}" placeholder="최소금액 입력">
                     </div>
+
                     <div class="col-md-3">
                         <label for="aMax" class="form-label">설정 최대 금액</label>
-                        <input type="number" id="aMax" class="form-control" name="amountMax" th:value="${pageRequestDTO.amountMax}" placeholder="최대금액 입력">
+                        <input type="number" id="aMax" class="form-control" name="amountMax"
+                               th:value="${pageRequestDTO.amountMax}" placeholder="최대금액 입력">
+                    </div>
+
+                    <!-- 버튼을 같은 줄의 우측 끝에 -->
+                    <div class="col-md-6 d-flex justify-content-end">
+                        <div class="budget-search-actions">
+                            <button class="btn btn-primary me-2" type="submit">검색</button>
+                            <button class="btn btn-danger clearBtn" type="button">초기화</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 버튼 -->
-                <div class="row g-3">
-                    <div class="col-auto d-flex gap-2">
-                        <button class="btn btn-primary" type="submit">검색</button>
-                        <button class="btn btn-danger clearBtn" type="button">초기화</button>
-                    </div>
-                </div>
             </form>
         </div>
     </div>
@@ -149,7 +154,7 @@
             return
         }
         const num = target.getAttribute("data-num")
-        const formObj = document.querySelector("form")
+        const formObj = document.querySelector("#budgetListForm")
         formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
         formObj.submit();
     },false)
@@ -164,6 +169,5 @@
         e.stopPropagation();
         self.location = '/budget/currentList'
     })
-
 </script>
 </html>

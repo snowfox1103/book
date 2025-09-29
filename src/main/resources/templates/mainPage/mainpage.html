@@ -282,7 +282,6 @@
             options: {
                 responsive: false,
                 plugins: {
-                    title: { display: true, text: '이번 달 수입 / 지출' },
                     tooltip: { callbacks: { label: c => c.dataset.label + ': ' + c.raw.toLocaleString() + '원' } },
                     legend: { position: 'bottom' }
                 },
@@ -315,7 +314,6 @@
             options: {
                 responsive: false,
                 plugins: {
-                    title: { display: true, text: '이번 달 카테고리별 지출' },
                     tooltip: { callbacks: { label: c => c.label + ': ' + c.raw.toLocaleString() + '원' } },
                     legend: {
                         position: 'bottom',

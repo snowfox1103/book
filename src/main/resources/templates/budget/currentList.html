@@ -9,7 +9,7 @@
 <div layout:fragment="content">
     <!--  <h1>Board List</h1>-->
     <div class="row mt-3">
-        <form action="/budget/currentList" method="get">
+        <form action="/budget/currentList" method="get" id="currentListForm">
             <div class="col">
                 <input type="hidden" name="size" th:value="${pageRequestDTO.size}">
             </div>
@@ -18,23 +18,35 @@
     <div class="row mt-3">
         <div class="col">
             <div class="card">
-                <div class="card-header fs-3 fw-bold py-3"><th:block th:text="${#temporals.year(#temporals.createNow()) + '년 '+ #temporals.month(#temporals.createNow())+'월 예산'}"></th:block></div>
-                <div class="card-body p-5">
-                    <ul class="list-group list-group-flush mb-3">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>예산 설정 금액</span>
-                            <strong th:text="${T(java.lang.String).format('%,d', sumBudgets)} + ' 원'"></strong>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>예산 사용 금액</span>
-                            <strong th:text="${T(java.lang.String).format('%,d', sumUses)} + ' 원'"></strong>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>남은 금액</span>
-                            <strong th:text="${T(java.lang.String).format('%,d', sumBudgets - sumUses)} + ' 원'"></strong>
-                        </li>
-                    </ul>
+                <div class="card-header fs-3 fw-bold py-3">
+                    <th:block th:text="${#temporals.year(#temporals.createNow()) + '년 '+ #temporals.month(#temporals.createNow())+'월 예산'}"></th:block>
                 </div>
+                <div class="card-body p-4">
+                    <div class="summary-cards">
+                        <!-- 설정 금액 -->
+                        <div class="stat-card accent-blue">
+                            <div class="bar"></div>
+                            <div class="label">예산 설정 금액</div>
+                            <div class="value" th:text="${T(java.lang.String).format('%,d', sumBudgets)} + ' 원'"></div>
+                        </div>
+
+                        <!-- 사용 금액 -->
+                        <div class="stat-card accent-pink">
+                            <div class="bar"></div>
+                            <div class="label">예산 사용 금액</div>
+                            <div class="value" th:text="${T(java.lang.String).format('%,d', sumUses)} + ' 원'"></div>
+                        </div>
+
+                        <!-- 남은 금액 (마이너스면 빨간색) -->
+                        <div class="stat-card accent-green"
+                             th:classappend="${(sumBudgets - sumUses) < 0} ? ' is-negative'">
+                            <div class="bar"></div>
+                            <div class="label">남은 금액</div>
+                            <div class="value" th:text="${T(java.lang.String).format('%,d', sumBudgets - sumUses)} + ' 원'"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card-body p-5" >
                     <table class="table">
                         <thead>
@@ -96,18 +108,18 @@
     <script layout:fragment="script" th:inline="javascript">
         console.log("script......")
 
-        // document.querySelector(".pagination").addEventListener("click", function (e) {
-        //     e.preventDefault()
-        //     e.stopPropagation()
-        //     const target = e.target
-        //     if(target.tagName !== 'A') {
-        //         return
-        //     }
-        //     const num = target.getAttribute("data-num")
-        //     const formObj = document.querySelector("form")
-        //     formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
-        //     formObj.submit();
-        // },false)
+        document.querySelector(".pagination").addEventListener("click", function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            const target = e.target
+            if(target.tagName !== 'A') {
+                return
+            }
+            const num = target.getAttribute("data-num")
+            const formObj = document.querySelector("#currentListForm")
+            formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
+            formObj.submit();
+        },false)
 
         document.querySelector(".goToReg").addEventListener("click",function (e){
             e.preventDefault();

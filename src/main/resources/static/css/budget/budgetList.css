@@ -72,3 +72,19 @@
     .table tbody tr { display: block; padding: .6rem; }
     .table tbody td, .table tbody th { display: flex; justify-content: space-between; }
 }
+.budget-search-actions {
+    display: flex;
+    gap: 8px;
+}
+/* 검색 폼 버튼 우측 정렬 & 간격 */
+.budget-search-actions .btn {
+    padding: .55rem 1.1rem;
+}
+
+/* 모바일에서는 가운데 정렬 */
+@media (max-width: 576px) {
+    .budget-search-actions {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -3,13 +3,14 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/nyjbasic.html}">
 <head>
+    <title>입출금 목록</title>
     <link rel="stylesheet" href="/css/trans/translist.css">
 </head>
 <div layout:fragment="content">
     <!--  <h1>Board List</h1>-->
     <div class="row mt-3">
         <div class="col">
-        <form action="/trans/transList" method="get" class="p-3 rounded shadow-sm bg-light ">
+        <form action="/trans/transList" method="get" class="p-3 rounded shadow-sm bg-light " id="transForm">
             <input type="hidden" name="size" th:value="${pageRequestDTO.size}">
 
             <div class="row g-3 align-items-end">
@@ -84,7 +85,7 @@
 
                 <div class="col-md-6 text-end">
                     <button class="btn btn-primary searchBtn me-2" type="submit">검색</button>
-                    <button class="btn btn-outline-secondary clearBtn" type="button">초기화</button>
+                    <button class="btn btn-danger clearBtn" type="button">초기화</button>
                 </div>
             </div>
         </form>
@@ -186,7 +187,7 @@
             return
         }
         const num = target.getAttribute("data-num")
-        const formObj = document.querySelector("form")
+        const formObj = document.querySelector("#transForm")
         formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
         formObj.submit();
     },false)

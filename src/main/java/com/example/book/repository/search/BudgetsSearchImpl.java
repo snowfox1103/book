@@ -21,6 +21,7 @@ public class BudgetsSearchImpl extends QuerydslRepositorySupport implements Budg
         JPQLQuery<Budgets> query = from(qBudgets);
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         booleanBuilder.and(qBudgets.userNo.eq(userNo));
+        booleanBuilder.and(qBudgets.budCategory.ne(0L));
         if(selectYear != null) booleanBuilder.and(qBudgets.budYear.eq(selectYear));
         if(selectMonth!=null) booleanBuilder.and(qBudgets.budMonth.eq(selectMonth));
         if(budCategories != null) booleanBuilder.and(qBudgets.budCategory.eq(budCategories));

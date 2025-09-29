@@ -23,7 +23,7 @@ public class BudgetsDTO {
     private Long budCategory;
     @NotNull
     @Positive
-    private Long budAmount;
+    private Long budAmount = 0L;
 
     private Long budCurrent = 0L;
 
