@@ -25,7 +25,7 @@ public class SchedulerServiceImpl implements SchedulerService{
         List<Subscriptions> subscriptions = subscriptionRepository.findAll();
 
         for (Subscriptions sub : subscriptions) {
-            if (isDueToday(sub, today)) {
+            if (isDueToday(sub, today) && sub.isSub()) {
                 createTransactionFromSubscription(sub);
             }
         }
