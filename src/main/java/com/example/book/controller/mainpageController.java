@@ -1,13 +1,11 @@
 package com.example.book.controller;
 
 import com.example.book.domain.finance.Categories;
+import com.example.book.domain.finance.Subscriptions;
 import com.example.book.domain.user.Users;
 import com.example.book.dto.*;
 import com.example.book.security.dto.UsersSecurityDTO;
-import com.example.book.service.BudgetsService;
-import com.example.book.service.CategoriesService;
-import com.example.book.service.StatisticsService;
-import com.example.book.service.TransactionsService;
+import com.example.book.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,14 +26,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class mainpageController {
     private final TransactionsService transactionsService;
-    private final BudgetsService budgetsService;
+    private final SubscriptionsService subscriptionsService;
     private final CategoriesService categoriesService;
     private final StatisticsService statisticsService;
     @GetMapping("/mainpage")
     public void getMain(@AuthenticationPrincipal UsersSecurityDTO authUser, PageRequestDTO pageRequestDTO, Model model, TransactionsDTO transactionsDTO, BudgetsDTO budgetsDTO) {
         Long userNo = authUser.getUserNo();
         log.info("--------get mainpage---------");
-
 
         PageResponseDTO<TransactionsDTO> responseDTO = transactionsService.listByUser(userNo, pageRequestDTO);
         List<Categories> categories = categoriesService.categoriesList(userNo);
@@ -55,11 +52,11 @@ public class mainpageController {
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
         Map<String, Map<String, Long>> dailyStats = statisticsService.getDailyIncomeExpense(userNo, year, month);
-
+        List<Subscriptions> subs = subscriptionsService.getSubscriptions(userNo);
         List<StatisticsDTO> monthlyBudgets = statisticsService.getMonthlyBudgetStatistics(userNo, year, month);
         model.addAttribute("monthlyBudgets", monthlyBudgets);
         model.addAttribute("dailyStats", dailyStats);
-
+        model.addAttribute("subsList", subs);
         model.addAttribute("responseDTO", responseDTO);
 
         model.addAttribute("categoryLabels", categoryLabels);
