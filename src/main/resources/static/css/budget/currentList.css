@@ -6,7 +6,11 @@
 }
 .card-header {
     background: #fff;
+    font-weight: 800;            /* 700 -> 800 */
+    font-size: 1.15rem;          /* 제목 크기 업 */
+    letter-spacing: -0.01em;
     border-bottom: 1px solid #eef1f4;
+    padding: .9rem 1.25rem;      /* 살짝 여유 */
 }
 
 /* 상단 합계 리스트 */
