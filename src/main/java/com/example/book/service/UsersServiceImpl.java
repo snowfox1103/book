@@ -206,9 +206,11 @@ public class UsersServiceImpl implements UsersService {
 
   @Override
   public void idSearch(IdSearchRequestDTO req) {
+    String realName = req.getRealName();
     String email = req.getEmail();
+    log.info("idSearch realName: " + realName);
     log.info("idSearch email: " + email);
-    Users users = usersRepository.findByEmail(email)
+    Users users = usersRepository.findByRealNameAndEmail(realName, email)
       .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
 
     emailService.sendId(email);
@@ -220,10 +222,11 @@ public class UsersServiceImpl implements UsersService {
     String userId = req.getUserId();
     String email = req.getEmail();
     log.info("pwSearch userId: " + userId);
-    Users users = usersRepository.findByUserId(userId)
+    log.info("pwSearch email: " + email);
+    Users users = usersRepository.findByUserIdAndEmail(userId, email)
       .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
 
-    users.changePassword(passwordEncoder.encode(email+"password"));
+    users.changePassword(passwordEncoder.encode(email+"password")); //임시 비밀번호로 변경
     log.info("pw change success ...........");
     emailService.sendPw(email);
     log.info("pw email send success ...........");

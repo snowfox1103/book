@@ -66,14 +66,14 @@ public class CustomSecurityConfig {
         log.info("------------------configure----------------------");
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/trans/**", "/budget/**")// 필요하면 특정 경로만 예외
+                        .ignoringRequestMatchers("/trans/**", "/budget/**", "/mainPage/intro")// 필요하면 특정 경로만 예외
                 )
 //      .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error", "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**", "/fragments/**").permitAll()
                         // 2.2 화면들
                         .requestMatchers("/users/login", "/users/checkUserId", "/users/checkEmail", "/users/userRegister", "/users/verify",
-                                "/users/searchAndResend").permitAll()
+                                "/users/searchAndResend", "/mainPage/intro").permitAll()
                         // 2.3 공개 API (resend/id/pw)
                         .requestMatchers("/users/resend", "/users/idSearch", "/users/pwSearch").permitAll()
                         // 2.4 그 외는 인증
