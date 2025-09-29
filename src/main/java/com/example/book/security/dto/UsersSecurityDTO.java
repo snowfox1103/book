@@ -77,7 +77,8 @@ public class UsersSecurityDTO extends User implements OAuth2User {
     return this.userId;
   }
 
-  public String getRealName() {
-    return this.realName;
-  }
+//  @Override
+//  public String getRealName() {
+//    return this.realName;
+//  }
 }

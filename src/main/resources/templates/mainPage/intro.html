@@ -17,6 +17,13 @@
       .hero p { font-size: 1.2rem; color: #555; margin-bottom: 2rem; }
       .feature-card img { max-height: 200px; object-fit: cover; }
       .feature-card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+      .feature-card .card-img-top {
+          width: 100%;
+          height: 200px;        /* 원하는 높이 고정 (150~200px 권장) */
+          object-fit: contain;  /* 이미지 전체 보이기 */
+          background-color: #fff;
+          padding: 0;           /* 패딩 없애서 더 크게 */
+      }
   </style>
 </head>
 <body>
@@ -51,19 +58,19 @@
       </div>
       <div class="col-md-4">
         <div class="card feature-card h-100">
-          <img src="/images/pointShopMain.png" class="card-img-top" alt="포인트샵">
+          <img src="/images/mainPage2.png" class="card-img-top" alt="예산 관리">
           <div class="card-body">
-            <h5 class="card-title">포인트샵</h5>
-            <p class="card-text">적립한 포인트로 다양한 상품을 교환</p>
+            <h5 class="card-title">예산 관리</h5>
+            <p class="card-text">예산 설정·사용금액·남은금액을 한눈에 관리</p>
           </div>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card feature-card h-100">
-          <img src="/images/mainPage2.png" class="card-img-top" alt="예산 관리">
+          <img src="/images/pointShopMain.png" class="card-img-top" alt="포인트샵">
           <div class="card-body">
-            <h5 class="card-title">예산 관리</h5>
-            <p class="card-text">예산 설정·사용금액·남은금액을 한눈에 관리</p>
+            <h5 class="card-title">포인트샵</h5>
+            <p class="card-text">적립한 포인트로 다양한 상품을 교환</p>
           </div>
         </div>
       </div>
@@ -81,12 +88,12 @@
         <p>정기 결제일 거래 내역 자동 등록</p>
       </div>
       <div class="col-md-3">
-        <h5>시각화</h5>
-        <p>도넛 차트와 그래프로 간편한 소비 분석</p>
-      </div>
-      <div class="col-md-3">
         <h5>정기 결제 알림</h5>
         <p>구독/정기결제 내역 알림 및 관리</p>
+      </div>
+      <div class="col-md-3">
+        <h5>시각화</h5>
+        <p>도넛 차트와 그래프로 간편한 소비 분석</p>
       </div>
       <div class="col-md-3">
         <h5>포인트 적립</h5>

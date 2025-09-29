@@ -260,7 +260,18 @@
             },
             options: {
                 responsive: true,
-                plugins: { legend: { position: 'bottom' } }
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 15  // ✅ 범례 글씨 크기(px) - 기본 12
+                            }
+                        }
+                    }
+                },
+                cutout: '50%',     // 안쪽 구멍 비율 (기본 50%)
+                radius: '90%'      // 전체 반지름 (기본 100%)
             }
         });
     }
@@ -296,7 +307,12 @@
             },
             options: {
                 responsive: true,
-                plugins: { legend: { position: 'bottom' } },
+                plugins: { legend: { position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 15  // ✅ 범례 글씨 크기(px) - 기본 12
+                            }
+                        }} },
                 scales: { y: { beginAtZero: true } }
             }
         });
