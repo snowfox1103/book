@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -41,12 +42,17 @@ public class BudgetsController {
         Long userNo = users.getUserNo();
         Long sumBudgets = budgetsService.wholeSetBudgetAmount(userNo);
         Long sumUses = budgetsService.budgetUses(userNo);
-        PageResponseDTO pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
+        PageResponseDTO<BudgetsDTO> pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
+        int nowY = LocalDate.now().getYear();
+        int nowM = LocalDate.now().getMonthValue();
+        List<BudgetsDTO> rows = pageResponseDTO.getDtoList().stream().filter(b -> b.getBudYear() == nowY && b.getBudMonth() == nowM).toList();
         List<Categories> categories = categoriesService.getCategoriesForUser(users.getUserNo());
         model.addAttribute("sumBudgets",sumBudgets);
         model.addAttribute("sumUses",sumUses);
         model.addAttribute("users",userNo);
         model.addAttribute("response",pageResponseDTO);
+        model.addAttribute("rows", rows);
+        model.addAttribute("hasData", !rows.isEmpty());
         model.addAttribute("categories",categories);
         log.info("-----------get currentList-----------");
     }

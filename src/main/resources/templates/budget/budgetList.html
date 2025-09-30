@@ -100,7 +100,7 @@
                         </thead>
                         <tbody>
                         <tr th:if="${#lists.isEmpty(bList.dtoList)}">
-                            <td colspan="7" class="text-center text-muted">검색 결과가 없습니다.</td>
+                            <td colspan="7" class="text-center text-muted">데이터가 없습니다.</td>
                         </tr>
                             <tr th:each="b:${bList.dtoList}"  > <!--응답 페이지 안의 예산 dto 리스트-->
                                 <th scope="row">
@@ -146,30 +146,65 @@
     </div><!-- end row-->
 </div>
 <script layout:fragment="script" th:inline="javascript">
-    console.log("script......")
+    console.log("script......");
 
-    document.querySelector(".pagination").addEventListener("click", function (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        const target = e.target
-        if(target.tagName !== 'A') {
-            return
-        }
-        const num = target.getAttribute("data-num")
-        const formObj = document.querySelector("#budgetListForm")
-        formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
-        formObj.submit();
-    },false)
+    // 1) 페이지네이션: 엘리먼트 있을 때만 이벤트 바인딩
+    const pager = document.querySelector(".pagination");
+    if (pager) {
+        pager.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const target = e.target;
+            if (target.tagName !== 'A') return;
 
-    document.querySelector(".clearBtn").addEventListener("click",function (e){
+            const num = target.getAttribute("data-num");
+            const formObj = document.querySelector("#budgetListForm");
+
+            // 기존 page 히든 제거 후 다시 세팅(중복 방지)
+            formObj.querySelectorAll("input[name='page']").forEach(el => el.remove());
+            formObj.insertAdjacentHTML("beforeend", `<input type="hidden" name="page" value="${num}">`);
+            formObj.submit();
+        }, false);
+    }
+
+    // 2) 초기화 버튼: 모든 필드 비우고 page 파라미터 제거 → 폼 제출
+    document.querySelector(".clearBtn").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
-        self.location = '/budget/budgetList';
-    })
-    document.querySelector(".toCurrentList").addEventListener("click",function (e){
+
+        const form = document.querySelector("#budgetListForm");
+
+        // select들을 "전체(빈 값)"로
+        const years = form.querySelector("#Years");
+        const months = form.querySelector("#Months");
+        const cats = form.querySelector("#cats");
+        if (years)  years.value = "";
+        if (months) months.value = "";
+        if (cats)   cats.value = "";
+
+        // 금액 입력 비우기
+        const aMin = form.querySelector("#aMin");
+        const aMax = form.querySelector("#aMax");
+        if (aMin) aMin.value = "";
+        if (aMax) aMax.value = "";
+
+        // page 히든 제거
+        form.querySelectorAll("input[name='page']").forEach(el => el.remove());
+
+        // 필요 시 size도 기본값으로 돌리고 싶으면 여기서 조정
+        // const size = form.querySelector("input[name='size']");
+        // if (size) size.value = "10";
+
+        // 비어있는 파라미터로 같은 URL GET
+        form.submit();
+    });
+
+    // 3) 현재 목록으로 돌아가기
+    document.querySelector(".toCurrentList").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
-        self.location = '/budget/currentList'
-    })
+        self.location = '/budget/currentList';
+    });
 </script>
+
 </html>
