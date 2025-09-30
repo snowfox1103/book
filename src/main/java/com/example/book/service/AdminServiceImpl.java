@@ -1,15 +1,29 @@
 package com.example.book.service;
 
-import com.example.book.domain.user.ApprovalStatus;
+import com.example.book.domain.finance.Budgets;
+import com.example.book.domain.finance.InOrOut;
+import com.example.book.domain.finance.Transactions;
 import com.example.book.domain.point.PendingPoint;
+import com.example.book.domain.point.PointType;
+import com.example.book.domain.point.UserPoint;
+import com.example.book.domain.user.ApprovalStatus;
+import com.example.book.domain.point.RewardType;
 import com.example.book.dto.PendingPointDTO;
 import com.example.book.dto.PointSettingsDTO;
 import com.example.book.dto.RuleDTO;
 import com.example.book.repository.PendingPointRepository;
+import com.example.book.repository.UserPointRepository;
+import com.example.book.repository.TransactionsRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
@@ -20,18 +34,24 @@ import java.util.stream.Collectors;
 public class AdminServiceImpl implements AdminService {
 
     private final PendingPointRepository pendingPointRepository;
+    private final UserPointRepository  userPointRepository;
+    private final TransactionsRepository transactionsRepository;
 
+    @PersistenceContext
+    private EntityManager em;
+
+    /** 월 상한(포인트) */
     private Integer monthlyCap = 500;
 
-    // 규칙: threshold(%) -> RuleDTO 매핑 (정렬 유지)
+    /** 규칙: threshold(%) -> RuleDTO (오름차순) */
     private final Map<Integer, RuleDTO> rules = new TreeMap<>();
 
-    // 제외 카테고리
+    /** 제외 카테고리 */
     private final List<String> excludedCategories = new ArrayList<>();
 
-    // ===== 설정/요약 =====
-    @Override
-    @Transactional(readOnly = true)
+    // ───────────────────────── settings ─────────────────────────
+
+    @Override @Transactional(readOnly = true)
     public PointSettingsDTO getSettings() {
         return new PointSettingsDTO(
                 monthlyCap,
@@ -40,99 +60,126 @@ public class AdminServiceImpl implements AdminService {
         );
     }
 
-    // ===== 승인 대기 목록 =====
-    @Override
-    @Transactional(readOnly = true)
+    // ───────────────────────── list ─────────────────────────────
+
+    @Override @Transactional(readOnly = true)
     public List<PendingPointDTO> listPendings() {
-        var rows = pendingPointRepository.findAllOrderByCreatedAtDesc();
-        List<PendingPointDTO> list = new ArrayList<>();
+        var rows = pendingPointRepository.findAllByOrderByCreatedAtDesc();
+        List<PendingPointDTO> list = new ArrayList<>(rows.size());
         for (PendingPoint p : rows) {
-            // createdAt 기준으로 year/month 계산 또는 엔티티 필드 그대로 사용
-            int y, m;
             if (p.getCreatedAt() != null) {
-                y = p.getCreatedAt().getYear();
-                m = p.getCreatedAt().getMonthValue();
+                list.add(PendingPointDTO.ofCanonical(
+                        p.getId(), p.getUserNo(), p.getUsername(),
+                        p.getRatePercent(), p.getPoints(),
+                        p.getCreatedAt().getYear(), p.getCreatedAt().getMonthValue(),
+                        p.getReason(), p.getStatus()
+                ));
             } else {
-                y = 0; m = 0;
+                list.add(PendingPointDTO.ofCanonical(
+                        p.getId(), p.getUserNo(), p.getUsername(),
+                        p.getRatePercent(), p.getPoints(),
+                        p.getYearMonth(),
+                        p.getReason(), p.getStatus()
+                ));
             }
-            list.add(new PendingPointDTO(
-                    p.getId(),
-                    p.getUserNo(),
-                    p.getUsername(),
-                    p.getRatePercent(),
-                    p.getPoints(),
-                    y,
-                    m,
-                    p.getReason(),
-                    p.getStatus()   // <-- ApprovalStatus
-            ));
         }
         return list;
     }
 
-    // ===== 스캔(중복 방지: upsert) =====
-    @Override
-    @Transactional
+    // ─────────────── scan(all users) / user별 accrual ───────────────
+
+    @Override @Transactional
     public int scanMonthlyAccruals(int year, int month) {
         YearMonth ym = YearMonth.of(year, month);
-        String ymStr = ym.toString(); // "YYYY-MM"
 
-        // TODO: 실제 사용률/리워드 규칙으로부터 후보 계산
-        long userNo = 1L;              // 샘플
-        String username = "admin";     // 샘플
-        int ratePercent = 44;          // 샘플
-        int points = 300;              // 샘플
-        String reason = "규칙 매칭: 사용률 " + ratePercent + "% ≤ 60% → 고정금액 300";
+        @SuppressWarnings("unchecked")
+        List<Long> fromBudgets = em.createQuery(
+                        "select distinct b.userNo from " + Budgets.class.getSimpleName() + " b " +
+                                "where b.budYear = :y and b.budMonth = :m")
+                .setParameter("y", year).setParameter("m", month).getResultList();
 
-        var existing = pendingPointRepository
-                .findByUserNoAndYearMonth(userNo, ymStr)
-                .orElse(null);
+        @SuppressWarnings("unchecked")
+        List<Long> fromTrans = em.createQuery(
+                        "select distinct t.userNo from " + Transactions.class.getSimpleName() + " t " +
+                                "where t.transDate between :s and :e")
+                .setParameter("s", ym.atDay(1)).setParameter("e", ym.atEndOfMonth()).getResultList();
+
+        Set<Long> userNos = new LinkedHashSet<>();
+        if (fromBudgets != null) userNos.addAll(fromBudgets);
+        if (fromTrans  != null) userNos.addAll(fromTrans);
+
+        int affected = 0;
+        for (Long u : userNos) {
+            String username = null;
+            try {
+                username = (String) em.createQuery(
+                                "select u.userId from Users u where u.userNo = :u")
+                        .setParameter("u", u).setMaxResults(1).getSingleResult();
+            } catch (Exception ignore) {}
+            affected += scanMonthlyAccrualsForUser(year, month, u, username);
+        }
+        return affected;
+    }
+
+    @Transactional
+    protected int scanMonthlyAccrualsForUser(int year, int month, long userNo, String username) {
+        YearMonth ym = YearMonth.of(year, month);
+        String ymStr  = ym.toString();
+
+        // 1) 실사용률 산출
+        UsageSnapshot usage = computeUsageSnapshot(userNo, ym);
+
+        // 2) 규칙 매칭
+        RuleDTO matched = rules.values().stream()
+                .filter(r -> usage.ratePercent() <= (r.threshold() == null ? 100 : r.threshold()))
+                .findFirst().orElse(null);
+
+        // 3) 포인트/사유 산정
+        AwardResult award = computeAward(matched, usage);
+
+        // 4) upsert
+        PendingPoint existing = pendingPointRepository
+                .findByUserNoAndYearMonth(userNo, ymStr).orElse(null);
 
         if (existing == null) {
             PendingPoint p = new PendingPoint();
             p.setUserNo(userNo);
             p.setUsername(username);
             p.setYearMonth(ymStr);
-            p.setRatePercent(ratePercent);
-            p.setPoints(points);
-            p.setReason(reason);
+            p.setRatePercent(usage.ratePercent());
+            p.setPoints(award.points());
+            p.setReason(award.reason());
             p.setStatus(ApprovalStatus.PENDING);
             p.setCreatedAt(LocalDateTime.now());
             pendingPointRepository.save(p);
-            return 1;
         } else {
-            // 이미 있으면 갱신 (insert 금지 → Duplicate 방지)
-            existing.setRatePercent(ratePercent);
-            existing.setPoints(points);
-            existing.setReason(reason);
+            existing.setRatePercent(usage.ratePercent());
+            existing.setPoints(award.points());
+            existing.setReason(award.reason());
             existing.setStatus(ApprovalStatus.PENDING);
-            // createdAt은 그대로 두고 필요시 updatedAt만
             pendingPointRepository.save(existing);
-            return 1;
         }
+        return 1;
     }
 
-    // ===== 해당 월 대기 전부 삭제 =====
-    @Override
-    @Transactional
+    // ─────────────── clear / approve / reject ───────────────
+
+    @Override @Transactional
     public int clearPendingFor(int year, int month) {
         String ymStr = YearMonth.of(year, month).toString();
         return pendingPointRepository.deleteByYearMonth(ymStr);
     }
 
-    // ===== 단건 승인/반려 =====
-    @Override
-    @Transactional
+    @Override @Transactional
     public void approvePending(Long id) {
         var p = pendingPointRepository.findById(id).orElseThrow();
         p.setStatus(ApprovalStatus.APPROVED);
         p.setDecidedAt(LocalDateTime.now());
-        p.setDecidedBy("admin"); // 필요 시 로그인 사용자
+        p.setDecidedBy("admin");
         pendingPointRepository.save(p);
     }
 
-    @Override
-    @Transactional
+    @Override @Transactional
     public void rejectPending(Long id) {
         var p = pendingPointRepository.findById(id).orElseThrow();
         p.setStatus(ApprovalStatus.REJECTED);
@@ -141,13 +188,11 @@ public class AdminServiceImpl implements AdminService {
         pendingPointRepository.save(p);
     }
 
-    // ===== 일괄 승인/반려 =====
-    @Override
-    @Transactional
+    @Override @Transactional
     public int approvePendingBulk(List<Long> ids) {
         if (ids == null || ids.isEmpty()) return 0;
-        var rows = pendingPointRepository.findAllByIdIn(ids);
         var now = LocalDateTime.now();
+        var rows = pendingPointRepository.findAllByIdIn(ids);
         for (var p : rows) {
             p.setStatus(ApprovalStatus.APPROVED);
             p.setDecidedAt(now);
@@ -157,12 +202,11 @@ public class AdminServiceImpl implements AdminService {
         return rows.size();
     }
 
-    @Override
-    @Transactional
+    @Override @Transactional
     public int rejectPendingBulk(List<Long> ids) {
         if (ids == null || ids.isEmpty()) return 0;
-        var rows = pendingPointRepository.findAllByIdIn(ids);
         var now = LocalDateTime.now();
+        var rows = pendingPointRepository.findAllByIdIn(ids);
         for (var p : rows) {
             p.setStatus(ApprovalStatus.REJECTED);
             p.setDecidedAt(now);
@@ -172,43 +216,225 @@ public class AdminServiceImpl implements AdminService {
         return rows.size();
     }
 
+    // ─────────────── paging / commit(실반영) ───────────────
+
+    @Override @Transactional(readOnly = true)
+    public Page<PendingPointDTO> findPendingsPage(String yearMonth, Pageable pageable) {
+        List<PendingPoint> all = pendingPointRepository.findAllByOrderByCreatedAtDesc();
+        List<PendingPoint> filtered = all.stream()
+                .filter(p -> Objects.equals(yearMonth, p.getYearMonth()))
+                .collect(Collectors.toList());
+
+        int total = filtered.size();
+        int from  = (int) pageable.getOffset();
+        int to    = Math.min(from + pageable.getPageSize(), total);
+        List<PendingPoint> slice = (from > to) ? Collections.emptyList() : filtered.subList(from, to);
+
+        List<PendingPointDTO> content = new ArrayList<>(slice.size());
+        for (PendingPoint p : slice) {
+            if (p.getCreatedAt() != null) {
+                content.add(PendingPointDTO.ofCanonical(
+                        p.getId(), p.getUserNo(), p.getUsername(),
+                        p.getRatePercent(), p.getPoints(),
+                        p.getCreatedAt().getYear(), p.getCreatedAt().getMonthValue(),
+                        p.getReason(), p.getStatus()
+                ));
+            } else {
+                content.add(PendingPointDTO.ofCanonical(
+                        p.getId(), p.getUserNo(), p.getUsername(),
+                        p.getRatePercent(), p.getPoints(),
+                        p.getYearMonth(),
+                        p.getReason(), p.getStatus()
+                ));
+            }
+        }
+        return new PageImpl<>(content, pageable, total);
+    }
+
     @Override
     @Transactional
+    public void commitApproved(int year, int month) {
+
+        String ymStr = YearMonth.of(year, month).toString();
+
+        var approved = pendingPointRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .filter(p -> ymStr.equals(p.getYearMonth()))
+                .filter(p -> p.getStatus() == ApprovalStatus.APPROVED)
+                .toList();
+
+        // 포인트 적립 시각 – 실제 실행 시각을 사용
+        LocalDateTime eventDateTime = LocalDateTime.now();
+
+        for (var p : approved) {
+
+            boolean exists = userPointRepository
+                    .existsByUserNoAndPointTypeAndPointAmountAndPointStartDateAndPointReason(
+                            p.getUserNo(),
+                            PointType.EARN,
+                            (long) p.getPoints(),
+                            eventDateTime,
+                            "[월정산] " + ymStr + " " + p.getReason()
+                    );
+            if (exists) continue;
+
+            // 1) 포인트 적립 (LocalDateTime 그대로 저장 → 00:00 문제 해소)
+            var up = new UserPoint();
+            up.setUserNo(p.getUserNo());
+            up.setPointType(PointType.EARN);
+            up.setPointAmount((long) p.getPoints());
+            up.setPointStartDate(eventDateTime);
+            up.setPointReason("[월정산] " + ymStr + " " + p.getReason());
+            userPointRepository.save(up);
+
+            // 2) 트랜잭션(입금) 기록 — 빌더 사용
+            transactionsRepository.save(
+                    Transactions.builder()
+                            .userNo(p.getUserNo())
+                            .transTitle("월 스캔 자동지급 - " + ymStr)
+                            .transAmount((long) p.getPoints())
+                            .transDate(eventDateTime.toLocalDate())   // 엔티티가 LocalDate
+                            .transInOut(InOrOut.IN)                   // 입금
+                            .transCategory(null)                      // 필요 시 카테고리 지정
+                            .transMemo("[월정산] " + ymStr + " " + p.getReason())
+                            .build()
+            );
+
+            // 3) pending 마무리 정보
+            if (p.getDecidedAt() == null) p.setDecidedAt(LocalDateTime.now());
+            if (p.getDecidedBy() == null) p.setDecidedBy("admin");
+        }
+
+        pendingPointRepository.saveAll(approved);
+    }
+
+
+
+    // ─────────────── rules / cap / exclude ───────────────
+
+    @Override @Transactional
     public void addOrUpdateRule(RuleDTO dto) {
         if (dto == null || dto.threshold() == null) return;
         rules.put(dto.threshold(), dto);
     }
 
-    @Override
-    @Transactional
+    @Override @Transactional
     public void deleteRule(Integer threshold) {
         if (threshold == null) return;
         rules.remove(threshold);
     }
 
-    @Override
-    @Transactional
+    @Override @Transactional
     public void saveExcludedCategories(String csv) {
         excludedCategories.clear();
         if (csv == null || csv.isBlank()) return;
-        List<String> parsed = Arrays.stream(csv.split(","))
+        Arrays.stream(csv.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .distinct()
-                .collect(Collectors.toList());
-        excludedCategories.addAll(parsed);
+                .forEach(excludedCategories::add);
     }
 
-    @Override
-    @Transactional
+    @Override @Transactional
     public void saveCap(Integer monthlyCap) {
         this.monthlyCap = (monthlyCap == null || monthlyCap < 0) ? 0 : monthlyCap;
     }
 
-    // ✅ 컨트롤러가 부르는 이름도 지원 (saveCap 위임)
-    @Override
-    @Transactional
+    @Override @Transactional
     public void saveMonthlyCap(Integer monthlyCap) {
         saveCap(monthlyCap);
+    }
+
+    // ─────────────── helpers ───────────────
+
+    private UsageSnapshot computeUsageSnapshot(long userNo, YearMonth ym) {
+        int y = ym.getYear();
+        int m = ym.getMonthValue();
+
+        Long budget = (Long) em.createQuery(
+                        "select coalesce(sum(b.budAmount),0) from " + Budgets.class.getSimpleName() + " b " +
+                                "where b.userNo = :u and b.budYear = :y and b.budMonth = :m")
+                .setParameter("u", userNo).setParameter("y", y).setParameter("m", m)
+                .getSingleResult();
+
+        LocalDate start = ym.atDay(1);
+        LocalDate end   = ym.atEndOfMonth();
+
+        Long spent = (Long) em.createQuery(
+                        "select coalesce(sum(t.transAmount),0) from " + Transactions.class.getSimpleName() + " t " +
+                                "where t.userNo = :u and t.transInOut = :io and t.transDate between :s and :e")
+                .setParameter("u", userNo)
+                .setParameter("io", InOrOut.OUT)
+                .setParameter("s", start).setParameter("e", end)
+                .getSingleResult();
+
+        int rate = 0;
+        if (budget != null && budget > 0L) {
+            BigDecimal r = BigDecimal.valueOf(spent == null ? 0L : spent)
+                    .multiply(BigDecimal.valueOf(100))
+                    .divide(BigDecimal.valueOf(budget), 0, RoundingMode.HALF_UP);
+            rate = r.intValue();
+        }
+        return new UsageSnapshot(Math.max(0, Math.min(rate, 100)),
+                budget == null ? 0L : budget,
+                spent == null ? 0L : spent);
+    }
+
+    private AwardResult computeAward(RuleDTO rule, UsageSnapshot u) {
+        if (u.budget() <= 0L) return new AwardResult(0, "예산 미설정");
+        if (rule == null)    return new AwardResult(0, "예산 미설정");
+
+        int points = 0;
+        RewardType rt = rule.rewardType(); // FIXED | PERCENT
+        if (rt == RewardType.FIXED) {
+            points = rule.rewardPoints();
+        } else if (rt == RewardType.PERCENT) {
+            int pct = rule.rewardPoints();
+            points = BigDecimal.valueOf(u.spent())
+                    .multiply(BigDecimal.valueOf(pct))
+                    .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP)
+                    .intValue();
+        }
+
+        if (monthlyCap != null && monthlyCap > 0) points = Math.min(points, monthlyCap);
+
+        String reason = (rt == RewardType.FIXED)
+                ? String.format("규칙 매칭: 사용률 %d%% ≤ %d%% → 고정금액 %d",
+                u.ratePercent(), rule.threshold(), points)
+                : String.format("규칙 매칭: 사용률 %d%% ≤ %d%% → 지출의 %d%%",
+                u.ratePercent(), rule.threshold(), rule.rewardPoints());
+
+        return new AwardResult(points, reason);
+    }
+
+    // (간단 record)
+    private record UsageSnapshot(int ratePercent, long budget, long spent) {}
+    private record AwardResult(int points, String reason) {}
+
+    @Override
+    @Transactional
+    public void clearPendings(int year, int month) {
+        String ym = YearMonth.of(year, month).toString();
+        List<PendingPoint> rows = pendingPointRepository.findAllByYearMonth(ym);
+        int size = rows.size();
+        if (size > 0) pendingPointRepository.deleteAll(rows);
+    }
+
+    /**
+     * 커밋 이후 사용자별 runningBalance 를 다시 계산해 주는 내부 도우미.
+     * (프로젝트에서 이미 동일 목적 유틸/서비스가 있다면 그걸 호출해도 무방)
+     */
+    private void recomputeRunningBalance(Long userNo) {
+        // 가장 오래된 순으로 정렬해 누적합 계산
+        List<UserPoint> points =
+                userPointRepository.findAllByUserNoOrderByPointStartDateAscPointIdAsc(userNo);
+
+        long running = 0L;
+        for (UserPoint p : points) {
+            long delta = (p.getPointType() == PointType.EARN) ? p.getPointAmount() : -p.getPointAmount();
+            running += delta;
+            p.setRunningBalance(running);
+        }
+        userPointRepository.saveAll(points);
     }
 }

@@ -1,176 +1,112 @@
 package com.example.book.repository;
 
-import com.example.book.domain.point.PointType;
 import com.example.book.domain.point.UserPoint;
+import com.example.book.domain.point.PointType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserPointRepository extends JpaRepository<UserPoint, Long> {
 
-    Page<UserPoint> findByUserNo(Long userNo, Pageable pageable);
+    /* ===== 목록 조회(월 범위) – 정렬은 서비스에서 처리하기 위해 List로 일단 모두 가져온다 ===== */
+    List<UserPoint> findByUserNoAndPointStartDateBetweenOrderByPointStartDateAscPointIdAsc(
+            Long userNo,
+            LocalDateTime from,
+            LocalDateTime to
+    );
 
-    // ✅ 기본 목록: 승인건(= PENDING|*, REJECTED|* 제외)만
+    /* ===== 시드(해당 시점 이전까지의 누계) ===== */
     @Query("""
-           select p from UserPoint p
-           where p.userNo = :userNo
-             and p.pointReason not like 'PENDING|%%'
-             and p.pointReason not like 'REJECTED|%%'
+            select coalesce(
+                sum(case when p.pointType = com.example.book.domain.point.PointType.EARN
+                         then p.pointAmount else -p.pointAmount end), 0)
+            from UserPoint p
+            where p.userNo = :userNo and p.pointStartDate < :ts
            """)
-    Page<UserPoint> findApprovedByUserNo(@Param("userNo") Long userNo, Pageable pageable);
+    Long sumDeltaBefore(@Param("userNo") Long userNo, @Param("ts") LocalDateTime ts);
 
-    boolean existsByPointReasonStartingWith(String pointReason);
-
-    //point.scan 중복방지 0928 석준영
-    @Modifying
-    @Query("delete from UserPoint u where u.pointReason like concat(:prefix, '%')")
-    void deleteByPointReasonPrefix(@Param("prefix") String prefix);
-
-    // ✅ delta 정렬(오름차순): 승인건만
+    /* ===== 전체 누적 ===== */
     @Query("""
-           select p from UserPoint p
-           where p.userNo = :userNo
-             and p.pointReason not like 'PENDING|%%'
-             and p.pointReason not like 'REJECTED|%%'
-           order by (case when p.pointType = com.example.book.domain.point.PointType.EARN
-                          then p.pointAmount else -p.pointAmount end) asc
-           """)
-    Page<UserPoint> findPageOrderBySignedAmountAsc(@Param("userNo") Long userNo, Pageable pageable);
-
-    // ✅ delta 정렬(내림차순): 승인건만
-    @Query("""
-           select p from UserPoint p
-           where p.userNo = :userNo
-             and p.pointReason not like 'PENDING|%%'
-             and p.pointReason not like 'REJECTED|%%'
-           order by (case when p.pointType = com.example.book.domain.point.PointType.EARN
-                          then p.pointAmount else -p.pointAmount end) desc
-           """)
-    Page<UserPoint> findPageOrderBySignedAmountDesc(@Param("userNo") Long userNo, Pageable pageable);
-
-    // ✅ 페이지 이전 누계(승인건만, < cutoff)
-    @Query("""
-           select coalesce(sum(case when p.pointType = com.example.book.domain.point.PointType.EARN
-                                    then p.pointAmount else -p.pointAmount end), 0)
+           select coalesce(sum(p.pointAmount), 0)
            from UserPoint p
-           where p.userNo = :userNo
-             and p.pointStartDate < :cutoff
-             and p.pointReason not like 'PENDING|%%'
-             and p.pointReason not like 'REJECTED|%%'
+           where p.userNo = :userNo and p.pointType = 'EARN'
            """)
-    long sumBefore(@Param("userNo") Long userNo, @Param("cutoff") LocalDateTime cutoff);
-
-    // 중복생성 방지 키(사유)에 대한 존재 확인
-    boolean existsByPointReason(String pointReason);
-
-    // ✅ 승인대기 목록 등 별도 조회가 필요할 때만 사용
-    List<UserPoint> findByPointReasonStartingWithOrderByPointStartDateDesc(String prefix);
-
-    // ✅ 전체 합계(타입별) — 승인건만
-    @Query("""
-           select coalesce(sum(case when u.pointType = :type then abs(u.pointAmount) else 0 end), 0)
-           from UserPoint u
-           where u.userNo = :userNo
-             and u.pointReason not like 'PENDING|%%'
-             and u.pointReason not like 'REJECTED|%%'
-           """)
-    long sumAmountByTypeAll(@Param("userNo") Long userNo, @Param("type") PointType type);
-
-    // ✅ 기간 합계(타입별) — 승인건만
-    @Query("""
-           select coalesce(sum(case when u.pointType = :type then abs(u.pointAmount) else 0 end), 0)
-           from UserPoint u
-           where u.userNo = :userNo
-             and u.pointStartDate between :start and :end
-             and u.pointReason not like 'PENDING|%%'
-             and u.pointReason not like 'REJECTED|%%'
-           """)
-    long sumAmountByTypeBetween(@Param("userNo") Long userNo,
-                                @Param("type") PointType type,
-                                @Param("start") LocalDateTime start,
-                                @Param("end") LocalDateTime end);
-
-    // ✅ 월말 누계(적립-사용) — 승인건만
-    @Query("""
-           select coalesce(sum(
-             case
-               when u.pointType = :earn then abs(u.pointAmount)
-               when u.pointType = :use  then -abs(u.pointAmount)
-               else 0 end
-           ), 0)
-           from UserPoint u
-           where u.userNo = :userNo
-             and u.pointStartDate <= :end
-             and u.pointReason not like 'PENDING|%%'
-             and u.pointReason not like 'REJECTED|%%'
-           """)
-    long sumSignedUntil(@Param("userNo") Long userNo,
-                        @Param("end") LocalDateTime end,
-                        @Param("earn") PointType earn,
-                        @Param("use") PointType use);
+    Long sumEarnTotalByUser(@Param("userNo") Long userNo);
 
     @Query("""
-           select coalesce(sum(u.pointAmount), 0)
-           from UserPoint u
-           where u.userNo = :userNo
-             and u.pointStartDate >= :from
-             and u.pointStartDate <  :to
-             and u.pointType = com.example.book.domain.point.PointType.EARN
+           select coalesce(sum(p.pointAmount), 0)
+           from UserPoint p
+           where p.userNo = :userNo and p.pointType = 'USE'
+           """)
+    Long sumUseTotalByUser(@Param("userNo") Long userNo);
+
+    /* ===== 기간 누적 ===== */
+    @Query("""
+           select coalesce(sum(p.pointAmount), 0)
+           from UserPoint p
+           where p.userNo = :userNo and p.pointType = 'EARN'
+             and p.pointStartDate >= :from and p.pointStartDate < :to
            """)
     Long sumEarnByUserAndPeriod(@Param("userNo") Long userNo,
                                 @Param("from") LocalDateTime from,
                                 @Param("to") LocalDateTime to);
 
     @Query("""
-           select coalesce(sum(u.pointAmount), 0)
-           from UserPoint u
-           where u.userNo = :userNo
-             and u.pointStartDate >= :from
-             and u.pointStartDate <  :to
-             and u.pointType = com.example.book.domain.point.PointType.USE
+           select coalesce(sum(p.pointAmount), 0)
+           from UserPoint p
+           where p.userNo = :userNo and p.pointType = 'USE'
+             and p.pointStartDate >= :from and p.pointStartDate < :to
            """)
     Long sumUseByUserAndPeriod(@Param("userNo") Long userNo,
                                @Param("from") LocalDateTime from,
                                @Param("to") LocalDateTime to);
 
+    /* ===== 특정 시점까지(월말 잔액 계산에 사용) ===== */
     @Query("""
-           select coalesce(sum(u.pointAmount), 0)
-           from UserPoint u
-           where u.userNo = :userNo
-             and u.pointStartDate < :to
-             and u.pointType = com.example.book.domain.point.PointType.EARN
+           select coalesce(sum(p.pointAmount), 0)
+           from UserPoint p
+           where p.userNo = :userNo and p.pointType = 'EARN'
+             and p.pointStartDate < :to
            """)
-    Long sumEarnByUserUntil(@Param("userNo") Long userNo,
-                            @Param("to") LocalDateTime to);
+    Long sumEarnByUserUntil(@Param("userNo") Long userNo, @Param("to") LocalDateTime to);
 
     @Query("""
-           select coalesce(sum(u.pointAmount), 0)
-           from UserPoint u
-           where u.userNo = :userNo
-             and u.pointStartDate < :to
-             and u.pointType = com.example.book.domain.point.PointType.USE
+           select coalesce(sum(p.pointAmount), 0)
+           from UserPoint p
+           where p.userNo = :userNo and p.pointType = 'USE'
+             and p.pointStartDate < :to
            """)
-    Long sumUseByUserUntil(@Param("userNo") Long userNo,
-                           @Param("to") LocalDateTime to);
+    Long sumUseByUserUntil(@Param("userNo") Long userNo, @Param("to") LocalDateTime to);
 
-    // === 전체 누계 (전체기간) ===
-    @Query("""
-           select coalesce(sum(u.pointAmount), 0)
-           from UserPoint u
-           where u.userNo = :userNo
-             and u.pointType = com.example.book.domain.point.PointType.EARN
-           """)
-    Long sumEarnTotalByUser(@Param("userNo") Long userNo);
+    /** 승인 대기/승인/반려 구분을 reason prefix 로 관리할 때 중복 체크용 */
+    boolean existsByPointReason(String pointReason);
 
-    @Query("""
-           select coalesce(sum(u.pointAmount), 0)
-           from UserPoint u
-           where u.userNo = :userNo
-             and u.pointType = com.example.book.domain.point.PointType.USE
-           """)
-    Long sumUseTotalByUser(@Param("userNo") Long userNo);
+    /** 대기 목록 최신순 */
+    List<UserPoint> findByPointReasonStartingWithOrderByPointStartDateDesc(String prefix);
+
+    /** 사용자의 전체 내역 */
+    Page<UserPoint> findByUserNo(Long userNo, Pageable pageable);
+
+    // 기존 Between(양끝 포함) 대신, [from, to) 형태로 조회
+    Page<UserPoint> findByUserNoAndPointStartDateGreaterThanEqualAndPointStartDateLessThan(
+            Long userNo, LocalDateTime from, LocalDateTime to, Pageable pageable);
+
+    // 달 전체 누계 계산용: [from, to) 범위, 날짜↑/ID↑ 정렬로 모두 가져오기
+    List<UserPoint> findByUserNoAndPointStartDateGreaterThanEqualAndPointStartDateLessThanOrderByPointStartDateAscPointIdAsc(
+            Long userNo, LocalDateTime from, LocalDateTime to);
+
+    boolean existsByUserNoAndPointTypeAndPointAmountAndPointStartDateAndPointReason(
+            Long userNo,
+            PointType pointType,
+            Long pointAmount,
+            LocalDateTime pointStartDate,
+            String pointReason
+    );
+
+    List<UserPoint> findAllByUserNoOrderByPointStartDateAscPointIdAsc(Long userNo);
 }

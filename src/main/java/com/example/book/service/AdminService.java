@@ -12,13 +12,17 @@ public interface AdminService {
 
     List<PendingPointDTO> listPendings();
 
+    /** 모든 사용자에 대해 해당 월 스캔 */
     int scanMonthlyAccruals(int year, int month);
 
+    /** 해당 월의 대기건(승인/반려 전) 삭제 */
     int clearPendingFor(int year, int month);
 
+    /** 단건 승인/반려 */
     void approvePending(Long id);
     void rejectPending(Long id);
 
+    /** 일괄 승인/반려 */
     int approvePendingBulk(List<Long> ids);
     int rejectPendingBulk(List<Long> ids);
 
@@ -37,4 +41,16 @@ public interface AdminService {
     default void saveMonthlyCap(Integer monthlyCap) {
         saveCap(monthlyCap);
     }
+
+    /** (승인된) 대기건을 실제 포인트에 반영 */
+    void commitApproved(int year, int month);
+
+    /** 스캔 목록 페이징 조회 */
+    org.springframework.data.domain.Page<PendingPointDTO> findPendingsPage(
+            String yearMonth,
+            org.springframework.data.domain.Pageable pageable
+    );
+
+    /** (보조) 해당 월 대기건 비우기 – 컨트롤러의 “비우기” 버튼용 */
+    void clearPendings(int year, int month);
 }

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "userPoint")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -43,16 +44,23 @@ public class UserPoint extends BaseEntity {
     // 거래 직후 잔액(선택)
     private Long runningBalance;
 
+    // 화면 누계 계산 시 PointServiceImpl 에서 사용
+    public void setRunningBalance(Long runningBalance) {
+        this.runningBalance = runningBalance;
+    }
+
+    // 승인/반려 표시 바꿀 때 사용
     public void setPointReason(String pointReason) {
         this.pointReason = pointReason;
     }
 
-    // (선택) 승인/반려용 헬퍼를 쓰고 싶다면:
+    // (선택) 승인/반려 헬퍼
     public void markApprovedFromPending() {
         if (this.pointReason != null && this.pointReason.startsWith("PENDING|")) {
             this.pointReason = "APPROVED|" + this.pointReason.substring("PENDING|".length());
         }
     }
+
     public void markRejectedFromPending() {
         if (this.pointReason != null && this.pointReason.startsWith("PENDING|")) {
             this.pointReason = "REJECTED|" + this.pointReason.substring("PENDING|".length());
