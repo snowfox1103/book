@@ -39,7 +39,7 @@
 
                         <!-- 남은 금액 (마이너스면 빨간색) -->
                         <div class="stat-card accent-green"
-                             th:classappend="${(sumBudgets - sumUses) < 0} ? ' is-negative'">
+                             th:classappend="${(sumBudgets - sumUses) < 0} ? ' is-negative' : null">
                             <div class="bar"></div>
                             <div class="label">남은 금액</div>
                             <div class="value" th:text="${T(java.lang.String).format('%,d', sumBudgets - sumUses)} + ' 원'"></div>
@@ -59,8 +59,11 @@
                         </tr>
                         </thead>
                             <tbody>
-                            <tr th:each="b: ${response.dtoList}"
-                                th:if="${b.budYear == #temporals.year(#temporals.createNow()) and b.budMonth == #temporals.month(#temporals.createNow())}"> <!--응답 페이지 안의 budgetDTO, 유저 정보 뽑기-->
+                            <tr th:if="${!hasData}">
+                                <td colspan="5" class="text-center text-muted">데이터가 없습니다.</td>
+                            </tr>
+                            <tr th:each="b: ${rows}"
+                                th:if="${hasData}"> <!--응답 페이지 안의 budgetDTO, 유저 정보 뽑기-->
                                 <td>
                                     <span th:each="cat : ${categories}"
                                           th:if="${cat.catId} == ${b.budCategory}">
@@ -84,9 +87,8 @@
                             <button class="btn btn-primary goToReg" type="button">등록하기</button>
                             <button class="btn btn-secondary toAllList" type="button">전체 예산 보기</button>
                         </div>
-
                         <!-- 오른쪽 페이지네이션 -->
-                        <ul class="pagination mb-0">
+                        <ul class="pagination mb-0" th:if="${response.end > 0}">
                             <li class="page-item" th:if="${response.prev}">
                                 <a class="page-link" th:data-num="${response.start -1}">Previous</a>
                             </li>
@@ -106,31 +108,47 @@
     </div><!-- end row-->
 </div>
     <script layout:fragment="script" th:inline="javascript">
-        console.log("script......")
+        console.log("script......");
 
-        document.querySelector(".pagination").addEventListener("click", function (e) {
-            e.preventDefault()
-            e.stopPropagation()
-            const target = e.target
-            if(target.tagName !== 'A') {
-                return
-            }
-            const num = target.getAttribute("data-num")
-            const formObj = document.querySelector("#currentListForm")
-            formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
-            formObj.submit();
-        },false)
+        // 1) 버튼 핸들러를 먼저 등록
+        const regBtn = document.querySelector(".goToReg");
+        if (regBtn) {
+            regBtn.addEventListener("click", function (e) {
+                e.preventDefault(); e.stopPropagation();
+                self.location = '/budget/budgetRegister';
+            }, false);
+        }
 
-        document.querySelector(".goToReg").addEventListener("click",function (e){
-            e.preventDefault();
-            e.stopPropagation();
-            self.location = '/budget/budgetRegister';
-        },false)
+        const allBtn = document.querySelector(".toAllList");
+        if (allBtn) {
+            allBtn.addEventListener("click", function (e) {
+                e.preventDefault(); e.stopPropagation();
+                self.location = '/budget/budgetList';
+            }, false);
+        }
 
-        document.querySelector(".toAllList").addEventListener("click",function (e){
-            e.preventDefault();
-            e.stopPropagation();
-            self.location = '/budget/budgetList';
-        })
+        // 2) 페이지네이션: 요소가 있을 때만 바인딩 (여러 개 대비)
+        const pagers = document.querySelectorAll(".pagination");
+        if (pagers.length > 0) {
+            pagers.forEach(pager => {
+                pager.addEventListener("click", function (e) {
+                    const a = e.target.closest("a");
+                    if (!a) return; // 링크가 아니면 무시
+                    e.preventDefault(); e.stopPropagation();
+
+                    const num = a.getAttribute("data-num");
+                    if (!num) return;
+
+                    const formObj = document.querySelector("#currentListForm");
+                    if (!formObj) return;
+
+                    // 기존 page 히든 제거 후 재설정(중복 방지)
+                    formObj.querySelectorAll("input[name='page']").forEach(el => el.remove());
+                    formObj.insertAdjacentHTML("beforeend",
+                        `<input type="hidden" name="page" value="${num}">`);
+                    formObj.submit();
+                }, false);
+            });
+        }
     </script>
 </html>

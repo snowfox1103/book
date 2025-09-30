@@ -136,7 +136,11 @@
         </div>
         <div class="mb-3">
           <label class="form-label">결제날 (Day)</label>
-          <input type="number" class="form-control" name="subPayDate" id="subPayDate" min="1" max="31" required>
+          <select class="form-select" name="subPayDate" id="subPayDate" required>
+            <option value="" selected disabled>날짜 선택</option>
+            <option th:each="i : ${#numbers.sequence(1,25)}"
+                    th:value="${i}" th:text="${i}"></option>
+          </select>
         </div>
         <div class="mb-3">
           <label class="form-label">결제 주기</label>
@@ -194,7 +198,11 @@
         </div>
         <div class="mb-3">
           <label class="form-label">결제날 (Day)</label>
-          <input type="number" class="form-control" id="editSubPayDate" min="1" max="31" required>
+          <select class="form-select" name="subPayDate" id="editSubPayDate" required>
+            <option value="" selected disabled>날짜 선택</option>
+            <option th:each="i : ${#numbers.sequence(1,25)}"
+                    th:value="${i}" th:text="${i}"></option>
+          </select>
         </div>
         <div class="mb-3">
           <label class="form-label">결제 주기</label>

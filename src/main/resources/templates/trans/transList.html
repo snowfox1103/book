@@ -130,7 +130,7 @@
 <!--                        <tbody th:with="link = ${pageRequestDTO.getLink()}">-->
                         <tbody>
                         <tr th:if="${#lists.isEmpty(responseDTO.dtoList)}">
-                            <td colspan="5" class="text-center text-muted">검색 결과가 없습니다.</td>
+                            <td colspan="5" class="text-center text-muted">데이터가 없습니다.</td>
                         </tr>
                         <tr th:each="dto:${responseDTO.dtoList}" th:if="${dto.userNo == users}">
                             <td>[[${#temporals.format(dto.transDate, 'yyyy-MM-dd')}]]</td>
@@ -177,32 +177,72 @@
         </div><!-- end col-->
     </div><!-- end row-->
 </div>
-</div>
 <script layout:fragment="script" th:inline="javascript">
-    console.log("script......")
+    console.log("script......");
 
-    document.querySelector(".pagination").addEventListener("click", function (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        const target = e.target
-        if(target.tagName !== 'A') {
-            return
-        }
-        const num = target.getAttribute("data-num")
-        const formObj = document.querySelector("#transForm")
-        formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
-        formObj.submit();
-    },false)
+    const form = document.querySelector("#transForm");
 
-    document.querySelector(".clearBtn").addEventListener("click",function (e){
+    // 1) 페이지네이션: 요소가 있을 때만 바인딩
+    const pager = document.querySelector(".pagination");
+    if (pager) {
+        pager.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const a = e.target.closest("a");
+            if (!a) return;
+
+            const num = a.getAttribute("data-num");
+
+            // 기존 page 히든 제거 후 재삽입(중복 방지)
+            form.querySelectorAll("input[name='page']").forEach(el => el.remove());
+            form.insertAdjacentHTML("beforeend", `<input type="hidden" name="page" value="${num}">`);
+            form.submit();
+        }, false);
+    }
+
+    // 2) 초기화 버튼: 모든 검색 조건을 기본값으로 돌리고 page 제거 → 제출
+    document.querySelector(".clearBtn").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
-        self.location = '/trans/transList';
-    })
-    document.querySelector(".trans-register-btn").addEventListener("click",function (e){
+
+        // 셀렉트들
+        const titleMemo = form.querySelector("#titleMemo");   // type
+        const cats      = form.querySelector("#cats");        // categories
+        const io        = form.querySelector("#IOIO");        // io
+
+        // 인풋들
+        const keyword   = form.querySelector("#keyword");
+        const minAmount = form.querySelector("#minAmount");
+        const maxAmount = form.querySelector("#maxAmount");
+        const startDay  = form.querySelector("#startDay");
+        const endDay    = form.querySelector("#endDay");
+
+        // 값 초기화
+        if (titleMemo) titleMemo.value = "tm"; // "전체" 옵션을 서버에서 tm으로 처리 중
+        if (cats)      cats.value = "";
+        if (io)        io.value = "";          // 전체
+
+        if (keyword)   keyword.value = "";
+        if (minAmount) minAmount.value = "";
+        if (maxAmount) maxAmount.value = "";
+        if (startDay)  startDay.value = "";
+        if (endDay)    endDay.value = "";
+
+        // page 히든 제거
+        form.querySelectorAll("input[name='page']").forEach(el => el.remove());
+
+        // 필요 시 size 기본값 조정 (원하면 주석 해제)
+        // const size = form.querySelector("input[name='size']");
+        // if (size) size.value = "10";
+
+        form.submit();
+    });
+
+    // 3) 등록하기 이동
+    document.querySelector(".trans-register-btn").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
-        self.location = '/trans/transRegister'
-    })
+        self.location = '/trans/transRegister';
+    });
 </script>
 </html>
