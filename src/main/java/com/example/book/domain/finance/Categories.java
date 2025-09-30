@@ -22,7 +22,7 @@ public class Categories extends BaseEntity{
     @JoinColumn(name = "userNo")
     private Users users;
 
-    @Column(name = "catName")
+    @Column(name = "catName", length = 20)
     private String catName;
 
     @Column(name = "isSystemDefault")

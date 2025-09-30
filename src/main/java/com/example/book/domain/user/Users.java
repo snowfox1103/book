@@ -22,16 +22,16 @@ public class Users extends BaseEntity {
     @Column(name = "userNo")
     private Long userNo;
 
-    @Column(name = "realName")
+    @Column(name = "realName", length = 20, nullable = false)
     private String realName;
 
-    @Column(name = "userId")
+    @Column(name = "userId", length = 20, nullable = false, unique = true)
     private String userId;
 
-    @Column(name = "password")
+    @Column(name = "password", length = 255, nullable = false)
     private String password;
 
-    @Column(name = "email")
+    @Column(name = "email", length = 100, nullable = false, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)

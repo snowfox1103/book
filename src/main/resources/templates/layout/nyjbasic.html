@@ -14,22 +14,23 @@
   <link rel="stylesheet" href="/css/header.css"/>
 </head>
 <body>
-<div class="d-flex" id="wrapper" style="background-color: #f8f9fa">
-  <div id="page-content-wrapper" >
-    <div th:replace="~{fragments/common :: header(active='board')}"></div>
-    <!-- Top navigation-->
-    <!-- Page content-->
-    <div class="container" layout:fragment="content">
-      <h1 class="mt-4">Simple Sidebar</h1>
+  <div class="d-flex" id="wrapper">
+    <div id="page-content-wrapper" style="background-color: #f8f9fa;">
+      <div th:replace="~{fragments/nyjcommon :: header(active='board')}"></div>
+      <!-- Top navigation-->
+      <!-- Page content-->
+      <div class="container" layout:fragment="content">
+        <h1 class="mt-4">Simple Sidebar</h1>
+      </div>
     </div>
   </div>
-</div>
-<!-- Bootstrap core JS-->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Core theme JS-->
-<script th:src="@{/js/scripts.js}"></script>
-<th:block layout:fragment="script">
+  <div th:replace="~{fragments/common :: alert}"></div>
+  <!-- Bootstrap core JS-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Core theme JS-->
+  <script th:src="@{/js/scripts.js}"></script>
+  <th:block layout:fragment="script">
 
-</th:block>
+  </th:block>
 </body>
 </html>

@@ -99,6 +99,9 @@
                         </tr>
                         </thead>
                         <tbody>
+                        <tr th:if="${#lists.isEmpty(bList.dtoList)}">
+                            <td colspan="7" class="text-center text-muted">검색 결과가 없습니다.</td>
+                        </tr>
                             <tr th:each="b:${bList.dtoList}"  > <!--응답 페이지 안의 예산 dto 리스트-->
                                 <th scope="row">
                                     <a th:href="|@{/budget/budgetRead(bno =${b.budgetId})}&${link}|"> [[${b.budgetId}]] </a>
@@ -123,11 +126,11 @@
                     <!-- ------------------------------------------------------------------- 목록 페이지 처리-->
                     <div class="d-flex justify-content-between align-items-center">
                         <button class="btn btn-primary toCurrentList" type="button">돌아가기</button>
-                        <ul class="pagination mb-0">
+                        <ul class="pagination mb-0" th:if="${bList.end > 0}">
                             <li class="page-item" th:if="${bList.prev}">
                                 <a class="page-link" th:data-num="${bList.start -1}">Previous</a>
                             </li>
-                            <th:block th:each="i: ${#numbers.sequence(bList.start, bList.end)}">
+                            <th:block th:if="${bList.start > 0}" th:each="i: ${#numbers.sequence(bList.start, bList.end)}">
                                 <li th:class="${bList.page == i}?'page-item active':'page-item'">
                                     <a class="page-link" th:data-num="${i}">[[${i}]]</a>
                                 </li>
