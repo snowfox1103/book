@@ -135,7 +135,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public List<YearlyTransactionDTO> getYearlyBudgetStatistics(Long userNo, int year) {
         List<Budgets> budgets = statisticsRepository.findBudgetsByYear(userNo, year);
-        List<Transactions> transactions = statisticsRepository.findTransactionsByYear(userNo, year);
+        // 트랜잭션 조회는 불필요
+        // List<Transactions> transactions = statisticsRepository.findTransactionsByYear(userNo, year);
 
         // 1. 월별 DTO 초기화 (1~12월)
         Map<Integer, YearlyTransactionDTO> monthMap = new HashMap<>();
@@ -149,33 +150,26 @@ public class StatisticsServiceImpl implements StatisticsService {
                     .build());
         }
 
-        // 2. 월별 예산 합계 및 예산 카테고리 매핑
-        Map<Integer, List<Long>> monthBudgetCategories = new HashMap<>(); // 월별 예산 카테고리
+        // 2. 월별 예산 금액 및 사용금액(budCurrent) 누적
         budgets.forEach(b -> {
-            // 월별 예산 금액 누적
-            YearlyTransactionDTO dto = monthMap.get(b.getBudMonth());
-            dto.setBudgetAmount(dto.getBudgetAmount() + b.getBudAmount());
-            monthMap.put(b.getBudMonth(), dto);
+            int m = b.getBudMonth();
+            YearlyTransactionDTO dto = monthMap.get(m);
 
-            // 월별 예산 카테고리 저장
-            monthBudgetCategories.computeIfAbsent(b.getBudMonth(), k -> new ArrayList<>())
-                    .add(b.getBudCategory());
+            long amount = b.getBudAmount() == null ? 0L : b.getBudAmount();
+            long used   = b.getBudCurrent() == null ? 0L : b.getBudCurrent();
+
+            dto.setBudgetAmount(dto.getBudgetAmount() + amount);
+            dto.setBudgetUsed(dto.getBudgetUsed() + used);
+
+            monthMap.put(m, dto);
         });
 
-        // 3. 트랜잭션 중 예산 카테고리만 사용 금액 집계
-        transactions.stream()
-                .filter(t -> t.getTransInOut().name().equals("OUT"))
-                .forEach(t -> {
-                    int m = t.getTransDate().getMonthValue();
-                    List<Long> budgetCats = monthBudgetCategories.getOrDefault(m, List.of());
-                    if (budgetCats.contains(t.getTransCategory())) {
-                        YearlyTransactionDTO dto = monthMap.get(m);
-                        dto.setBudgetUsed(dto.getBudgetUsed() + t.getTransAmount());
-                        monthMap.put(m, dto);
-                    }
-                });
+        // 3. (삭제) 트랜잭션 집계 불필요 - budCurrent 사용
 
-        return new ArrayList<>(monthMap.values());
+        // 4. 1~12월 순서로 정렬해 반환 (HashMap 값 순서 보장 X)
+        return java.util.stream.IntStream.rangeClosed(1, 12)
+                .mapToObj(monthMap::get)
+                .toList();
     }
 
     @Override
