@@ -1,38 +1,145 @@
-<!doctype html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!-- src/main/resources/templates/fragments/nyjcommon.html -->
+<div th:fragment="header(active)"
+     xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head th:fragment="head(title)">
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <style>
+        .brand-logo {
+            height: 36px;
+            width: auto
+        }
 
-    <title th:text="${title} ?: '가계북'">가계북</title>
+        /* ===== 상단 메뉴바 ===== */
+        .mega-nav {
+            position: relative;
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            user-select: none
+        }
 
-    <!-- Bootstrap 5 -->
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet"/>
-</head>
+        .mega-inner {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 .75rem
+        }
 
-<body>
-<th:block th:fragment="header(active)">
-    <!-- 상단 로고/유저 바 -->
+        .main-menu {
+            display: flex;
+            gap: 2.5rem;
+            margin: 0;
+            padding: .75rem 0;
+            list-style: none;
+            align-items: center
+        }
+
+        .main-menu > li > a {
+            display: block;
+            padding: .25rem 0;
+            text-decoration: none;
+            color: #212529;
+            font-weight: 600
+        }
+
+        .main-menu > li.active > a, .main-menu > li > a:hover {
+            color: #0d6efd
+        }
+
+        /* ===== 한 박스(풀폭, 위에 딱 붙음) ===== */
+        .matrix-panel {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 60;
+            border-top: 1px solid #e9ecef;
+            background: transparent;
+            display: none;
+            padding: 0;
+        }
+
+        .matrix-panel.show {
+            display: block
+        }
+
+        /* 박스는 네비게이션 전체 폭 100% 사용, 좌우 여백 0 */
+        .matrix-inner {
+            position: relative;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-top: none; /* 윗줄은 네비 라인과 연결 */
+            border-radius: 0 0 .65rem .65rem;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .06);
+            /* 높이는 JS가 콘텐츠 보고 세팅 */
+        }
+
+        /* 각 파트 칼럼: 절대배치로 위 탭 중앙과 일자 맞춤 */
+        .matrix-col{
+            position:absolute;
+            top:12px;
+            left:0;
+            width:auto;                 /* JS가 탭폭으로 설정 */
+            transform:translateX(-50%); /* 탭 중앙 기준 */
+            text-align: center;
+        }
+
+        /* 세로 일렬 + 색상 규칙 */
+        .matrix-col a{
+            display:block;
+            line-height:1.5;
+            min-height:32px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            text-decoration:none!important;
+            color:#212529!important;
+            border-radius:.4rem;
+            text-align: center;
+            padding: 6px 0;          /* 기존 8px 14px → 위아래만 */
+            margin: 0 auto;          /* 안전하게 중앙 */
+            width: 100%;             /* 배경/호버가 칼럼 폭 그대로 나오게 */
+        }
+
+        .matrix-col a:hover {
+            background: #f8f9fa
+        }
+
+        .matrix-col a.admin-link {
+            color: #dc3545 !important;
+            font-weight: 600
+        }
+
+        /* 관리자만 빨강 */
+
+        @media (max-width: 768px) {
+            .main-menu {
+                gap: 1.25rem;
+                overflow-x: auto
+            }
+
+            .matrix-col {
+                width: 200px
+            }
+        }
+    </style>
+
+    <!-- 상단 로고/계정 -->
     <nav class="navbar bg-white border-bottom">
         <div class="container d-flex align-items-center justify-content-between">
             <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/mainPage/mainpage}">
                 <img th:src="@{/images/logo.png}" alt="가계북" class="brand-logo"/>
             </a>
-
             <div class="d-flex align-items-center gap-3">
         <span class="text-muted">
-          <b sec:authorize="isAuthenticated()"
-             th:text="${#authentication.principal.realName}">로그인한이름</b>
+          <b sec:authorize="isAuthenticated()" th:text="${#authentication.principal.realName}">사용자</b>
           <b sec:authorize="!isAuthenticated()">게스트</b> 님
         </span>
-
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/mypage/myPage}"
+                   sec:authorize="isAuthenticated()">마이페이지</a>
                 <a class="btn btn-primary btn-sm" th:href="@{/users/login}" sec:authorize="!isAuthenticated()">로그인</a>
-                <a class="btn btn-outline-secondary btn-sm" th:href="@{/mypage/myPage}" sec:authorize="isAuthenticated()">마이페이지</a>
                 <form th:action="@{/users/logout}" method="post" class="d-inline" sec:authorize="isAuthenticated()">
                     <button class="btn btn-outline-danger btn-sm" type="submit">로그아웃</button>
                 </form>
@@ -40,147 +147,150 @@
         </div>
     </nav>
 
-    <!-- 메인 네비게이션 (메가메뉴) -->
+    <!-- 상단 탭 + 공통 패널(한 개) -->
     <nav class="mega-nav">
-        <div class="mega-inner">
-            <ul class="main-menu">
-                <li><a href="#">게시판</a></li>
-                <li><a href="#">자산관리</a></li>
-                <li><a href="#">소비분석</a></li>
-                <li><a href="#">포인트/포인트샵</a></li>
-                <li sec:authorize="hasRole('ADMIN')"><a href="#">관리자</a></li>
+        <div class="mega-inner" id="megaInner">
+            <ul class="main-menu" id="mainMenu">
+                <li data-key="board" th:classappend="${active}=='board' ? 'active'"><a href="javascript:void(0)">게시판</a>
+                </li>
+                <li data-key="asset" th:classappend="${active}=='asset' ? 'active'"><a
+                        href="javascript:void(0)">자산관리</a></li>
+                <li data-key="analysis" th:classappend="${active}=='analysis' ? 'active'"><a href="javascript:void(0)">소비분석</a>
+                </li>
+                <li data-key="point" th:classappend="${active}=='point' ? 'active'"><a href="javascript:void(0)">포인트/포인트샵</a>
+                </li>
+                <li data-key="admin" sec:authorize="hasRole('ADMIN')" th:classappend="${active}=='admin' ? 'active'"><a
+                        href="javascript:void(0)">관리자</a></li>
             </ul>
+        </div>
 
-            <!-- 메가 드롭다운: 동일 폭으로 중앙 정렬 -->
-            <div class="mega-dropdown">
-                <div class="mega-dropdown-inner">
-                    <div class="dropdown-col">
-                        <a th:href="@{/qna}">문의사항</a>
-                        <a th:href="@{/notice}">공지사항</a>
-                    </div>
-
-                    <div class="dropdown-col">
-                        <a th:href="@{/trans/transList}">입출금 내역</a>
-                        <a th:href="@{/budget/currentList}">예산 관리</a>
-                        <a th:href="@{/subscriptions/subMain}">정기 결제</a>
-                    </div>
-
-                    <div class="dropdown-col">
-                        <a th:href="@{/mainPage/statistics}">통계</a>
-                    </div>
-
-                    <div class="dropdown-col">
-                        <a th:href="@{/point}">포인트</a>
-                        <a th:href="@{/pointshop/pointShop}">포인트 샵</a>
-                    </div>
-
-                    <div class="dropdown-col" sec:authorize="hasRole('ADMIN')">
-                        <a class="text-danger fw-semibold" th:href="@{/admin}">관리자 페이지</a>
-                    </div>
+        <!-- ★ 패널은 .mega-nav 바로 아래(풀폭) -->
+        <div class="matrix-panel" id="matrixPanel">
+            <div class="matrix-inner" id="matrixInner">
+                <!-- 게시판(왼쪽 1열) -->
+                <div class="matrix-col" data-col="board">
+                    <a th:href="@{/qna}">문의사항</a>
+                    <a th:href="@{/notice}">공지사항</a>
+                </div>
+                <!-- 자산관리(2열) -->
+                <div class="matrix-col" data-col="asset">
+                    <a th:href="@{/trans/transList}">입출금 내역</a>
+                    <a th:href="@{/budget/currentList}">예산 관리</a>
+                    <a th:href="@{/subscriptions/subMain}">정기 결제</a>
+                </div>
+                <!-- 소비분석(3열) -->
+                <div class="matrix-col" data-col="analysis">
+                    <a th:href="@{/mainPage/statistics}">통계</a>
+                </div>
+                <!-- 포인트/포인트샵(4열) -->
+                <div class="matrix-col" data-col="point">
+                    <a th:href="@{/point}">포인트</a>
+                    <a th:href="@{/pointshop/pointShop}">포인트 샵</a>
+                </div>
+                <!-- 관리자(5열, 권한 있을 때만) -->
+                <div class="matrix-col" data-col="admin" sec:authorize="hasRole('ADMIN')">
+                    <a class="admin-link" th:href="@{/admin}">관리자 페이지</a>
                 </div>
             </div>
         </div>
     </nav>
-</th:block>
+    <script>
+        (() => {
+            const COL_W = 200;   // 모든 칼럼 동일 폭(원하면 190~220 내에서 조절)
+            const OFFSETS = {    // 칼럼별 미세 보정(px) — 필요 없으면 0
+                board:   0,       // 게시판
+                asset:   0,       // 자산관리
+                analysis: 0,       // 소비분석
+                point:    0,       // 포인트/포인트샵
+                admin:    0        // 관리자
+            };
 
-<!-- 0926 조덕진 :정기 결제 알림 전역으로 나오게 하기 알림이 나와도 되는 html </body>이전 아무곳에나 넣기-->
-<!--0928 조덕진 수정 : 예산 알림도 나오게 함-->
-<th:block th:fragment="alert">
-    <div id="toastArea" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+            const nav   = document.querySelector('.mega-nav');      // 풀폭 기준
+            const menu  = document.getElementById('mainMenu');      // 상단 탭 ul
+            const panel = document.getElementById('matrixPanel');   // 패널(한 개)
+            const inner = document.getElementById('matrixInner');   // 패널 컨테이너
+            const MIN_COL_W = 180;                                  // 최소 칼럼 폭
 
-    <th:block sec:authorize="isAuthenticated()">
-        <script>
-            document.addEventListener("DOMContentLoaded", async () => {
-                const toastArea = document.getElementById('toastArea');
-                const tMeta = document.querySelector('meta[name="_csrf"]')?.content;
-                const hMeta = document.querySelector('meta[name="_csrf_header"]')?.content;
-                const csrfHeaders = {};
-                if (tMeta && hMeta) csrfHeaders[hMeta] = tMeta;
+            let open=false, hideTimer=null;
 
-                // 오늘 날짜
-                const today = new Date().toISOString().slice(0, 10);
-                // 오늘 닫은 알림 읽기 (없으면 빈 배열)
-                const closedAlerts = JSON.parse(localStorage.getItem("closedAlerts") || "[]");
+            const BIAS_PX = 40;
+            // 탭과 칼럼을 안전하게 매칭(보이는 것들만)
+            function layoutMatrix(){
+                const colW = COL_W;  // ★ 모든 칼럼 폭 동일
+                const navRect   = nav.getBoundingClientRect();
+                const innerRect = inner.getBoundingClientRect();
 
-                // 공통 함수: 알림 UI 생성
-                const showToast = (title, body, id, markUrl) => {
-                    const el = document.createElement('div');
-                    el.className = 'toast align-items-center text-bg-warning border-0';
-                    el.setAttribute('role', 'alert');
-                    el.innerHTML = `
-                  <div class="toast-header">
-                    <strong class="me-auto">${title}</strong>
-                    <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast"></button>
-                  </div>
-                  <div class="toast-body">${body}</div>
-                `;
-                    toastArea.appendChild(el);
+                // 1) 현재 보이는 탭 수집
+                const tabs = [...menu.querySelectorAll('li[data-key]')].filter(li => li.offsetParent !== null)
+                    .map(li => {
+                        const r = li.getBoundingClientRect();
+                        return {
+                            key: li.dataset.key,                // board/asset/analysis/point/admin
+                            left: r.left,
+                            width: r.width,
+                            center: r.left + r.width/2
+                        };
+                    });
 
-                    const t = new bootstrap.Toast(el, { autohide: false });
+                // 2) 현재 보이는 칼럼 수집(해당 키의 칼럼만, display:none 제외)
+                const cols = [...inner.querySelectorAll('.matrix-col')].filter(col => {
+                    const vis = col.offsetParent !== null; // 관리자 미노출 등
+                    return vis;
+                });
 
-                    if (markUrl && id) {
-                        el.addEventListener('hidden.bs.toast', () => {
-                            // 서버에 마킹
-                            fetch(markUrl, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json', ...csrfHeaders },
-                                body: JSON.stringify([id]),
-                                credentials: 'same-origin'
-                            }).catch(console.error);
+                // 3) 탭 ↔ 칼럼 매칭: 키가 같은 쌍만 사용
+                const pairs = [];
+                tabs.forEach(t => {
+                    const col = inner.querySelector(`.matrix-col[data-col="${t.key}"]`);
+                    if (col && col.offsetParent !== null) pairs.push({t, col});
+                });
 
-                            // 오늘 닫은 알림 localStorage에 기록
-                            const arr = JSON.parse(localStorage.getItem("closedAlerts") || "[]");
-                            arr.push({id: id, date: today});
-                            localStorage.setItem("closedAlerts", JSON.stringify(arr));
-                        });
-                    }
+                // 4) 컨테이너는 풀폭
+                inner.style.width = navRect.width + 'px';
+                inner.style.left  = '0px';
 
-                    t.show();
-                };
+                // 5) 좌표/폭 적용
+                pairs.forEach(({t, col}) => {
+                    const colW = Math.max(MIN_COL_W, t.width);       // 최소 폭 보장
+                    let centerX = t.center - navRect.left + (OFFSETS[t.key] || 0); // ★ 칼럼별 보정
 
-                try {
-                    // 1️⃣ 예산 알림
-                    const res1 = await fetch('/budget/alerts', { credentials: 'same-origin' });
-                    if (res1.ok) {
-                        const alerts = await res1.json();
-                        alerts.forEach(a => {
-                            // 오늘 닫은 알림이면 skip
-                            if (closedAlerts.find(c => c.id === a.id && c.date === today)) return;
+                    // 좌우 경계 보정(반쪽은 남기기)
+                    const half = colW / 2;
+                    centerX = Math.max(half, Math.min(centerX, navRect.width - half));
 
-                            const body = `
-                          <b>${a.category}</b> 카테고리 예산의 ${a.rate}% 사용했습니다.<br>
-                          (${Number(a.current).toLocaleString()} / ${Number(a.amount).toLocaleString()}원)<br>
-                          (설정 비율: ${a.threshold}%)
-                        `;
-                            showToast("예산 알림", body, a.id, '/budget/alerts/mark');
-                        });
-                    }
+                    col.style.width = colW + 'px';
+                    col.style.left  = centerX + 'px';  // transform: translateX(-50%) 그대로 유지
+                    col.style.display = '';                          // 혹시를 대비
+                });
 
-                    // 2️⃣ 정기결제 알림
-                    const res2 = await fetch('/subscriptions/alerts', { credentials: 'same-origin' });
-                    if (res2.ok) {
-                        const alerts = await res2.json();
-                        alerts.forEach(a => {
-                            // 오늘 닫은 알림이면 skip
-                            if (closedAlerts.find(c => c.id === a.id && c.date === today)) return;
+                // 6) 박스 높이 자동(가장 긴 칼럼 기준)
+                let maxBottom = 0;
+                pairs.forEach(({col}) => {
+                    const bottom = col.offsetTop + col.offsetHeight + 12;
+                    if (bottom > maxBottom) maxBottom = bottom;
+                });
+                inner.style.height = (maxBottom || 60) + 'px';
+            }
 
-                            const body = `
-                          <b>${a.title}</b> 결제 예정입니다.<br>
-                          금액: ${Number(a.amount||0).toLocaleString()}원<br>
-                          결제일: ${a.nextPayDate}
-                        `;
-                            showToast("정기결제 알림", body, a.id, '/subscriptions/alerts/mark');
-                        });
-                    }
-                } catch (err) {
-                    console.error(err);
-                }
+            function show(){ if(!open){ panel.classList.add('show'); open=true; } layoutMatrix(); }
+            function hide(){ panel.classList.remove('show'); open=false; }
+
+            // 어디에 올려도 한 박스 표시
+            menu.addEventListener('mouseover', e => { if (e.target.closest('li[data-key]')) show(); });
+            menu.addEventListener('click', e => {
+                if (!e.target.closest('li[data-key]')) return;
+                open ? hide() : show();
             });
-        </script>
-    </th:block>
-</th:block>
 
-<!-- Bootstrap JS (dropdown 등 동작) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+            // 바깥 닫기/리사이즈/ESC
+            nav.addEventListener('mouseleave', () => { hideTimer = setTimeout(hide, 120); });
+            nav.addEventListener('mouseenter', () => { if (hideTimer){ clearTimeout(hideTimer); hideTimer=null; } });
+            window.addEventListener('resize', () => { if (open) layoutMatrix(); });
+            window.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+            document.addEventListener('click', e => { if (!e.target.closest('.mega-nav')) hide(); });
+        })();
+    </script>
+
+
+
+</div>
