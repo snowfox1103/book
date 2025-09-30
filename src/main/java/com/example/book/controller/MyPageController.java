@@ -106,10 +106,13 @@ public class MyPageController {
     cartRepository.deleteByUsers_UserNo(userNo);
     log.info("cart delete ..........");
     subscriptionsRepository.deleteByUsers_UserNo(userNo);
+    subscriptionsRepository.flush();
     log.info("sub delete ..........");
     categoriesRepository.deleteByUsers_UserNo(userNo);
+    categoriesRepository.flush();
     log.info("cate delete ..........");
     qnaRepository.deleteAllByUserNo(userNo);
+    qnaRepository.flush();
     log.info("qna delete ..........");
 //    noticeRepository.deleteByUsers_UserNo(userNo);
     // 다른 연관도 있으면 같은 방식으로

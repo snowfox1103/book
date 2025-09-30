@@ -80,6 +80,11 @@ public class CustomSecurityConfig {
                         // ✅ 관리자 포인트 화면/액션은 ADMIN만 0929 석준영
                         .requestMatchers("/admin/point/**", "/admin/points/**").hasRole("ADMIN")
                         // 2.4 그 외는 인증
+                        // 공지: 읽기 허용, 쓰기/수정/삭제는 ADMIN
+                        .requestMatchers(HttpMethod.GET, "/notice/**").permitAll()
+                        .requestMatchers("/notice/write", "/notice/*/edit", "/notice/*/delete").hasRole("ADMIN")
+                        // 관리자 페이지
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
