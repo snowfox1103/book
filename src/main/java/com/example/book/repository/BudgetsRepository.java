@@ -26,7 +26,7 @@ public interface BudgetsRepository extends JpaRepository<Budgets,Long>, BudgetsS
     Long totalBudAmountByMonth(int year, int month, Long userNo);
     //해당 달 설정한 예산 총 합계
 
-    @Query("select coalesce(sum(b.budCurrent)) "+
+    @Query("select coalesce(sum(b.budCurrent),0) "+
             "from Budgets b "+
             "where b.userNo = :userNo "+
             "and b.budYear = :year "+

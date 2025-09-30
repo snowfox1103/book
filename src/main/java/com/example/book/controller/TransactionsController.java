@@ -44,8 +44,8 @@ public class TransactionsController {
         model.addAttribute("responseDTO",responseDTO);
         model.addAttribute("totalUseByThisMonth",UsesThisMonth);
         model.addAttribute("incomeThisMonth",incomeThisMonth);
-
         log.info("--------get list---------");
+        log.info(pageRequestDTO.getType());
     }
     @GetMapping("/transRegister")
     public void getTransRegister(@AuthenticationPrincipal UsersSecurityDTO users,Model model){

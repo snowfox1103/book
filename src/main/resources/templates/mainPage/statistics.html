@@ -12,21 +12,26 @@
 <div layout:fragment="content">
 
   <!-- 연도/월 선택 -->
-  <form method="get" th:action="@{/mainPage/statistics}">
-    <label for="year">연도:</label>
-    <select id="year" name="year">
-      <option th:each="y : ${#numbers.sequence(2020, currentYear)}"
-              th:value="${y}" th:text="${y}" th:selected="${y == year}"></option>
-    </select>
+  <form method="get" th:action="@{/mainPage/statistics}" class="stat-filter">
+    <div class="field">
+      <label for="year">연도</label>
+      <select id="year" name="year">
+        <option th:each="y : ${#numbers.sequence(2020, currentYear)}"
+                th:value="${y}" th:text="${y}" th:selected="${y == year}"></option>
+      </select>
+    </div>
 
-    <label for="month">월:</label>
-    <select id="month" name="month">
-      <option th:each="m : ${#numbers.sequence(1,12)}"
-              th:value="${m}" th:text="${m}" th:selected="${m == month}"></option>
-    </select>
+    <div class="field">
+      <label for="month">월</label>
+      <select id="month" name="month">
+        <option th:each="m : ${#numbers.sequence(1,12)}"
+                th:value="${m}" th:text="${m}" th:selected="${m == month}"></option>
+      </select>
+    </div>
 
-    <button type="submit">조회</button>
+    <button type="submit" class="btn-submit">조회</button>
   </form>
+
 
   <div class="grid-container">
     <!-- 1. 카테고리별 출금 (도넛) -->

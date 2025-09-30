@@ -20,7 +20,7 @@ public class TransactionsSearchImpl extends QuerydslRepositorySupport implements
     @Override
     public Page<Transactions> searchTrans(Pageable pageable){
         QTransactions qTransactions = QTransactions.transactions;
-        JPQLQuery<Transactions> query = from(qTransactions);        //select .. from transactions
+        JPQLQuery<Transactions> query = from(qTransactions);        //select  from transactions
         query.where(qTransactions.transTitle.contains("1"));        //where title like...
         this.getQuerydsl().applyPagination(pageable,query);
         List<Transactions> list = query.fetch();
@@ -28,7 +28,7 @@ public class TransactionsSearchImpl extends QuerydslRepositorySupport implements
         return null;
     }
     @Override
-    public Page<Transactions> searchAllTrans(Long userNo,String[] types, String keyword, Long category, Long minn, Long maxx, LocalDate startDay, LocalDate endDay, InOrOut io, Pageable pageable){
+    public Page<Transactions> searchAllTransaction(Long userNo,String[] types, String keyword, Long category, Long minn, Long maxx, LocalDate startDay, LocalDate endDay, InOrOut io, Pageable pageable){
         QTransactions qTransactions = QTransactions.transactions;
         JPQLQuery<Transactions> query = from(qTransactions);
         BooleanBuilder booleanBuilder = new BooleanBuilder();

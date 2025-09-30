@@ -2,6 +2,7 @@ package com.example.book.repository;
 
 import com.example.book.domain.finance.InOrOut;
 import com.example.book.domain.finance.Transactions;
+import com.example.book.repository.search.TransactionsSearch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,14 +13,11 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 
-public interface TransactionsRepository extends JpaRepository<Transactions, Long> {
+public interface TransactionsRepository extends JpaRepository<Transactions, Long>, TransactionsSearch {
 
     @Query("select COALESCE(SUM(t.transAmount),0)"+
             "from Transactions t "+
