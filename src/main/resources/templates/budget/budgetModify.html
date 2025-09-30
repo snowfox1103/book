@@ -90,13 +90,20 @@
 
     const formObj = document.querySelector("#f1")
 
-    document.querySelector(".clearBtn").addEventListener("click",function (e){
-        e.preventDefault()
-        e.stopPropagation()
-        formObj.action='/budget/budgetRemove'
-        formObj.method='post'
-        formObj.submit()
-    },false)
+    document.querySelector('.clearBtn').addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const ok = confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
+        if (!ok) return; // 취소 시 종료
+
+        // 중복 클릭 방지
+        this.disabled = true;
+
+        formObj.action = '/budget/budgetRemove';
+        formObj.method = 'post';
+        formObj.submit();
+    }, false);
 
 </script>
 </html>

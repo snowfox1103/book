@@ -129,6 +129,9 @@
                         </thead>
 <!--                        <tbody th:with="link = ${pageRequestDTO.getLink()}">-->
                         <tbody>
+                        <tr th:if="${#lists.isEmpty(responseDTO.dtoList)}">
+                            <td colspan="5" class="text-center text-muted">검색 결과가 없습니다.</td>
+                        </tr>
                         <tr th:each="dto:${responseDTO.dtoList}" th:if="${dto.userNo == users}">
                             <td>[[${#temporals.format(dto.transDate, 'yyyy-MM-dd')}]]</td>
                             <td>
@@ -152,7 +155,7 @@
 <!-- ------------------------------------------------------------------- 목록 페이지 처리 수정 필요-->
                     <div class="toall" style="display: flex; justify-content: space-between; height: 38px;">
                         <button class="btn btn-primary trans-register-btn" type="button">등록하기</button>
-                        <div class="float-end">
+                        <div class="float-end" th:if="${responseDTO.end > 0}">
 <!--                        등록하기 버튼-->
                             <ul class="pagination flex-wrap">
                                 <li class="page-item" th:if="${responseDTO.prev}">
