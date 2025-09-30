@@ -2,6 +2,7 @@ package com.example.book.config;
 
 import com.example.book.security.CustomUserDetailsService;
 import com.example.book.security.handler.Custom403Handler;
+import com.example.book.security.handler.CustomAuthenticationEntryPoint;
 import com.example.book.security.handler.CustomSocialLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -87,8 +88,8 @@ public class CustomSecurityConfig {
                             // 새 세션 강제 생성
                             request.getSession(true);
 
-                            // 리다이렉트
-                            response.sendRedirect("/users/login?logout");
+                            // 리다이렉트 > 인트로로 가게 하자 0930 조덕진
+                            response.sendRedirect("/mainPage/intro");
                         })
                         .permitAll()
                 )
@@ -109,7 +110,8 @@ public class CustomSecurityConfig {
                             .tokenValiditySeconds(60 * 60 * 24 * 30);
                 })
                 .exceptionHandling(ex -> ex
-                        .accessDeniedHandler(new Custom403Handler()) // 등록
+                    .authenticationEntryPoint(new CustomAuthenticationEntryPoint()) // 0930 조덕진 권한없을 시 인트로페이지로
+                    .accessDeniedHandler(new Custom403Handler()) // 등록
                 )
                 .oauth2Login(httpSecurityOauth2LoginConfigurer -> {
 //      httpSecurityOauth2LoginConfigurer.loginPage("/member/login");
