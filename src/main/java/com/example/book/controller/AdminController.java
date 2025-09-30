@@ -1,6 +1,7 @@
 package com.example.book.controller;
 
 import com.example.book.domain.point.PointType;
+import com.example.book.domain.point.RewardType;
 import com.example.book.service.AdminService;
 import com.example.book.dto.PointSettingsDTO;
 import com.example.book.dto.RuleDTO;
@@ -29,7 +30,7 @@ public class AdminController {
     @PostMapping("/rules")
     public String upsertRule(@RequestParam Integer threshold,
                              @RequestParam Integer reward,
-                             @RequestParam PointType rewardType) {
+                             @RequestParam RewardType rewardType) {
         adminService.addOrUpdateRule(new RuleDTO(threshold, reward, rewardType));
         return "redirect:/admin";
     }

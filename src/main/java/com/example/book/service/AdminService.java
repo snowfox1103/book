@@ -1,27 +1,40 @@
 package com.example.book.service;
 
+import com.example.book.dto.PendingPointDTO;
 import com.example.book.dto.PointSettingsDTO;
 import com.example.book.dto.RuleDTO;
-import com.example.book.dto.PendingPointDTO;
 
 import java.util.List;
 
 public interface AdminService {
-    // 기존
+
     PointSettingsDTO getSettings();
-    void addOrUpdateRule(RuleDTO dto);
-    void deleteRule(Integer threshold);
-    void saveExcludedCategories(String csv);
-    void saveMonthlyCap(Integer cap);
 
-    // 신규: 포인트 산출/승인
-    /** 특정 연/월에 대해 규칙을 적용해 "승인 대기" 항목을 생성한다. 반환값은 생성 건수 */
-    int scanMonthlyAccruals(int year, int month);
-
-    /** 승인 대기 목록 */
     List<PendingPointDTO> listPendings();
 
-    /** 승인/거절 처리 */
-    void approvePending(Long pendingId);
-    void rejectPending(Long pendingId);
+    int scanMonthlyAccruals(int year, int month);
+
+    int clearPendingFor(int year, int month);
+
+    void approvePending(Long id);
+    void rejectPending(Long id);
+
+    int approvePendingBulk(List<Long> ids);
+    int rejectPendingBulk(List<Long> ids);
+
+    /** 규칙 추가/수정 (threshold 기준 upsert) */
+    void addOrUpdateRule(RuleDTO dto);
+
+    /** 규칙 삭제 */
+    void deleteRule(Integer threshold);
+
+    /** 제외 카테고리 CSV 저장 (예: "관리비, 월세") */
+    void saveExcludedCategories(String csv);
+
+    /** 월 상한 저장 */
+    void saveCap(Integer monthlyCap);
+
+    default void saveMonthlyCap(Integer monthlyCap) {
+        saveCap(monthlyCap);
+    }
 }

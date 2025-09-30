@@ -41,15 +41,15 @@ public class CustomSecurityConfig {
     private final DataSource dataSource;
     private final CustomUserDetailsService userDetailsService;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 //    @Bean
-//    public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
-//        return org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder();
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
 //    }
+
+    @Bean
+    public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
+        return org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 
     //로그인 안되는 오류로 추가 0928 석준영
     @Bean
@@ -76,6 +76,8 @@ public class CustomSecurityConfig {
                                 "/users/searchAndResend").permitAll()
                         // 2.3 공개 API (resend/id/pw)
                         .requestMatchers("/users/resend", "/users/idSearch", "/users/pwSearch").permitAll()
+                        // ✅ 관리자 포인트 화면/액션은 ADMIN만 0929 석준영
+                        .requestMatchers("/admin/point/**", "/admin/points/**").hasRole("ADMIN")
                         // 2.4 그 외는 인증
                         .anyRequest().authenticated()
                 )

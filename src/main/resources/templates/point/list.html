@@ -1,6 +1,5 @@
 <!doctype html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <title>포인트</title>
@@ -9,13 +8,12 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <style>
-        .toolbar { gap:.5rem }
-        .sort-link{ text-decoration:none }
-        .sort-arrow{ font-size:.85em; margin-left:.25rem }
-        .delta-pos { color:#198754; font-weight:600; }
-        .delta-neg { color:#dc3545; font-weight:600; }
-        .table-empty { padding:3rem 0; color:#6c757d; }
-        .num { text-align:end; font-variant-numeric: tabular-nums; }
+        .toolbar{gap:.5rem}
+        .sort-link{text-decoration:none}
+        .sort-arrow{font-size:.85em;margin-left:.25rem}
+        .table-empty{padding:3rem 0;color:#6c757d}
+        .num{text-align:end;font-variant-numeric:tabular-nums}
+        .summary-num{letter-spacing:.3px}
     </style>
 </head>
 <body class="bg-light">
@@ -24,50 +22,112 @@
 
 <div class="container py-4">
 
-    <!-- 상단 헤더: 제목 + 페이지 크기 -->
+    <!-- 상단 카드 -->
     <div class="card shadow-sm mb-3">
         <div class="card-body d-flex flex-wrap align-items-center toolbar">
             <h5 class="m-0 me-auto fw-semibold">포인트</h5>
+            <!-- (이전 위치의 페이지 사이즈 폼은 삭제됨) -->
+        </div>
 
-            <form th:action="@{/point}" method="get" class="d-inline-flex align-items-center gap-2">
-                <input type="hidden" name="sort" th:value="${pointList.sort}"/>
-                <input type="hidden" name="dir"  th:value="${pointList.dir}"/>
-                <select name="size" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
-                    <option th:value="10"  th:selected="${page.size==10}">10</option>
-                    <option th:value="20"  th:selected="${page.size==20}">20</option>
-                    <option th:value="50"  th:selected="${page.size==50}">50</option>
-                    <option th:value="100" th:selected="${page.size==100}">100</option>
-                </select>
-                <noscript><button class="btn btn-sm btn-outline-secondary">적용</button></noscript>
+        <!-- 월 선택 / 전체기간 -->
+        <div>
+            <form class="d-flex align-items-center gap-2 mb-2" method="get" th:action="@{/point}">
+                <input type="month" class="form-control form-control-sm" name="ym"
+                       style="max-width:160px" th:value="${ym}">
+                <button class="btn btn-sm btn-primary" type="submit">조회</button>
+                <a class="btn btn-sm btn-outline-secondary" th:href="@{/point}">전체기간</a>
             </form>
         </div>
 
-        <!-- 정렬 버튼 (라벨 제거) -->
-        <div class="card-footer bg-white border-top-0 pt-0">
-            <div class="d-flex flex-wrap align-items-center gap-2">
-                <a class="btn btn-sm btn-outline-secondary"
-                   th:classappend="${pointList.sort}=='date' ? ' active' : ''"
-                   th:href="@{/point(sort='date', dir=${pointList.dir}, page=${page.number}, size=${page.size})}">
-                    날짜
-                </a>
-                <a class="btn btn-sm btn-outline-secondary"
-                   th:classappend="${pointList.sort}=='delta' ? ' active' : ''"
-                   th:href="@{/point(sort='delta', dir=${pointList.dir}, page=${page.number}, size=${page.size})}">
-                    변동액
-                </a>
-                <a class="btn btn-sm btn-outline-secondary"
-                   th:classappend="${pointList.sort}=='type' ? ' active' : ''"
-                   th:href="@{/point(sort='type', dir=${pointList.dir}, page=${page.number}, size=${page.size})}">
-                    구분
-                </a>
+        <!-- 요약 카드 -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
 
-                <!-- 오름/내림 토글 -->
-                <a class="btn btn-sm btn-outline-secondary ms-auto"
-                   th:href="@{/point(sort=${pointList.sort},
-                  dir=${#strings.equalsIgnoreCase(pointList.dir,'asc') ? 'desc' : 'asc'},
-                  page=${page.number}, size=${page.size})}">
-                    <span th:text="${#strings.equalsIgnoreCase(pointList.dir,'asc') ? '오름차순(▲)' : '내림차순(▼)'}">내림차순(▼)</span>
-                </a>
+                    <!-- 왼쪽: 현재 포인트 + 월말 잔액(한 줄) -->
+                    <div class="me-md-auto">
+                        <div class="fw-bold small text-muted mb-1">현재 포인트 (전체)</div>
+                        <div class="h3 mb-1 summary-num">
+                            <span th:text="${#numbers.formatInteger((summary != null ? summary.currentAll : 0), 3, 'COMMA')}"></span>
+                        </div>
+                        <div class="text-muted small text-nowrap d-inline-flex align-items-baseline gap-1" th:if="${ym}">
+                            <span th:text="${summary.periodLabel}">2025-07</span>
+                            <span>말일 잔액:</span>
+                            <span th:text="${#numbers.formatInteger((summary != null ? summary.balanceAtPeriodEnd : 0), 3, 'COMMA')}"></span>
+                        </div>
+                    </div>
+
+                    <!-- 오른쪽: 적립 / 사용 / 증감 -->
+                    <div class="ms-md-3 w-100 w-md-auto mt-3 mt-md-0 text-md-end">
+                        <div class="small text-muted mb-1">
+                            <span th:text="${summary != null ? summary.periodLabel : '전체기간'}"></span>
+                        </div>
+
+                        <div class="d-inline-block me-4">
+                            <div class="small text-muted">적립 포인트</div>
+                            <span th:text="${#numbers.formatInteger((summary != null ? summary.earnedPeriod : 0), 3, 'COMMA')}"></span>
+                        </div>
+
+                        <div class="d-inline-block me-4">
+                            <div class="small text-muted">사용 포인트</div>
+                            <span th:text="${#numbers.formatInteger((summary != null ? summary.usedPeriod : 0), 3, 'COMMA')}"></span>
+                        </div>
+
+                        <div class="d-inline-block">
+                            <div class="small text-muted">증감 포인트</div>
+                            <div class="h5 mb-0 summary-num"
+                                 th:classappend="${(summary.earnedPeriod - summary.usedPeriod) >= 0} ? ' text-success' : ' text-danger'"
+                                 th:text="${(summary.earnedPeriod - summary.usedPeriod) >= 0 ? '+' : ''} + ${#numbers.formatInteger(summary.earnedPeriod - summary.usedPeriod, 3, 'COMMA')}">+0
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 정렬 & 정렬방향 & 페이지 사이즈(오른쪽) -->
+        <div class="card-footer bg-white border-top-0 pt-0">
+            <div class="d-flex flex-wrap align-items-center w-100 gap-2">
+                <!-- 좌측: 정렬 키 -->
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${pointList.sort}=='date' ? ' active' : ''"
+                       th:href="@{/point(sort='date', dir=${pointList.dir}, page=${page.number}, size=${page.size}, ym=${ym})}">날짜</a>
+
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${pointList.sort}=='delta' ? ' active' : ''"
+                       th:href="@{/point(sort='delta', dir=${pointList.dir}, page=${page.number}, size=${page.size}, ym=${ym})}">변동액</a>
+
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${pointList.sort}=='type' ? ' active' : ''"
+                       th:href="@{/point(sort='type', dir=${pointList.dir}, page=${page.number}, size=${page.size}, ym=${ym})}">구분</a>
+                </div>
+
+                <!-- 우측: 정렬방향 토글 + 페이지 사이즈 -->
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:href="@{/point(sort=${pointList.sort},
+                                dir=${#strings.equalsIgnoreCase(pointList.dir,'asc') ? 'desc' : 'asc'},
+                                page=${page.number}, size=${page.size}, ym=${ym})}">
+                        <span th:text="${#strings.equalsIgnoreCase(pointList.dir,'asc') ? '오름차순(▲)' : '내림차순(▼)'}">내림차순(▼)</span>
+                    </a>
+
+                    <!-- ✅ 페이지 사이즈 셀렉트를 정렬방향 버튼 오른쪽에 배치 -->
+                    <form th:action="@{/point}" method="get" class="d-inline-flex align-items-center">
+                        <input type="hidden" name="sort" th:value="${pointList.sort}"/>
+                        <input type="hidden" name="dir" th:value="${pointList.dir}"/>
+                        <input type="hidden" name="page" th:value="${page.number}"/>
+                        <input type="hidden" name="ym" th:value="${ym}"/>
+                        <select name="size" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+                            <option th:value="10" th:selected="${page.size==10}">10</option>
+                            <option th:value="20" th:selected="${page.size==20}">20</option>
+                            <option th:value="50" th:selected="${page.size==50}">50</option>
+                            <option th:value="100" th:selected="${page.size==100}">100</option>
+                        </select>
+                        <noscript><button class="btn btn-sm btn-outline-secondary ms-1">적용</button></noscript>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -77,29 +137,22 @@
         <table class="table align-middle mb-0">
             <thead class="table-light">
             <tr>
-                <!-- 날짜 정렬 헤더 -->
                 <th style="width:180px;"
                     th:with="field='date', isCurr=${pointList.sort==field}, nextDir=${isCurr and pointList.dir=='asc' ? 'desc' : 'asc'}">
-                    <a class="sort-link" th:href="@{/point(page=${page.number}, size=${page.size}, sort=${field}, dir=${nextDir})}">날짜</a>
+                    <a class="sort-link" th:href="@{/point(page=${page.number}, size=${page.size}, sort=${field}, dir=${nextDir}, ym=${ym})}">날짜</a>
                     <span class="sort-arrow" th:if="${isCurr}" th:text="${pointList.dir=='asc' ? '▲' : '▼'}"></span>
                 </th>
-
-                <!-- 구분 정렬 헤더 -->
                 <th style="width:120px;"
                     th:with="field='type', isCurr=${pointList.sort==field}, nextDir=${isCurr and pointList.dir=='asc' ? 'desc' : 'asc'}">
-                    <a class="sort-link" th:href="@{/point(page=${page.number}, size=${page.size}, sort=${field}, dir=${nextDir})}">구분</a>
+                    <a class="sort-link" th:href="@{/point(page=${page.number}, size=${page.size}, sort=${field}, dir=${nextDir}, ym=${ym})}">구분</a>
                     <span class="sort-arrow" th:if="${isCurr}" th:text="${pointList.dir=='asc' ? '▲' : '▼'}"></span>
                 </th>
-
                 <th>메모</th>
-
-                <!-- 변동액 정렬 헤더 -->
                 <th class="text-end" style="width:160px;"
                     th:with="field='delta', isCurr=${pointList.sort==field}, nextDir=${isCurr and pointList.dir=='asc' ? 'desc' : 'asc'}">
-                    <a class="sort-link" th:href="@{/point(page=${page.number}, size=${page.size}, sort=${field}, dir=${nextDir})}">변동액</a>
+                    <a class="sort-link" th:href="@{/point(page=${page.number}, size=${page.size}, sort=${field}, dir=${nextDir}, ym=${ym})}">변동액</a>
                     <span class="sort-arrow" th:if="${isCurr}" th:text="${pointList.dir=='asc' ? '▲' : '▼'}"></span>
                 </th>
-
                 <th class="text-end" style="width:160px;">잔액</th>
             </tr>
             </thead>
@@ -110,31 +163,24 @@
             </tr>
 
             <tr th:each="p : ${page.content}">
-                <!-- 날짜(LocalDateTime/LocalDate 모두 처리) -->
                 <td th:text="${
-             p.pointStartDate == null ? '-' :
-             (p.pointStartDate instanceof T(java.time.LocalDateTime)
-                ? #temporals.format(p.pointStartDate, 'yyyy-MM-dd HH:mm')
-                : #temporals.format(p.pointStartDate, 'yyyy-MM-dd'))
-        }">-</td>
+            p.pointStartDate == null ? '-' :
+            (p.pointStartDate instanceof T(java.time.LocalDateTime)
+              ? #temporals.format(p.pointStartDate, 'yyyy-MM-dd HH:mm')
+              : #temporals.format(p.pointStartDate, 'yyyy-MM-dd'))
+          }">-</td>
 
-                <!-- 구분 -->
                 <td th:with="t=${p.pointType}"
                     th:text="${t == null ? '-' : (#strings.equalsIgnoreCase(t.toString(),'EARN') ? '적립' : '사용')}">-</td>
 
-                <!-- 메모 -->
                 <td th:text="${p.pointReason != null ? p.pointReason : '-'}">-</td>
 
-                <!-- 변동액 -->
                 <td class="num">
           <span th:with="t=${p.pointType}, isEarn=${t != null and #strings.equalsIgnoreCase(t.toString(),'EARN')}"
-                th:class="${isEarn} ? 'delta-pos' : 'delta-neg'"
-                th:text="${(isEarn ? '+' : '-') + (p.pointAmount != null ? #numbers.formatInteger(p.pointAmount,0,'COMMA') : '0')}">
-            0
-          </span>
+                th:class="${isEarn} ? 'text-success' : 'text-danger'"
+                th:text="${(isEarn ? '+' : '-') + (p.pointAmount != null ? #numbers.formatInteger(p.pointAmount,0,'COMMA') : '0')}">0</span>
                 </td>
 
-                <!-- 잔액: runningBalance 우선, 없으면 balance, 그것도 없으면 '-' -->
                 <td class="num"
                     th:text="${p.runningBalance != null ? #numbers.formatInteger(p.runningBalance,0,'COMMA')
                       : (p.balance != null ? #numbers.formatInteger(p.balance,0,'COMMA') : '-') }">-</td>
@@ -143,34 +189,21 @@
         </table>
     </div>
 
-    <!-- 블록 페이지네이션 (컨트롤러에서 계산된 변수 사용) -->
+    <!-- 블록 페이지네이션 -->
     <nav class="mt-3" th:if="${page.totalPages > 1}">
         <ul class="pagination justify-content-center">
-            <!-- 이전 블록 -->
             <li class="page-item" th:classappend="${hasPrevBlock}? '' : ' disabled'">
                 <a class="page-link"
-                   th:href="@{/point(page=${prevPage - 1}, size=${page.size}, sort=${pointList.sort}, dir=${pointList.dir})}">
-                    이전
-                </a>
+                   th:href="@{/point(page=${prevPage - 1}, size=${page.size}, sort=${pointList.sort}, dir=${pointList.dir}, ym=${ym})}">이전</a>
             </li>
-
-            <!-- 현재 블록 페이지들: startPage ~ endPage (1-based 표시, 링크는 0-based) -->
-            <li class="page-item"
-                th:each="i : ${#numbers.sequence(startPage, endPage)}"
+            <li class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}"
                 th:classappend="${i == now} ? ' active' : ''">
-                <a class="page-link"
-                   th:text="${i}"
-                   th:href="@{/point(page=${i - 1}, size=${page.size}, sort=${pointList.sort}, dir=${pointList.dir})}">
-                    1
-                </a>
+                <a class="page-link" th:text="${i}"
+                   th:href="@{/point(page=${i - 1}, size=${page.size}, sort=${pointList.sort}, dir=${pointList.dir}, ym=${ym})}">1</a>
             </li>
-
-            <!-- 다음 블록 -->
             <li class="page-item" th:classappend="${hasNextBlock}? '' : ' disabled'">
                 <a class="page-link"
-                   th:href="@{/point(page=${nextPage - 1}, size=${page.size}, sort=${pointList.sort}, dir=${pointList.dir})}">
-                    다음
-                </a>
+                   th:href="@{/point(page=${nextPage - 1}, size=${page.size}, sort=${pointList.sort}, dir=${pointList.dir}, ym=${ym})}">다음</a>
             </li>
         </ul>
     </nav>
