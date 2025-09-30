@@ -6,6 +6,8 @@ import com.example.book.domain.finance.SubPeriodUnit;
 import com.example.book.domain.user.Users;
 import com.example.book.dto.SubscriptionsDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,6 +43,8 @@ public class Subscriptions extends BaseEntity {
     private Long subAmount;
 
     @Column(name = "subPayDate")
+    @Min(1)
+    @Max(25)
     private int subPayDate;
 
     @Column(name = "subNotice")

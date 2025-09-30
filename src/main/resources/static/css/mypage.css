@@ -105,6 +105,7 @@ body {
 
 .info-row .value {
     flex: 1;
+    max-width: 725px;
     padding: 8px 12px;
     border: 1px solid #ccc;
     border-radius: 6px;
@@ -282,4 +283,8 @@ body {
 /* 회원탈퇴 영역 */
 .delete-section {
     text-align: right;
+}
+
+.btn-darkmode {
+    display: none !important;
 }
