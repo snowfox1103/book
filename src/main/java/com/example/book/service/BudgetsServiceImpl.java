@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -91,24 +92,33 @@ public class BudgetsServiceImpl implements BudgetsService {
     //0926 조덕진 수정 알림용
     @Override
     public List<BudgetAlertDTO> getBudgetAlerts(Long userNo) {
-        List<Budgets> budgets = budgetsRepository.findByUserNoAndBudNoticeTrue(userNo);
+        var today = LocalDate.now(java.time.ZoneId.of("Asia/Seoul"));
+        var ym = YearMonth.from(today);
+
+        // 🔒 당월(KST) 레코드만 조회 (레포지토리에 메서드 추가 권장)
+        List<Budgets> budgets =
+                budgetsRepository.findByUserNoAndBudNoticeTrueAndBudYearAndBudMonth(
+                        userNo, ym.getYear(), ym.getMonthValue()
+                );
 
         return budgets.stream()
-          .filter(b -> b.getBudAmount() != null && b.getBudAmount() > 0)
-          .map(b -> {
-              int rate = (int) Math.round((double) b.getBudCurrent() / b.getBudAmount() * 100);
-              int threshold = (b.getBudThreshold() != null) ? b.getBudThreshold() : 90; // 기본값 90%
-              return new BudgetAlertDTO(
-                b.getBudgetId(),
-                categoriesService.getCatNameByCatId(b.getBudCategory()),
-                b.getBudAmount(),
-                b.getBudCurrent(),
-                rate,
-                threshold
-              );
-          })
-          .filter(dto -> dto.getRate() >= dto.getThreshold()) // ⚠️ 설정한 비율 이상일 때만 알림
-          .toList();
+                .filter(b -> b.getBudAmount() != null && b.getBudAmount() > 0)
+                .map(b -> {
+                    long amount = b.getBudAmount();
+                    long current = b.getBudCurrent() == null ? 0 : b.getBudCurrent(); // null 방어
+                    int rate = (int) Math.round((double) current / amount * 100);
+                    int threshold = (b.getBudThreshold() != null) ? b.getBudThreshold() : 90;
+                    return new BudgetAlertDTO(
+                            b.getBudgetId(),
+                            categoriesService.getCatNameByCatId(b.getBudCategory()),
+                            amount,
+                            current,
+                            rate,
+                            threshold
+                    );
+                })
+                .filter(dto -> dto.getRate() >= dto.getThreshold())
+                .toList();
     }
 
     @Override
