@@ -40,5 +40,7 @@ public interface BudgetsRepository extends JpaRepository<Budgets,Long>, BudgetsS
     List<Budgets> findByUserNoAndBudYearAndBudMonthAndBudNoticeTrue(
       Long userNo, Integer budYear, Integer budMonth
     ); //마찬가지
+    List<Budgets> findByUserNoAndBudNoticeTrueAndBudYearAndBudMonth(
+            Long userNo, int budYear, int budMonth); //마찬가지
 }
 
