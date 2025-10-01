@@ -151,27 +151,27 @@
     </div>
 
     <!-- 제외 카테고리 -->
-    <div class="card mt-4">
-        <div class="card-header">제외 카테고리 설정 <small class="text-muted ms-1">예) 관리비, 월세</small></div>
-        <div class="card-body">
-            <form th:action="@{/admin/exclusions}" method="post">
-                <label class="form-label">쉼표( , )로 구분하여 입력</label>
-                <textarea name="excludedCategories" rows="3" class="form-control"
-                          th:text="${settings != null && settings.excludedCategories() != null ? #strings.listJoin(settings.excludedCategories(), ', ') : ''}"
-                          placeholder="관리비, 월세"></textarea>
-                <div class="d-flex align-items-center gap-3 mt-2">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <button class="btn btn-primary">저장</button>
-                    <span class="text-muted small">
-                      현재:
-                      <span th:if="${settings != null && settings.excludedCategories() != null && !#lists.isEmpty(settings.excludedCategories())}"
-                            th:text="${#strings.listJoin(settings.excludedCategories(), ', ')}"></span>
-                      <span th:if="${settings == null || settings.excludedCategories() == null || #lists.isEmpty(settings.excludedCategories())}">없음</span>
-                    </span>
-                </div>
-            </form>
-        </div>
-    </div>
+<!--    <div class="card mt-4">-->
+<!--        <div class="card-header">제외 카테고리 설정 <small class="text-muted ms-1">예) 관리비, 월세</small></div>-->
+<!--        <div class="card-body">-->
+<!--            <form th:action="@{/admin/exclusions}" method="post">-->
+<!--                <label class="form-label">쉼표( , )로 구분하여 입력</label>-->
+<!--                <textarea name="excludedCategories" rows="3" class="form-control"-->
+<!--                          th:text="${settings != null && settings.excludedCategories() != null ? #strings.listJoin(settings.excludedCategories(), ', ') : ''}"-->
+<!--                          placeholder="관리비, 월세"></textarea>-->
+<!--                <div class="d-flex align-items-center gap-3 mt-2">-->
+<!--                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+<!--                    <button class="btn btn-primary">저장</button>-->
+<!--                    <span class="text-muted small">-->
+<!--                      현재:-->
+<!--                      <span th:if="${settings != null && settings.excludedCategories() != null && !#lists.isEmpty(settings.excludedCategories())}"-->
+<!--                            th:text="${#strings.listJoin(settings.excludedCategories(), ', ')}"></span>-->
+<!--                      <span th:if="${settings == null || settings.excludedCategories() == null || #lists.isEmpty(settings.excludedCategories())}">없음</span>-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </div>-->
 
     <!-- 월 상한 -->
     <div class="card mt-4 mb-5">

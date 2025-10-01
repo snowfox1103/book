@@ -36,6 +36,6 @@ public class Custom403Handler implements AccessDeniedHandler {
 
     // ---- 일반 브라우저 요청 ----
     // 여기서는 Spring Boot 기본 에러 페이지로 빠지지 않도록 직접 리다이렉트
-    response.sendRedirect("/users/login?error=ACCESS_DENIED");
+    response.sendRedirect("/mainPage/intro?error=ACCESS_DENIED");
   }
 }
