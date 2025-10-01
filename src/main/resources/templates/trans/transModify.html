@@ -32,7 +32,7 @@
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">날짜</span>
-                            <input type="date" name="transDate" class="form-control" th:value="${transDTO.transDate}" disabled>
+                            <input type="date" name="transDate" class="form-control" th:value="${transDTO.transDate}" readonly>
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">입금/출금 선택</span>
@@ -64,7 +64,7 @@
                             <div class="float-end">
                                 <button type="submit" class="btn btn-primary modifyBtn">수정 완료</button>
                                 <button type="button" class="btn btn-danger clearBtn">삭제</button>
-                                <button type="button" class="btn btn-secondary listBtn">List</button>
+                                <button type="button" class="btn btn-secondary listBtn">목록 가기</button>
                             </div>
                         </div>
                     </form>
