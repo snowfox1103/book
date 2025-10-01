@@ -34,6 +34,11 @@ public class PendingPoint {
     @Column(length = 20, nullable = false)
     private ApprovalStatus status; // PENDING/APPROVED/REJECTED
 
+    @PrePersist
+    void prePersist() {
+        if (status == null) status = ApprovalStatus.PENDING;
+    }
+
     private LocalDateTime createdAt;
     private LocalDateTime decidedAt;
     private String decidedBy;

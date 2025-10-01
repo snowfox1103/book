@@ -8,12 +8,14 @@ import com.example.book.domain.point.PointType;
 import com.example.book.domain.point.UserPoint;
 import com.example.book.domain.user.ApprovalStatus;
 import com.example.book.domain.point.RewardType;
+import com.example.book.domain.user.Users;
 import com.example.book.dto.PendingPointDTO;
 import com.example.book.dto.PointSettingsDTO;
 import com.example.book.dto.RuleDTO;
 import com.example.book.repository.PendingPointRepository;
 import com.example.book.repository.UserPointRepository;
 import com.example.book.repository.TransactionsRepository;
+import com.example.book.repository.UsersRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class AdminServiceImpl implements AdminService {
 
     private final PendingPointRepository pendingPointRepository;
     private final UserPointRepository  userPointRepository;
+    private final UsersRepository usersRepository;
     private final TransactionsRepository transactionsRepository;
 
     @PersistenceContext
@@ -71,7 +74,7 @@ public class AdminServiceImpl implements AdminService {
                 list.add(PendingPointDTO.ofCanonical(
                         p.getId(), p.getUserNo(), p.getUsername(),
                         p.getRatePercent(), p.getPoints(),
-                        p.getCreatedAt().getYear(), p.getCreatedAt().getMonthValue(),
+                        p.getYearMonth(),
                         p.getReason(), p.getStatus()
                 ));
             } else {
@@ -236,13 +239,6 @@ public class AdminServiceImpl implements AdminService {
                 content.add(PendingPointDTO.ofCanonical(
                         p.getId(), p.getUserNo(), p.getUsername(),
                         p.getRatePercent(), p.getPoints(),
-                        p.getCreatedAt().getYear(), p.getCreatedAt().getMonthValue(),
-                        p.getReason(), p.getStatus()
-                ));
-            } else {
-                content.add(PendingPointDTO.ofCanonical(
-                        p.getId(), p.getUserNo(), p.getUsername(),
-                        p.getRatePercent(), p.getPoints(),
                         p.getYearMonth(),
                         p.getReason(), p.getStatus()
                 ));
@@ -254,7 +250,6 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public void commitApproved(int year, int month) {
-
         String ymStr = YearMonth.of(year, month).toString();
 
         var approved = pendingPointRepository.findAllByOrderByCreatedAtDesc()
@@ -263,49 +258,45 @@ public class AdminServiceImpl implements AdminService {
                 .filter(p -> p.getStatus() == ApprovalStatus.APPROVED)
                 .toList();
 
-        // 포인트 적립 시각 – 실제 실행 시각을 사용
+        // 적립 시각은 "지금" 그대로 사용 (00:00 방지)
         LocalDateTime eventDateTime = LocalDateTime.now();
 
         for (var p : approved) {
 
-            boolean exists = userPointRepository
-                    .existsByUserNoAndPointTypeAndPointAmountAndPointStartDateAndPointReason(
-                            p.getUserNo(),
-                            PointType.EARN,
-                            (long) p.getPoints(),
-                            eventDateTime,
-                            "[월정산] " + ymStr + " " + p.getReason()
-                    );
+            boolean exists = userPointRepository.existsByUserNoAndPointTypeAndPointAmountAndPointStartDateAndPointReason(
+                    p.getUserNo(),
+                    PointType.EARN,
+                    (long) p.getPoints(),
+                    eventDateTime,
+                    "[월정산] " + ymStr + " " + p.getReason()
+            );
             if (exists) continue;
 
-            // 1) 포인트 적립 (LocalDateTime 그대로 저장 → 00:00 문제 해소)
+            // 1) 사용자 포인트 이력(UserPoint) 저장
             var up = new UserPoint();
             up.setUserNo(p.getUserNo());
             up.setPointType(PointType.EARN);
             up.setPointAmount((long) p.getPoints());
-            up.setPointStartDate(eventDateTime);
+            up.setPointStartDate(eventDateTime);       // <-- toLocalDate() 쓰지 않음
             up.setPointReason("[월정산] " + ymStr + " " + p.getReason());
             userPointRepository.save(up);
 
-            // 2) 트랜잭션(입금) 기록 — 빌더 사용
-            transactionsRepository.save(
-                    Transactions.builder()
-                            .userNo(p.getUserNo())
-                            .transTitle("월 스캔 자동지급 - " + ymStr)
-                            .transAmount((long) p.getPoints())
-                            .transDate(eventDateTime.toLocalDate())   // 엔티티가 LocalDate
-                            .transInOut(InOrOut.IN)                   // 입금
-                            .transCategory(null)                      // 필요 시 카테고리 지정
-                            .transMemo("[월정산] " + ymStr + " " + p.getReason())
-                            .build()
-            );
+            // 2) **Users 잔액(balance) 갱신**  ← 핵심
+            Users u = usersRepository.findById(p.getUserNo())
+                    .orElseThrow(() -> new IllegalStateException("user not found: " + p.getUserNo()));
+            long cur = u.getBalance();
+            u.setBalance(cur + p.getPoints());                        // setPointBalance(...) 로 변경
+            usersRepository.save(u);
 
-            // 3) pending 마무리 정보
+            // 4) pending 마무리 정보 채움
             if (p.getDecidedAt() == null) p.setDecidedAt(LocalDateTime.now());
             if (p.getDecidedBy() == null) p.setDecidedBy("admin");
         }
 
         pendingPointRepository.saveAll(approved);
+
+        // 필요 시 사용자별 러닝밸런스 재계산
+         approved.stream().map(PendingPoint::getUserNo).distinct().forEach(this::recomputeRunningBalance);
     }
 
 
@@ -437,4 +428,6 @@ public class AdminServiceImpl implements AdminService {
         }
         userPointRepository.saveAll(points);
     }
+
+
 }

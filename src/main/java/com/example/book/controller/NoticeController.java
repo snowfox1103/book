@@ -108,7 +108,7 @@ public class NoticeController {
     @GetMapping("/{id:\\d+}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("n", noticeService.read(id));
-        return "notice/form";
+        return "notice/write";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
