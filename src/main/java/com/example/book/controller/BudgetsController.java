@@ -43,6 +43,7 @@ public class BudgetsController {
         Long sumBudgets = budgetsService.wholeSetBudgetAmount(userNo);
         Long sumUses = budgetsService.budgetUses(userNo);
         PageResponseDTO<BudgetsDTO> pageResponseDTO = budgetsService.budgetListByUser(userNo,pageRequestDTO);
+        List<BudgetsDTO> currentMonthBudgetList = pageResponseDTO.getDtoList();
         int nowY = LocalDate.now().getYear();
         int nowM = LocalDate.now().getMonthValue();
         List<BudgetsDTO> rows = pageResponseDTO.getDtoList().stream().filter(b -> b.getBudYear() == nowY && b.getBudMonth() == nowM).toList();
@@ -50,7 +51,7 @@ public class BudgetsController {
         model.addAttribute("sumBudgets",sumBudgets);
         model.addAttribute("sumUses",sumUses);
         model.addAttribute("users",userNo);
-        model.addAttribute("response",pageResponseDTO);
+        model.addAttribute("currentMonthBudgetList",currentMonthBudgetList);
         model.addAttribute("rows", rows);
         model.addAttribute("hasData", !rows.isEmpty());
         model.addAttribute("categories",categories);
