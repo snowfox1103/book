@@ -12,6 +12,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Builder
+@Table(name = "emailverificationtoken")
 @AllArgsConstructor
 public class EmailVerificationToken {
   @Id

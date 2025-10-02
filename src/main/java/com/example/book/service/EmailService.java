@@ -29,7 +29,7 @@ public class EmailService {
   private final EmailVerificationTokenRepository tokenRepo;
   private final UsersRepository usersRepo;
 
-  @Value("${app.base-url:http://localhost:9020}")
+  @Value("${app.base-url:http://10.10.21.231:9020}")
   private String baseUrl;
 
   private static final Duration TOKEN_TTL = Duration.ofHours(1);

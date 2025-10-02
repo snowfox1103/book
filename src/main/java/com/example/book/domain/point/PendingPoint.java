@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "pendingPoint",
+@Table(name = "pendingpoint",
         uniqueConstraints = @UniqueConstraint(name = "uq_pending_user_month",
                 columnNames = {"userNo","yearMonth"}))
 public class PendingPoint {

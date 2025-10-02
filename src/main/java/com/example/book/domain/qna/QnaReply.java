@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
         @AttributeOverride(name = "modDate", column = @Column(name = "qRUpdatedAt"))
 })
 @Entity
-@Table(name = "qnaReply")
+@Table(name = "qnareply")
 @Getter
 @Builder
 @AllArgsConstructor

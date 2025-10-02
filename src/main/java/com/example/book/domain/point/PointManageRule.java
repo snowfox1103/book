@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "pointManageRule")
+@Table(name = "pointmanagerule")
 @Getter
 @Builder
 @AllArgsConstructor
